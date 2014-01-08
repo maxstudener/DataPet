@@ -5,7 +5,7 @@ class Query
       @sql = sql
     else
       @sql = "SELECT TOP #{limit} * FROM #{table_name} "
-      @sql += "WHERE " unless sql.match(/^WHERE/i)
+      @sql += "WHERE " unless sql.match(/^WHERE/i) || sql.match(/^ORDER\s{1}BY/i)
       @sql += sql
     end
     @sql.force_encoding('utf-8')

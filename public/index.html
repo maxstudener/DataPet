@@ -20,14 +20,14 @@
 	<div ng-controller='connectionsController' ng-init='getConnections()'
 			 class='col-sm-2 connections full-height scrolling'>
 		<h4>Connections</h4>
-		<input ng-model='tableFilter' class='form-control'/>
+		<input ng-model='tableFilter' class='form-control' ng-change='displayAllConnections()'/>
 		<br/>
 		<ul>
 			<li ng-repeat='connection in connections'>
 				<a href='#' ng-click='toggleDisplay(connection.name)'>{{connection.name}}</a>
 				<div ng-show='connection.display'>
 					<ul>
-						<li ng-repeat='table in connection.tables | filter:tableFilter'>
+						<li ng-repeat='table in connection.tables | filter:tableFilter | orderBy:"name"' >
 							<a href='#' ng-click='createConnectionWindow(connection.name, table.name)'>{{table.name}}</a>
 						</li>
 					</ul>
