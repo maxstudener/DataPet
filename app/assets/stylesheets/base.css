@@ -1,0 +1,65 @@
+.medium_glyph {
+    font-size: 30px;
+    background: #f5f5f5;
+}
+
+.connections {
+    background-color: #f8f8f8;
+}
+
+.context_menu {
+    position: absolute;
+    display: none;
+    z-index: 9999;
+    background-color: #f8f8f8;
+    border-style: solid;
+    border-width: thin;
+    border-color: #616161;
+    padding-right: 30px;
+    -webkit-border-radius: 2px 2px 2px 2px;
+    border-radius: 2px 2px 2px 2px;
+    -webkit-box-shadow: 0 1px 10px 2px rgba(25, 25, 25, .5);
+    box-shadow: 0 1px 10px 2px rgba(25, 25, 25, .5);
+}
+
+.centered {
+    text-align: center;
+}
+
+.up_and_left {
+    position: relative;
+    top: -15px;
+    left: -15px;
+}
+
+td.relations, th.filler {
+    background-color: #91baff;
+    width: 25px;
+    min-width: 25px;
+    overflow: hidden;
+}
+
+td.relations:hover {
+    background-color: #2a86ff;
+
+}
+
+td {
+    white-space: nowrap;
+    max-width: 400px;
+    overflow: auto;
+}
+
+.full-height {
+    height: 100%;
+}
+
+.eighty-height {
+    height: 80%;
+}
+
+.scrolling {
+    overflow: scroll;
+    overflow-y: scroll;
+}
+
