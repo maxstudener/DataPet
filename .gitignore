@@ -6,6 +6,7 @@
 
 # Ignore RubyMine
 *.idea
+*.DS_Store
 
 # Ignore any DataPet connection or relation config files
 /config/DataPet/connections/*

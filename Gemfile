@@ -2,9 +2,10 @@ source 'https://rubygems.org'
 
 gem 'rails', '3.2.13'
 
-gem 'sqlite3'
-gem 'tiny_tds'
-gem 'activerecord-sqlserver-adapter'
+gem 'jdbc-openedge', '10.2B'
+gem 'jdbc-sqlite3'
+gem 'sequel'
+
 
 group :assets do
   gem 'sass-rails',   '~> 3.2.3'

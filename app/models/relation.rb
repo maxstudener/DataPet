@@ -20,11 +20,8 @@ class Relation
     relation_type = relation_hash[:type]
     @relation_table_name = relation_hash[:table]
 
-    # acquire a database connection to run this query against
-    @connection = Connection.get(@connection_name)
-
     @where_clauses = relation_hash[:where]
-    @sql = "SELECT * FROM #{@relation_table_name} WHERE "
+    @sql = "SELECT * FROM \"#{Query.quote_table(@relation_table_name)}\" WHERE "
 
     case relation_type
       when 'has_many'
@@ -32,13 +29,10 @@ class Relation
 
       when 'has_many_through'
         through_relation = Relation.new(connection_name, table_name, relation_hash[:through], data_hash)
-        through_relation.bind_data
-        result_set = through_relation.compute
-        join_hash = relation_hash[:join]
-        join_column = join_hash.first.keys.first
-        from_column = join_hash.first[join_column]['from']
 
-        @sql += "#{@relation_table_name}.#{join_column} IN ('#{result_set.collect{ |row| row[from_column] }.join("','")}')"
+        @join_data = through_relation.compute
+        @join_clauses = relation_hash[:join]
+        add_join_clauses
 
         if @where_clauses.present?
           @sql += " AND "
@@ -55,19 +49,35 @@ class Relation
     @sql += where_clause_sql
   end
 
+  def add_join_clauses
+    join_clause_sql = @join_clauses.map{ |join| create_join_clause(join) }.join(' AND ')
+    @sql += join_clause_sql
+  end
+
+  def create_join_clause(join)
+    puts "\n\n" + join.inspect + "\n\n"
+    join_column = join.keys.first
+    from_column = join[join_column]['from']
+
+    join_data = @join_data.collect{ |row| row[from_column.downcase.to_sym] }.join("','")
+    raise "Cannot join without values." if join_data.blank?
+
+    "\"#{Query.quote_table(@relation_table_name+'.'+join_column)}\" IN ('#{join_data}')"
+  end
+
   def create_where_clause(where)
     column = where.keys.first
     operator = where[column]['is']
 
     if where[column]['my'].present? # match on column value
-      my_value = @data_hash[where[column]['my']]
+      my_value = @data_hash[where[column]['my'].downcase]
     elsif where[column]['value'].present? # match on specified value
       my_value = where[column]['value']
     else
       raise "This type of WHERE clause is not supported."
     end
 
-    "#{@relation_table_name}.#{column} #{comparison_to_sql(operator)} '#{my_value}'"
+    "\"#{Query.quote_table(@relation_table_name+'.'+column)}\" #{comparison_to_sql(operator)} '#{my_value}'"
   end
 
   def comparison_to_sql(comparison)
@@ -87,12 +97,6 @@ class Relation
     end
   end
 
-  def bind_data
-    @bind_columns.each do |bind_column|
-      @sql.sub!('?', @data_hash[bind_column])
-    end
-  end
-
   def sql
     @sql
   end
@@ -106,7 +110,8 @@ class Relation
   end
 
   def compute
-    @connection.execute_query(@connection.create_query(@table_name, @sql), true)
+    connection = Connection.get(@connection_name)
+    connection.execute_query(connection.create_query(@table_name, @sql), true)
   end
 
   def result_set
@@ -129,7 +134,7 @@ class Relation
       lookup_table_name = nil
       if relations_hash
         relations = relations_hash.select do |relation_table_name, _|
-          if relation_table_name.upcase == table_name.upcase
+          if relation_table_name.upcase == table_name.upcase.gsub('"', '')
             lookup_table_name = relation_table_name
             true
           else

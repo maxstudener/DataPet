@@ -13,9 +13,14 @@ class RelationsController < ApplicationController
     result_set = relation.result_set
 
     # get the relations for the new connectionWindow
-    relations = Relation.find_all_for_table_name(relation.relation_connection_name, relation.relation_table_name)
+    relations = Relation.find_all_for_table_name(relation.relation_connection_name, Query.unquote_table(relation.relation_table_name))
 
-    render json: { columns: result_set.columns, rows: result_set.rows, relations: relations, query: relation.sql }
+    render json: {
+                   columns: result_set.present? ? result_set.first.keys : [],
+                   rows: result_set.map{ |row| row.values },
+                   relations: relations,
+                   query: relation.sql
+                 }
   end
 
 end

@@ -29,8 +29,12 @@ function connectionWindowsController($scope, $http, $rootScope, $modal) {
             success(function(data, status, headers, config) {
                 connectionWindow.relations = [];
                 connectionWindow.rows = [];
+                connectionWindow.columns = [];
                 data['rows'].forEach(function(row, idx, arr){
                     connectionWindow.rows.push(new Row(row, idx))
+                });
+                data['columns'].forEach(function(column, idx, arr){
+                   connectionWindow.columns.push(new Column(column));
                 });
                 if(typeof(data['relations']) === 'object'){
                     Object.keys(data['relations']).forEach(function(relationName, idx, arr){
@@ -57,8 +61,10 @@ function connectionWindowsController($scope, $http, $rootScope, $modal) {
 
         var row = connectionWindow.rows[$scope.currentRowId];
         var rowData = {};
+        console.log(row);
         _.each(row.rowData, function(data){
-            rowData[connectionWindow.columns[data.id].name] = data.value
+            console.log(data.value);
+            rowData[connectionWindow.columns[data.id].name.toLowerCase()] = data.value
         });
         var newConnectionWindow = $scope.createConnectionWindow(connection, relation.relationAttributes['table']);
         $scope.getRelationData(newConnectionWindow, connectionWindow, relationName, rowData);
@@ -70,8 +76,12 @@ function connectionWindowsController($scope, $http, $rootScope, $modal) {
             success(function(data, status, headers, config) {
                 connectionWindow.relations = [];
                 connectionWindow.rows = [];
+                connectionWindow.columns = [];
                 data['rows'].forEach(function(row, idx, arr){
                     connectionWindow.rows.push(new Row(row, idx));
+                });
+                data['columns'].forEach(function(column, idx, arr){
+                    connectionWindow.columns.push(new Column(column));
                 });
                 if(typeof(data['relations']) === 'object'){
                     Object.keys(data['relations']).forEach(function(relationName, idx, arr){
@@ -112,20 +122,20 @@ function connectionWindowsController($scope, $http, $rootScope, $modal) {
 
     $rootScope.$on('addConnectionWindow', function(event, data){
         var connectionWindow = $scope.createConnectionWindow(data['connectionName'], data['tableName']);
-        $scope.submitQuery(connectionWindow.id, 'Select TOP ' + connectionWindow.limit + ' * FROM ' + connectionWindow.tableName);
+        $scope.submitQuery(connectionWindow.id, 'Select TOP ' + connectionWindow.limit + ' * FROM ' + '"' + connectionWindow.schemaName + '"."' + connectionWindow.tableName + '"');
     });
 
-    $scope.getColumns = function(connectionWindow){
-        $http.get('/connections/' + connectionWindow.connectionName + '/tables/' + connectionWindow.schemaName + '/' + connectionWindow.tableName + '/columns').
-            success(function(data, status, headers, config) {
-                data.forEach(function(columnName, idx, arr){
-                    connectionWindow.columns.push(new Column(columnName));
-                });
-            }).
-            error(function(data, status, headers, config) {
-                // something went wrong
-            });
-    };
+//    $scope.getColumns = function(connectionWindow){
+//        $http.get('/connections/' + connectionWindow.connectionName + '/tables/' + connectionWindow.schemaName + '/' + connectionWindow.tableName + '/columns').
+//            success(function(data, status, headers, config) {
+//                data.forEach(function(columnName, idx, arr){
+//                    connectionWindow.columns.push(new Column(columnName));
+//                });
+//            }).
+//            error(function(data, status, headers, config) {
+//                // something went wrong
+//            });
+//    };
 
     $scope.showTab = function(connectionWindowId){
         _.each($scope.connectionWindows, function(connectionWindow){
@@ -159,7 +169,6 @@ function connectionWindowsController($scope, $http, $rootScope, $modal) {
         this.columns = [];
         this.relations = [];
         this.currentSqlQuery = ''; // displayed in form for connectionWindow
-        $scope.getColumns(this);
         this.limit = 50;
     };
 

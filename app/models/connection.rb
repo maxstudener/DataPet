@@ -7,11 +7,10 @@ class Connection
   def initialize(configuration)
     @configuration = configuration
     @db = establish_connection
-    @tables = @db.tables
   end
 
   def establish_connection
-    ActiveRecord::Base.establish_connection(@configuration).connection
+    Sequel.connect(@configuration)
   end
 
   def create_query(table_name, sql, limit = 50)
@@ -22,19 +21,11 @@ class Connection
   # calling without a second parameter will attempt to ensure that the query is readonly
   def execute_query(sql, safety_is_off = false)
     if safety_is_off || is_select_query?(sql)
-      @db.exec_query(sql)
+      Rails.logger.info sql
+      @db[sql].all
     else
       raise 'Only SELECT statements are allowed.'
     end
-  end
-
-  def tables
-    @db.tables
-  end
-
-  def columns(schema_name, table_name)
-    full_table_name = schema_name.present? ? "#{schema_name}.#{table_name}" : table_name
-    @db.columns(full_table_name).collect{ |column| column.name }
   end
 
   def db
@@ -75,9 +66,11 @@ class Connection
     end
 
     def get_connection(configuration)
-      case configuration[:adapter]
+      case configuration[:db_type]
         when 'sqlserver'
           Connection::SqlServerConnection.new(configuration)
+        when 'progress'
+          Connection::ProgressConnection.new(configuration)
         else
           # use the default connection class
           Connection.new(configuration)

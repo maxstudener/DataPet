@@ -16,10 +16,23 @@ class TablesController < ApplicationController
     # use a schema if one is present
     full_table_name = schema_name.present? ? "#{schema_name}.#{table_name}" : table_name
 
-    result_set = @connection.execute_query(@connection.create_query(table_name, sql, limit))
-    relations = Relation.find_all_for_table_name(connection_name, full_table_name)
+    result_set = @connection.execute_query(@connection.create_query(full_table_name, sql, limit))
+    relations = Relation.find_all_for_table_name(connection_name, Query.unquote_table(full_table_name))
 
-    render json: { columns: result_set.columns, rows: result_set.rows, relations: relations }
+    render json: { columns: result_set.first.keys, rows: result_set.map{ |row| row.values }, relations: relations }
+  end
+
+  # this is for testing only
+  def relations
+    connection_name = params[:connection_name]
+    schema_name = params[:schema_name]
+
+    table_name = params[:table_name]
+
+    full_table_name = schema_name.present? ? "#{schema_name}.#{table_name}" : table_name
+
+    relations = Relation.find_all_for_table_name(connection_name, Query.unquote_table(full_table_name))
+    render json: { relations: relations }
   end
 
 end
