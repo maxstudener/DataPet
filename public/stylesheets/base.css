@@ -67,3 +67,6 @@ th {
     overflow-y: scroll;
 }
 
+.right {
+    text-align: right;
+}

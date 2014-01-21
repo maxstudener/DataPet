@@ -12,5 +12,6 @@ DataPet::Application.routes.draw do
   match 'connections/:connection_name/:action', controller: :connections
 
   resources :connections
+  resources :relations
 
 end

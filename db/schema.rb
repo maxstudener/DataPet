@@ -11,53 +11,36 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140108211014) do
-
-  create_table "attributes", :force => true do |t|
-    t.string   "name"
-    t.string   "value"
-    t.integer  "connection_id"
-    t.datetime "created_at",    :null => false
-    t.datetime "updated_at",    :null => false
-  end
-
-  create_table "connections", :force => true do |t|
-    t.string   "name"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
-  end
+ActiveRecord::Schema.define(:version => 20140120170028) do
 
   create_table "join_clauses", :force => true do |t|
     t.string   "join_column"
     t.string   "from_column"
+    t.integer  "relation_id"
     t.datetime "created_at",  :null => false
     t.datetime "updated_at",  :null => false
   end
 
   create_table "relations", :force => true do |t|
-    t.integer  "table_id"
-    t.string   "name"
-    t.string   "type"
-    t.integer  "data_table_id"
-    t.integer  "thru_table_id"
-    t.datetime "created_at",    :null => false
-    t.datetime "updated_at",    :null => false
-  end
-
-  create_table "tables", :force => true do |t|
-    t.string   "name"
-    t.integer  "connection_id"
-    t.datetime "created_at",    :null => false
-    t.datetime "updated_at",    :null => false
+    t.string   "connection_name"
+    t.string   "table_name"
+    t.string   "relation_name"
+    t.string   "relation_type"
+    t.string   "relation_connection_name"
+    t.string   "relation_table_name"
+    t.integer  "through_relation_id"
+    t.datetime "created_at",               :null => false
+    t.datetime "updated_at",               :null => false
   end
 
   create_table "where_clauses", :force => true do |t|
-    t.string   "column_is"
+    t.string   "relation_table_column"
     t.string   "comparison_operator"
-    t.string   "my_column"
-    t.string   "value"
-    t.datetime "created_at",          :null => false
-    t.datetime "updated_at",          :null => false
+    t.string   "comparison_type"
+    t.string   "comparison_value"
+    t.integer  "relation_id"
+    t.datetime "created_at",            :null => false
+    t.datetime "updated_at",            :null => false
   end
 
 end

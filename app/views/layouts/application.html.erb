@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html ng-app='data-pet'>
+<head>
+  <title>DataPet</title>
+  <link rel='stylesheet' type='text/css' href='/stylesheets/bootstrap/bootstrap.min.css'/>
+  <link rel='stylesheet' type='text/css' href='/stylesheets/base.css'/>
+  <script src='/javascripts/jquery/jquery-2.0.3.min.js'></script>
+  <script src='/javascripts/angular/angular.min.js'></script>
+  <script src='/javascripts/underscore/underscore.min.js'></script>
+  <script src='/javascripts/bootstrap/ui-bootstrap.min.js'></script>
+  <script src='/javascripts/bootstrap/ui-bootstrap-tpls.min.js'></script>
+  <script>angular.module('data-pet', ['ui.bootstrap']);</script>
+
+  <%= csrf_meta_tags %>
+</head>
+<body>
+
+<%= yield %>
+
+</body>
+</html>

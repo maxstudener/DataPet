@@ -47,7 +47,6 @@ function connectionsController($scope, $http, $rootScope) {
 
     $scope.displayAllConnections = function(){
         $scope.connections.forEach(function(connection, idx, arr){
-            console.log(connection);
           connection.display = true;
         });
     };

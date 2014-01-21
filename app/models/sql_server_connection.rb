@@ -12,4 +12,10 @@ class SqlServerConnection < Connection
     result_set.collect { |row| row[:fulltablename] }
   end
 
+  def columns(schema_name, table_name)
+    column_fetch_sql = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '#{table_name}' AND TABLE_SCHEMA = '#{schema_name}'"
+    result_set = execute_query(column_fetch_sql, true)
+    result_set.collect { |row| row[:column_name] }
+  end
+
 end

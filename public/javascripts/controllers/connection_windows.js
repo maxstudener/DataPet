@@ -36,11 +36,9 @@ function connectionWindowsController($scope, $http, $rootScope, $modal) {
                 data['columns'].forEach(function(column, idx, arr){
                    connectionWindow.columns.push(new Column(column));
                 });
-                if(typeof(data['relations']) === 'object'){
-                    Object.keys(data['relations']).forEach(function(relationName, idx, arr){
-                        connectionWindow.relations.push(new Relation(relationName, data['relations'][relationName]));
-                    });
-                }
+                data['relations'].forEach(function(relation, idx, arr){
+                    connectionWindow.relations.push(new Relation(relation.relation_name, relation));
+                });
             }).
             error(function(data, status, headers, config) {
                 // something went wrong
@@ -56,22 +54,19 @@ function connectionWindowsController($scope, $http, $rootScope, $modal) {
             return relation.name == relationName;
         });
 
-        var relationConnection = relation.relationAttributes.connection;
+        var relationConnection = relation.relationAttributes.relation_connection_name;
         var connection = (relationConnection !== undefined) ? relationConnection : connectionWindow.connectionName;
 
         var row = connectionWindow.rows[$scope.currentRowId];
         var rowData = {};
-        console.log(row);
         _.each(row.rowData, function(data){
-            console.log(data.value);
             rowData[connectionWindow.columns[data.id].name.toLowerCase()] = data.value
         });
-        var newConnectionWindow = $scope.createConnectionWindow(connection, relation.relationAttributes['table']);
+        var newConnectionWindow = $scope.createConnectionWindow(connection, relation.relationAttributes.relation_table_name);
         $scope.getRelationData(newConnectionWindow, connectionWindow, relationName, rowData);
     };
 
     $scope.getRelationData = function(connectionWindow, oldConnectionWindow, relationName, rowData){
-        console.log(oldConnectionWindow.tableName);
         $http.post('/connections/' + oldConnectionWindow.connectionName + '/tables/' + oldConnectionWindow.schemaName + '/' + oldConnectionWindow.tableName + '/relations/' + relationName + '/query', { rowData: rowData }).
             success(function(data, status, headers, config) {
                 connectionWindow.relations = [];
@@ -83,11 +78,10 @@ function connectionWindowsController($scope, $http, $rootScope, $modal) {
                 data['columns'].forEach(function(column, idx, arr){
                     connectionWindow.columns.push(new Column(column));
                 });
-                if(typeof(data['relations']) === 'object'){
-                    Object.keys(data['relations']).forEach(function(relationName, idx, arr){
-                        connectionWindow.relations.push(new Relation(relationName, data['relations'][relationName]));
-                    });
-                }
+                data['relations'].forEach(function(relation, idx, arr){
+                    connectionWindow.relations.push(new Relation(relation.relation_name, relation));
+                });
+
                 connectionWindow.currentSqlQuery = 'WHERE' + data['query'].split('WHERE')[1];
             }).
             error(function(data, status, headers, config) {
