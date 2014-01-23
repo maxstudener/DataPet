@@ -73,9 +73,25 @@ class Connection
           Connection::ProgressConnection.new(configuration)
         else
           # use the default connection class
-          Connection.new(configuration)
+          Connection.new(configuration) # this class is incomplete and will not work !!!
       end
     end
+
+    def details(connection_name)
+      connection = Connection.get(connection_name)
+      tables = connection.tables.map do |full_table_name|
+        if full_table_name.match(/\./)
+          schema_name, table_name = full_table_name.split('.')
+        else
+          schema_name = ''
+          table_name = full_table_name
+        end
+
+        { connectionName: connection_name, schemaName: schema_name, tableName: table_name}
+      end
+      { name: connection_name, tables: tables }
+    end
+
   end
 
 end

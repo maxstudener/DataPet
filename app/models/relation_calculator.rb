@@ -4,23 +4,15 @@ class RelationCalculator
     @table_name = table_name
     @data_hash = data_hash
 
-    # stores a list of column names to look up when bind_data is called
-    @bind_columns = []
-
     # find the configuration for this relation
     relation = Relation.where(connection_name: connection_name, table_name: table_name, relation_name: relation_name).first
-
-    # use different connection if relation configuration lists one
-    # this allows for relations to another db
-    @connection_name = relation.relation_connection_name || connection_name
-
-    relation_type = relation.relation_type
+    @connection_name = relation.relation_connection_name
     @relation_table_name = relation.relation_table_name
-
     @where_clauses = relation.where_clauses
+
     @sql = "SELECT * FROM \"#{Query.quote_table(@relation_table_name)}\" WHERE "
 
-    case relation_type
+    case relation.relation_type
       when 'has_many'
         add_where_clauses
 
@@ -29,6 +21,7 @@ class RelationCalculator
 
         @join_data = through_relation.compute
         @join_clauses = relation.join_clauses
+
         add_join_clauses
 
         if @where_clauses.present?
@@ -36,7 +29,7 @@ class RelationCalculator
           add_where_clauses
         end
       else
-        raise "#{relation_type} relationship is not supported."
+        raise "#{relation.relation_type} relationship is not supported."
     end
     @result_set = compute
   end
@@ -52,7 +45,6 @@ class RelationCalculator
   end
 
   def create_join_clause(join)
-    puts "\n\n" + join.inspect + "\n\n"
     join_column = join.join_column
     from_column = join.from_column
 
@@ -102,14 +94,6 @@ class RelationCalculator
     @sql
   end
 
-  def relation_table_name
-    @relation_table_name
-  end
-
-  def relation_connection_name
-    @connection_name
-  end
-
   def compute
     connection = Connection.get(@connection_name)
     connection.execute_query(connection.create_query(@table_name, @sql), true)
@@ -117,6 +101,18 @@ class RelationCalculator
 
   def result_set
     @result_set
+  end
+
+  def columns
+    @result_set.present? ? @result_set.first.keys : []
+  end
+
+  def rows
+    @result_set.present? ? @result_set.map{ |row| row.values } : []
+  end
+
+  def relations
+    Relation.where(connection_name: @connection_name, table_name: Query.unquote_table( @relation_table_name)).all
   end
 
 end

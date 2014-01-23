@@ -1,6 +1,6 @@
 function connectionWindowsController($scope, $http, $rootScope, $modal) {
     $scope.connectionWindows = []; // any connectionWindow object in this Array will be shown as a tab in view
-    $scope.currentRowId = null; // holds the last select rowId in order to lookup data before fetching a relation
+    $scope.currentRowId = null; // holds the last selected rowId in order to lookup data before fetching a relation
 
     // connectionWindows
 

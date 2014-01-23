@@ -1,17 +1,25 @@
 class ConnectionsController < ApplicationController
 
-  before_filter :set_connection, :only => [ :tables ]
-
   def index
-    render json: Connection.all.to_json
+    render json: Connection.all.map{ |connection_name| { name: connection_name } }
   end
 
   def tables
-    render json: @connection.tables.to_json
-  end
+    set_connection
+    connection_name = params[:connection_name]
 
-  def relations
-    render :json => Relation.find_all_for_connection_name(params[:connection_name])
+    tables = @connection.tables.map do |full_table_name|
+      if full_table_name.match(/\./)
+        schema_name, table_name = full_table_name.split('.')
+      else
+        schema_name = ''
+        table_name = full_table_name
+      end
+
+      { connectionName: connection_name, schemaName: schema_name, tableName: table_name, fullTableName: full_table_name}
+    end
+    render json: tables.to_json
   end
 
 end
+

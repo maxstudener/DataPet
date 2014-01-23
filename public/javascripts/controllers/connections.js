@@ -1,13 +1,13 @@
 function connectionsController($scope, $http, $rootScope) {
-    $scope.connections = []; // any connection object in this Array will be listed in view
+    $scope.connections = [];
 
     // connections
 
     $scope.getConnections = function(){
         $http.get('/connections').
             success(function(data, status, headers, config) {
-                data.forEach(function(connectionName, idx, arr){
-                    $scope.connections.push(new Connection(connectionName));
+                data.forEach(function(connection, idx, arr){
+                    $scope.connections.push(new Connection(connection.name));
                 });
             }).
             error(function(data, status, headers, config) {
@@ -16,23 +16,28 @@ function connectionsController($scope, $http, $rootScope) {
     };
 
     $scope.getConnection = function(connectionName){
-        return _.find($scope.connections, function(connection){
+        return $scope.connections.filter(function(connection){
             return connection.name == connectionName;
-        });
+        })[0];
     };
 
-    $scope.getTables = function(connection){
-        connection.tables = [];
+    var Connection = function (connectionName) {
+        this.name = connectionName;
+        this.display = false;
+        this.tables = [];
+        this.getTables(this);
+    };
+
+    Connection.prototype.getTables = function (connection) {
         $http.get('/connections/' + connection.name + '/tables').
-            success(function(data, status, headers, config) {
-                data.forEach(function(tableName, idx, arr){
-                    connection.tables.push(new Table(tableName));
-                });
+            success(function (data, status, headers, config) {
+                connection.tables = data;
             }).
-            error(function(data, status, headers, config) {
+            error(function (data, status, headers, config) {
                 // something went wrong
             });
     };
+
 
     // general functions
 
@@ -50,19 +55,5 @@ function connectionsController($scope, $http, $rootScope) {
           connection.display = true;
         });
     };
-
-    // objects
-
-    var Connection = function(connectionName){
-        this.name = connectionName;
-        this.display = false;
-        $scope.getTables(this);
-    };
-
-    var Table = function(tableName){
-        this.name = tableName;
-        this.columns = [];
-    };
-
 }
 

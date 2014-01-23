@@ -1,209 +1,194 @@
 function relationsController($scope, $http, $rootScope) {
-    $scope.connections = []; // any connection object in this Array will be listed in view
-    $scope.connection = null;
-    $scope.table = null;
-    $scope.relationConnection = null;
-    $scope.relationTable = null;
-    $scope.throughRelationName = null;
-    $scope.throughRelation = null;
-    $scope.throughRelationId = null;
-    $scope.types = [ 'has_many', 'has_many_through' ];
-    $scope.comparisonOperators = ['Equal To', 'Greater Than', 'Less Than', 'Like', 'Not Equal To', 'In'];
-    $scope.comparisonTypes = ['Column', 'Value'];
-    $scope.joinClauses = [ { id: 1 } ];
-    $scope.whereClauses = [ { id: 1 } ];
+        $scope.types = [
+            { name: 'Has Many', value: 'has_many' },
+            { name: 'Has Many Through', value: 'has_many_through' }
+        ];
+
+        $scope.comparisonOperators = [
+            { name: 'Equal To' },
+            { name: 'Greater Than' },
+            { name: 'Less Than' },
+            { name: 'Like' },
+            { name: 'Not Equal To' },
+            { name: 'In' }
+        ];
+
+        $scope.comparisonTypes = [
+            { name: 'Column' },
+            { name: 'Value' }
+        ];
 
 
-    // connections
+        $scope.columnData = {};
+        $scope.relationData = {};
 
-    $scope.setThroughRelation = function(){
-      $scope.throughRelation = $scope.table.relations.filter(function(relation){
-        if(relation.id == $scope.throughRelation.id){
-            relation.columns = [];
-            $http.get('/connections/' + relation.relationTable.connectionName + '/tables/' + relation.relationTable.schemaName + '/' + relation.relationTable.tableName + '/columns').
-                success(function(data, status, headers, config) {
-                    data.forEach(function(columnName, idx, arr){
-                        relation.columns.push(columnName);
-                    });
+        $scope.testSomething = function () {
+            console.log($scope.relation);
+        };
+
+        $scope.initialize = function () {
+            $scope.getConnections(function (data) {
+                $scope.connections = data; // for drop downs
+                $scope.connectionObjects = {}; // for connection details
+
+                // the relation object to be saved
+                $scope.relation = {
+                    connectionName: data[0].name,
+                    relationConnectionName: data[0].name,
+                    relationType: $scope.types[0].value,
+                    whereClauses: [ new WhereClause() ],
+                    joinClauses: [ new JoinClause() ]
+
+                };
+
+                // build up the connection objects
+                data.forEach(function (connection, idx, arr) {
+                    $scope.connectionObjects[connection.name] = new Connection(connection.name);
+                });
+            });
+        };
+
+
+        // connections
+
+
+        $scope.getConnections = function (cb) {
+            $http.get('/connections').
+                success(function (data, status, headers, config) {
+                    cb(data);
                 }).
-                error(function(data, status, headers, config) {
+                error(function (data, status, headers, config) {
                     // something went wrong
                 });
-            return true;
-        }else{
-            return false;
-        }
-      })[0];
-    };
+        };
 
-    $scope.addJoinClause = function(){
-        $scope.joinClauses.push(new JoinClause);
-    };
+        var Connection = function (connectionName) {
+            this.name = connectionName;
+            this.tables = [];
+            this.getTables(this);
+        };
 
-    $scope.removeJoinClause = function(joinClauseId){
-        var reindex = 1;
-        $scope.joinClauses = $scope.joinClauses.filter(function(joinClause){
-           if(joinClause.id !== joinClauseId){
-               joinClause.id = reindex;
-               reindex++;
-               return true;
-           }else{
-               return false;
-           }
-        });
-    };
+        Connection.prototype.getTables = function (connection) {
+            $http.get('/connections/' + connection.name + '/tables').
+                success(function (data, status, headers, config) {
+                    connection.tables = data;
+                }).
+                error(function (data, status, headers, config) {
+                    // something went wrong
+                });
+        };
 
-    $scope.removeWhereClause = function(whereClauseId){
-        var reindex = 1;
-        $scope.whereClauses = $scope.whereClauses.filter(function(whereClause){
-            if(whereClause.id !== whereClauseId){
-                whereClause.id = reindex;
-                reindex++;
-                return true;
-            }else{
-                return false;
+
+        // tables
+
+
+        $scope.loadColumns = function (connectionName, tableName) {
+            if (connectionName === undefined || tableName == undefined) {
+                return 1;
+            } else {
+                var table = $scope.connectionObjects[connectionName].tables.filter(function (table) {
+                    return table.fullTableName == tableName;
+                })[0];
+
+                $http.get('/connections/' + connectionName + '/tables/' + table.schemaName + '/' + table.tableName + '/columns').
+                    success(function (data, status, headers, config) {
+                        if ($scope.columnData[connectionName] === undefined) {
+                            $scope.columnData[connectionName] = {};
+                        }
+                        $scope.columnData[connectionName][tableName] = data;
+                    }).
+                    error(function (data, status, headers, config) {
+                        // something went wrong
+                    });
             }
-        });
-    };
+        };
 
-    $scope.addWhereClause = function(){
-        $scope.whereClauses.push(new WhereClause);
-    };
 
-    $scope.setConnection = function(){
-      $scope.connection = $scope.getConnection($scope.connection);
-    };
+        // where clauses
 
-    $scope.setRelationConnection = function(){
-        $scope.relationConnection = $scope.getConnection($scope.relationConnection);
-    };
 
-    $scope.setTable = function(){
-      $scope.table = new Table($scope.connection.name, $scope.table, true);
-    };
+        $scope.currentWhereClauseId = 0;
 
-    $scope.getRelations = function(table){
-        $http.get('/connections/' + $scope.connection.name + '/tables/' + table.schemaName + '/' + table.tableName + '/relations').
-            success(function(data, status, headers, config) {
-                data.forEach(function(relation, idx, arr){
-                    table.relations.push(new Relation(relation));
-                });
-            }).
-            error(function(data, status, headers, config) {
-                // something went wrong
+        $scope.removeWhereClause = function (whereClauseId) {
+            $scope.relation.whereClauses = $scope.relation.whereClauses.filter(function (whereClause) {
+                return whereClause.id !== whereClauseId;
             });
-    };
+        };
 
-    $scope.setRelationTable = function(){
-        $scope.relationTable = new Table($scope.relationConnection.name, $scope.relationTable, true);
-    };
+        $scope.addWhereClause = function () {
+            $scope.relation.whereClauses.push(new WhereClause);
+        };
 
-    $scope.getConnections = function(){
-        $http.get('/connections').
-            success(function(data, status, headers, config) {
-                data.forEach(function(connectionName, idx, arr){
-                    $scope.connections.push(new Connection(connectionName));
-                });
-            }).
-            error(function(data, status, headers, config) {
-                // something went wrong
+        var WhereClause = function () {
+            this.id = (++$scope.currentWhereClauseId);
+            this.comparisonOperator = $scope.comparisonOperators[0].name;
+            this.comparisonType = $scope.comparisonTypes[0].name;
+        };
+
+
+        // join clauses
+
+
+        $scope.currentJoinClauseId = 0;
+
+        $scope.addJoinClause = function () {
+            $scope.relation.joinClauses.push(new JoinClause);
+        };
+
+        $scope.removeJoinClause = function (joinClauseId) {
+            $scope.relation.joinClauses = $scope.relation.joinClauses.filter(function (joinClause) {
+                return joinClause.id !== joinClauseId;
             });
-    };
+        };
 
-    $scope.getConnection = function(connectionName){
-        return _.find($scope.connections, function(connection){
-            return connection.name == connectionName;
-        });
-    };
+        var JoinClause = function () {
+            this.id = (++$scope.currentJoinClauseId);
+        };
 
-    $scope.getTables = function(connection){
-        connection.tables = [];
-        $http.get('/connections/' + connection.name + '/tables').
-            success(function(data, status, headers, config) {
-                data.forEach(function(tableName, idx, arr){
-                    connection.tables.push(new Table($scope.connection, tableName, false));
-                });
+
+        // relations
+
+
+        $scope.loadRelations = function (connectionName, tableName) {
+            if (connectionName === undefined || tableName == undefined) {
+                return 1;
+            } else {
+                var table = $scope.connectionObjects[connectionName].tables.filter(function (table) {
+                    return table.fullTableName == tableName;
+                })[0];
+
+                $http.get('/connections/' + connectionName + '/tables/' + table.schemaName + '/' + table.tableName + '/relations').
+                    success(function (data, status, headers, config) {
+                        if ($scope.relationData[connectionName] === undefined) {
+                            $scope.relationData[connectionName] = {};
+                        }
+                        $scope.relationData[connectionName][tableName] = data;
+                    }).
+                    error(function (data, status, headers, config) {
+                        // something went wrong
+                    });
+            }
+        };
+
+
+        // submit
+
+
+        $scope.createRelation = function(){
+            $http({
+                method : 'POST',
+                url : '/relations',
+                data : { relation: $scope.relation }
             }).
-            error(function(data, status, headers, config) {
-                // something went wrong
-            });
-    };
+                success(function (data, status, headers, config) {
+                   console.log(data);
+                }).
+                error(function (data, status, headers, config) {
+                    console.log(data);
 
-    // general functions
-
-    $scope.createConnectionWindow = function(connectionName, tableName){
-        $rootScope.$emit('addConnectionWindow', { connectionName: connectionName, tableName: tableName });
-    };
-
-    $scope.toggleDisplay = function(connectionName){
-        var connection = $scope.getConnection(connectionName);
-        connection.display = connection.display !== true;
-    };
-
-    $scope.displayAllConnections = function(){
-        $scope.connections.forEach(function(connection, idx, arr){
-            console.log(connection);
-            connection.display = true;
-        });
-    };
-
-    $scope.getColumns = function(table, connectionName){
-        $http.get('/connections/' + connectionName + '/tables/' + table.schemaName + '/' + table.tableName + '/columns').
-            success(function(data, status, headers, config) {
-                data.forEach(function(columnName, idx, arr){
-                    table.columns.push(columnName);
+                    // something went wrong
                 });
-            }).
-            error(function(data, status, headers, config) {
-                // something went wrong
-        });
-    };
-
-    // objects
-
-    var Connection = function(connectionName){
-        this.name = connectionName;
-        $scope.getTables(this);
-    };
-
-    var Table = function(connectionName, tableName, withDetail){
-        this.connectionName = connectionName;
-        var table_name_parts = tableName.split('.');
-        if(table_name_parts[1] !== undefined){
-            this.schemaName = table_name_parts[0];
-            this.tableName = table_name_parts[1];
-            this.fullTableName = table_name_parts[0] + '.' + table_name_parts[1];
-        }else{
-            this.schemaName = '';
-            this.tableName = table_name_parts[0];
-            this.fullTableName = table_name_parts[0];
         }
-        if(withDetail==true){
-            this.columns = [];
-            $scope.getColumns(this, connectionName);
-            $scope.getRelations(this);
 
-        }else{
-            this.columns = [];
-        }
-        this.relations = [];
-    };
-
-    var JoinClause = function(){
-      this.id = $scope.joinClauses.length+1;
-
-    };
-
-    var WhereClause = function(){
-        this.id = ($scope.whereClauses.length+1);
-    };
-
-    var Relation = function(relation){
-        this.id = relation.id;
-        this.name = relation.relation_name;
-        this.connectionName = relation.connection_name;
-        this.relationTable = new Table(relation.relation_connection_name, relation.relation_table_name, false);
-    }
 
 }
-

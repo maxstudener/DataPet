@@ -1,0 +1,15 @@
+<div class='container'>
+  <br />
+  <% @relations.each do |relation| %>
+    <div class='row'>
+      <h3><%= "#{relation.connection_name} / #{relation.table_name} . #{relation.relation_name}" %></h3>
+      <% relation.attributes.each do |k,v| %>
+        <%= "#{k} : #{v}" %>
+        <br />
+      <% end %>
+      <br />
+      <%= button_to 'Delete', relation_path(relation.id), :method => :delete, class: 'btn btn-sm btn-danger'%>
+      <br />
+    </div>
+  <% end %>
+</div>

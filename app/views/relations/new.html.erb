@@ -1,220 +1,239 @@
 <script src='/javascripts/controllers/relations.js'></script>
 
-<div class='container' ng-controller='relationsController' ng-init='getConnections()'>
-  <h3>New Relation</h3>
-  <%= form_for @relation do |f| %>
-      <div class='container'>
-        <div class='row'>
-          <div class='col-xs-3 right'>
-            <%= f.label :relation_name %>
-          </div>
-          <div class='col-xs-9'>
-            <%= f.text_field :relation_name, class: 'form-control' %>
-          </div>
+<div class='container' ng-controller='relationsController' ng-init='initialize()'>
+<h3>New Relation</h3>
 
-        </div>
+<!-- GENERAL INFORMATION -->
+<div class='container'>
 
-        <br />
+  <!-- Relation Name -->
+  <div class='row'>
+    <div class='col-xs-3 right'>
+      <label>Relation Name</label>
+    </div>
+    <div class='col-xs-9'>
+      <input type='text' class='form-control' ng-model='relation.relationName'/>
+    </div>
+  </div>
+  <br/>
 
-        <div class='row'>
-          <div class='col-xs-3 right'>
-            <%= f.label :connection_name %>
-          </div>
-          <div class='col-xs-9'>
-            <input autocomplete="off" name='relation[connection_name]' ng-model='connection'
-                   typeahead="connection.name for connection in connections | filter:$viewValue | limitTo:8 "
-                   typeahead-on-select='setConnection();'
-                   typeahead-editable=false
-                   class='form-control'/>
-          </div>
-        </div>
+  <!-- Connection Name -->
+  <div class='row'>
+    <div class='col-xs-3 right'>
+      <label>Connection Name</label>
+    </div>
+    <div class='col-xs-9'>
+      <select class='form-control'
+              ng-model='relation.connectionName'
+      >
+        <option ng-repeat='connection in connections' value='{{connection.name}}'>{{connection.name}}</option>
+      </select>
+    </div>
+  </div>
+  <br/>
 
-        <br />
+  <!-- Table Name -->
+  <div class='row'>
+    <div class='col-xs-3 right'>
+      <label>Table Name</label>
+    </div>
+    <div class='col-xs-9'>
+      <input class='form-control'
+             autocomplete="off"
+             ng-model='relation.tableName'
+             typeahead='table.fullTableName for table in connectionObjects[relation.connectionName].tables | filter:$viewValue | limitTo:8'
+             typeahead-on-select='loadColumns(relation.connectionName, relation.tableName); loadRelations(relation.connectionName, relation.tableName)'
+             typeahead-editable=false
+      />
+    </div>
+  </div>
 
-        <div class='row'>
-          <div class='col-xs-3 right'>
-            <%= f.label :table_name %>
-          </div>
-          <div class='col-xs-9'>
-            <input autocomplete="off" name='relation[table_name]' ng-model='table'
-                   typeahead="table.fullTableName for table in connection.tables | filter:$viewValue | limitTo:8"
-                   typeahead-on-select='setTable();'
-                   typeahead-editable=false
-                   class='form-control'/>
-          </div>
-        </div>
+  <br/>
 
-        <br />
+  <!-- Relation Type -->
+  <div class='row'>
+    <div class='col-xs-3 right'>
+      <label>Relation Type</label>
+    </div>
+    <div class='col-xs-9'>
+      <select class='form-control'
+              ng-model='relation.relationType'
+      >
+        <option ng-repeat='type in types' value='{{type.value}}'>{{type.name}}</option>
+      </select>
+    </div>
+  </div>
+  <br/>
 
-        <div class='row'>
-          <div class='col-xs-3 right'>
-            <%= f.label :relation_type %>
-          </div>
-          <div class='col-xs-9'>
-            <input autocomplete="off" name='relation[relation_type]' ng-model='type'
-                   typeahead="type for type in types | filter:$viewValue | limitTo:8"
-                   typeahead-editable=false
-                   class='form-control'/>
-          </div>
-        </div>
+  <!-- Relation Connection Name -->
+  <div class='row'>
+    <div class='col-xs-3 right'>
+      <label>Relation Connection Name</label>
+    </div>
+    <div class='col-xs-9'>
+      <select class='form-control'
+              ng-model='relation.relationConnectionName'
+      >
+        <option ng-repeat='connection in connections' value='{{connection.name}}'>{{connection.name}}</option>
+      </select>
+    </div>
+  </div>
+  <br/>
 
-        <br />
+  <!-- Relation Table Name -->
+  <div class='row'>
+    <div class='col-xs-3 right'>
+      <label>Relation Table Name</label>
+    </div>
+    <div class='col-xs-9'>
+      <input class='form-control'
+             autocomplete="off"
+             ng-model='relation.relationTableName'
+             typeahead='table.fullTableName for table in connectionObjects[relation.relationConnectionName].tables | filter:$viewValue | limitTo:8'
+             typeahead-on-select='loadColumns(relation.relationConnectionName, relation.relationTableName)'
+             typeahead-editable=false
+      />
+    </div>
+  </div>
+</div>
+<br/>
 
-        <div class='row'>
-          <div class='col-xs-3 right'>
-            <%= f.label :relation_connection_name %>
-          </div>
-          <div class='col-xs-9'>
-            <input autocomplete="off" name='relation[relation_connection_name]' ng-model='relationConnection'
-                   typeahead="connection.name for connection in connections | filter:$viewValue | limitTo:8"
-                   typeahead-on-select='setRelationConnection();'
-                   typeahead-editable=false
-                   class='form-control'/>
-          </div>
-        </div>
+<!-- WHERE CLAUSES -->
+<div class='container'>
+  <h3>Where&nbsp&nbsp<span class='glyphicon glyphicon-plus' ng-click='addWhereClause()'></span></h3>
+  <h6 ng-show='type=="has_many_through"' style='color:red;'>* Optional for 'has_many_through' relation type.</h6>
 
-        <br />
+  <div ng-repeat='whereClause in relation.whereClauses'>
+    <div class='row'>
+      <span style='float:right;' class='glyphicon glyphicon-remove' ng-click='removeWhereClause(whereClause.id)'></span>
+    </div>
 
-        <div class='row'>
-          <div class='col-xs-3 right'>
-            <%= f.label :relation_table_name %>
-          </div>
-          <div class='col-xs-9'>
-            <input autocomplete="off" name='relation[relation_table_name]' ng-model='relationTable'
-                   typeahead="table.fullTableName for table in relationConnection.tables | filter:$viewValue | limitTo:8"
-                   typeahead-on-select='setRelationTable();'
-                   typeahead-editable=false
-                   class='form-control'/>
-          </div>
-        </div>
+    <!-- Where Clause / Relation Table Column -->
+    <div class='row'>
+      <div class='col-xs-3 right'>
+        <label ng-show='relation.relationTableName !== null'>Column from {{relation.relationTableName}}</label>
       </div>
-
-
-      <br />
-
-      <div class='container'>
-        <h3>Where&nbsp&nbsp<span class='glyphicon glyphicon-plus' ng-click='addWhereClause()'></span></h3>
-        <h6 ng-show='type=="has_many_through"' style='color:red;'>* Optional for 'has_many_through' relation type.</h6>
-        <div ng-repeat='whereClause in whereClauses'>
-            <div class='row'><span style='float:right;' class='glyphicon glyphicon-remove' ng-click='removeWhereClause(whereClause.id)'></span></div>
-
-            <div class='row'>
-            <div class='col-xs-3 right'>
-              <label ng-show='relationTable!==null'>Column from {{relationTable.fullTableName}}</label>
-            </div>
-            <div class='col-xs-9'>
-              <input autocomplete="off" name='where_clauses[{{whereClause.id}}][relation_table_column]' ng-model='whereClauseTemp'
-                     typeahead="column for column in relationTable.columns | filter:$viewValue | limitTo:8"
-                     class='form-control'/>
-            </div>
-          </div>
-
-          <br />
-
-
-          <div class='row'>
-            <div class='col-xs-3 right'>
-              <label>Is</label>
-            </div>
-            <div class='col-xs-9'>
-              <input autocomplete="off" name='where_clauses[{{whereClause.id}}][comparison_operator]' ng-model='whereClauseTemp2'
-                     typeahead="operator for operator in comparisonOperators | filter:$viewValue | limitTo:8"
-                     typeahead-editable=false
-                     class='form-control'/>
-            </div>
-          </div>
-
-          <br />
-
-          <div class='row'>
-            <div class='col-xs-3 right'>
-              <label>'Value' or 'Column'</label>
-            </div>
-            <div class='col-xs-9'>
-              <input autocomplete="off" name='where_clauses[{{whereClause.id}}][comparison_type]' ng-model='whereClauseTemp3'
-                     typeahead="type for type in comparisonTypes | filter:$viewValue | limitTo:8"
-                     typeahead-editable=false
-                     class='form-control'/>
-            </div>
-          </div>
-
-          <br />
-
-          <div class='row'>
-            <div class='col-xs-3 right'>
-              <label ng-show='whereClauseTemp3=="Value"'>Comparison Value</label>
-              <label ng-show='whereClauseTemp3=="Column"'>Column from {{table.fullTableName}}</label>
-
-
-            </div>
-            <div class='col-xs-9'>
-              <input autocomplete="off"
-                     name='where_clauses[{{whereClause.id}}][comparison_value]'
-                     ng-model='whereClauseTemp4'
-                     typeahead="column for column in table.columns | filter:$viewValue | limitTo:8"
-                     class='form-control'
-              />
-            </div>
-          </div>
-
-          <br />
-          <h6 ng-show='whereClauses.length>whereClause.id' >AND</h6>
-        </div>
+      <div class='col-xs-9'>
+        <input class='form-control'
+               autocomplete="off"
+               ng-model='whereClause.relationTableColumn'
+               typeahead='column for column in columnData[relation.relationConnectionName][relation.relationTableName] | filter:$viewValue | limitTo:8'
+               typeahead-editable=false
+        >
       </div>
+    </div>
+    <br/>
 
-      <div class='container' ng-show='type=="has_many_through"'>
-        <h3>Through</h3>
-        <div class='row'>
-          <div class='col-xs-3 right'>
-            <label>Through Relation Name</label>
-          </div>
-          <div class='col-xs-9'>
-            <input autocomplete="off"
-                   ng-model='throughRelation'
-                   typeahead="relation as relation.name for relation in table.relations | filter:$viewValue | limitTo:8"
-                   typeahead-on-select='setThroughRelation();'
-                   class='form-control'
-            />
-            <input type='hidden' name='relation[through_relation_id]' value='{{throughRelation.id}}' />
-          </div>
-        </div>
-
-        <h3>Joining&nbsp&nbsp<span class='glyphicon glyphicon-plus' ng-click='addJoinClause();'></span></h3>
-
-          <div ng-repeat='joinClause in joinClauses'>
-            <div class='row'><span style='float:right;' class='glyphicon glyphicon-remove' ng-click='removeJoinClause(joinClause.id)'></span>
-            </div>
-            <div class='row'>
-              <div class='col-xs-3 right'>
-                Column from {{relationTable.fullTableName}}
-              </div>
-              <div class='col-xs-9'>
-                <input autocomplete="off" name='join_clauses[{{joinClause.id}}][join_column]' ng-model='joinClauseTemp'
-                       typeahead="column for column in relationTable.columns | filter:$viewValue | limitTo:8"
-                       class='form-control'/>
-              </div>
-            </div>
-
-            <br />
-
-            <div class='row'>
-              <div class='col-xs-3 right'>
-                Column from {{throughRelation.relationTable.fullTableName}}
-              </div>
-              <div class='col-xs-9'>
-                <input autocomplete="off" name='join_clauses[{{joinClause.id}}][from_column]' ng-model='joinClauseTemp2'
-                       typeahead="column for column in throughRelation.columns | filter:$viewValue | limitTo:8"
-                       class='form-control'/>
-              </div>
-            </div>
-
-            <br />
-            <h6 ng-show='joinClauses.length>joinClause.id' >AND</h6>
-          </div>
+    <!-- Where Clause / Comparison Operator -->
+    <div class='row'>
+      <div class='col-xs-3 right'>
+        <label>Is</label>
       </div>
+      <div class='col-xs-9'>
+        <select class='form-control'
+                ng-model='whereClause.comparisonOperator'
+        >
+          <option ng-repeat='operator in comparisonOperators' value='{{operator.name}}'>{{operator.name}}</option>
+        </select>
+      </div>
+    </div>
+    <br/>
 
-      <br />
-      <%= f.submit class: 'btn btn-success' %>
-  <% end %>
+    <!-- Where Clause / Comparison Type -->
+    <div class='row'>
+      <div class='col-xs-3 right'>
+        <label>Comparison Type</label>
+      </div>
+      <div class='col-xs-9'>
+        <select class='form-control'
+                ng-model='whereClause.comparisonType'
+        >
+          <option ng-repeat='type in comparisonTypes' value='{{type.name}}'>{{type.name}}</option>
+        </select>
+      </div>
+    </div>
+    <br/>
 
+    <!-- Where Clause / Comparison Value -->
+    <div class='row'>
+      <div class='col-xs-3 right'>
+        <label ng-show='whereClause.comparisonType=="Value"'>Comparison Value</label>
+        <label ng-show='whereClause.comparisonType=="Column"'>Column from {{relation.tableName}}</label>
+      </div>
+      <div class='col-xs-9'>
+        <input class='form-control'
+               autocomplete="off"
+               ng-model='whereClause.comparisonValue'
+               typeahead='column for column in columnData[relation.connectionName][relation.tableName] | filter:$viewValue | limitTo:8'
+               typeahead-editable=false
+        >
+      </div>
+    </div>
+    <hr/>
+  </div>
+</div>
+
+
+<!-- THROUGH RELATION -->
+<div class='container' ng-show='relation.relationType=="has_many_through"'>
+  <h3>Through</h3>
+
+  <!-- Through Relation Name -->
+  <div class='row'>
+    <div class='col-xs-3 right'>
+      <label>Through Relation Name</label>
+    </div>
+    <div class='col-xs-9'>
+      <input class='form-control'
+             autocomplete="off"
+             ng-model='relation.throughRelation'
+             typeahead="throughRelation as throughRelation.relation_name for throughRelation in relationData[relation.connectionName][relation.tableName] | filter:$viewValue | limitTo:8"
+             typeahead-on-select='loadColumns(relation.throughRelation.relation_connection_name, relation.throughRelation.relation_table_name)'
+             typeahead-editable=false
+      >
+    </div>
+  </div>
+
+  <!-- JOIN CLAUSES -->
+  <h3>Joining&nbsp&nbsp<span class='glyphicon glyphicon-plus' ng-click='addJoinClause()'></span></h3>
+
+  <div ng-repeat='joinClause in relation.joinClauses'>
+    <div class='row'>
+      <span style='float:right;' class='glyphicon glyphicon-remove' ng-click='removeJoinClause(joinClause.id)'></span>
+    </div>
+
+    <!-- From Column -->
+    <div class='row'>
+      <div class='col-xs-3 right'>
+        Column from {{relation.throughRelation.relation_table_name}}
+      </div>
+      <div class='col-xs-9'>
+        <input class='form-control'
+               autocomplete="off"
+               ng-model='joinClause.fromColumn'
+               typeahead='column for column in columnData[relation.throughRelation.relation_connection_name][relation.throughRelation.relation_table_name] | filter:$viewValue | limitTo:8'
+               typeahead-editable=false
+        >
+      </div>
+    </div>
+    <br/>
+
+    <!-- Join Column -->
+    <div class='row'>
+      <div class='col-xs-3 right'>
+        Column from {{relation.relationTableName}}
+      </div>
+      <div class='col-xs-9'>
+        <input class='form-control'
+               autocomplete="off"
+               ng-model='joinClause.joinColumn'
+               typeahead='column for column in columnData[relation.relationConnectionName][relation.relationTableName] | filter:$viewValue | limitTo:8'
+               typeahead-editable=false
+        >
+      </div>
+    </div>
+    <hr/>
+  </div>
+</div>
+<input type='button' value='Create Relation' class='btn btn-success' ng-click='createRelation()'/>
 </div>
