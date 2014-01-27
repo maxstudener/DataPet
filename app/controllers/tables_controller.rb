@@ -12,6 +12,11 @@ class TablesController < ApplicationController
     limit = params[:limit]
     connection_name = params[:connection_name]
 
+    # in case the user is being mean
+    if sql.match(/SELECT/i) && !sql.match(/SELECT TOP/i)
+      render nothing: true and return
+    end
+
     result_set = @connection.execute_query(@connection.create_query(@full_table_name, sql, limit))
     relations = Relation.where(connection_name: connection_name, table_name: Query.unquote_table(@full_table_name)).all
 
