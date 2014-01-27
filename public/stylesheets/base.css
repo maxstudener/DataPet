@@ -4,6 +4,7 @@
 }
 
 .connections {
+    overflow: auto;
     background-color: #f8f8f8;
 }
 
@@ -32,15 +33,17 @@
     left: -15px;
 }
 
-td.relations, th.filler {
-    background-color: #91baff;
+td.relations {
+    background-color: #91baff !important;
     width: 25px;
     min-width: 25px;
     overflow: hidden;
+    color: #ffffff;
+    text-align: center;
 }
 
 td.relations:hover {
-    background-color: #2a86ff;
+    background-color: #2a86ff !important;
 
 }
 
@@ -63,10 +66,14 @@ th {
 }
 
 .scrolling {
-    overflow: scroll;
+    overflow-x: scroll;
     overflow-y: scroll;
 }
 
 .right {
     text-align: right;
+}
+
+#top_navigation_bar {
+    margin-bottom: 0 !important;
 }

@@ -119,18 +119,6 @@ function connectionWindowsController($scope, $http, $rootScope, $modal) {
         $scope.submitQuery(connectionWindow.id, 'Select TOP ' + connectionWindow.limit + ' * FROM ' + '"' + connectionWindow.schemaName + '"."' + connectionWindow.tableName + '"');
     });
 
-//    $scope.getColumns = function(connectionWindow){
-//        $http.get('/connections/' + connectionWindow.connectionName + '/tables/' + connectionWindow.schemaName + '/' + connectionWindow.tableName + '/columns').
-//            success(function(data, status, headers, config) {
-//                data.forEach(function(columnName, idx, arr){
-//                    connectionWindow.columns.push(new Column(columnName));
-//                });
-//            }).
-//            error(function(data, status, headers, config) {
-//                // something went wrong
-//            });
-//    };
-
     $scope.showTab = function(connectionWindowId){
         _.each($scope.connectionWindows, function(connectionWindow){
             if(connectionWindowId == connectionWindow.id){

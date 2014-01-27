@@ -1,5 +1,8 @@
 DataPet::Application.routes.draw do
 
+  match '/main', controller: :application, action: :main
+  root to: 'application#main'
+
   # relations for table with schema
   match 'connections/:connection_name/tables/:schema_name/:table_name/relations/:relation_name/:action', controller: :relations
   # relations for table without schema
@@ -13,5 +16,10 @@ DataPet::Application.routes.draw do
 
   resources :connections
   resources :relations
+
+
+  match '/testing', controller: :application, action: :testing
+  match '/scrolling_tables', controller: :application, action: :scrolling_tables
+
 
 end
