@@ -1,0 +1,88 @@
+<script src='/javascripts/controllers/connections.js'></script>
+<script src='/javascripts/controllers/connection_windows.js'></script>
+
+<!-- connections pane -->
+<div class='col-sm-2 connections full-height'
+     ng-controller='connectionsController'
+     ng-init='getConnections()'
+>
+  <br />
+  <input class='form-control' placeholder='Table Name...'
+         ng-model='tableFilter'
+         ng-change='displayAllConnections()'
+  />
+  <br/>
+  <ul>
+    <li ng-repeat='connection in connections'>
+      <a href='#' ng-click='toggleDisplay(connection.name)'>{{connection.name}}</a>
+
+      <div ng-show='connection.display'>
+        <ul>
+          <li ng-repeat='table in connection.tables | filter:tableFilter | orderBy:"fullTableName"'>
+            <a href='#' ng-click='createConnectionWindow(connection.name, table.fullTableName)'>{{table.fullTableName}}</a>
+          </li>
+        </ul>
+      </div>
+    </li>
+  </ul>
+</div>
+
+<!-- connectionWindows pane -->
+<div class='col-sm-10 full-height' ng-controller='connectionWindowsController' >
+  <!-- connectionWindow tabs -->
+  <ul class='nav nav-tabs'>
+    <li ng-repeat='connectionWindow in connectionWindows'>
+      <a href=#{{connectionWindow.id}} data-toggle='tab' ng-click='showTab(connectionWindow.id)'>{{connectionWindow.title}}&nbsp&nbsp<span
+      ng-click='closeConnectionWindow(connectionWindow.id)'>X</span></a>
+    </li>
+  </ul>
+  <!-- connectionWindows -->
+  <div class='tab-content full-height'>
+    <div ng-repeat='connectionWindow in connectionWindows' id={{connectionWindow.id}}
+         class='tab-pane {{connectionWindow.active}} full-height'>
+      <h3>{{connectionWindow.title}}</h3>
+
+      <form ng-submit='submitQuery(connectionWindow.id, connectionWindow.currentSqlQuery)'>
+        <input id='{{connectionWindow.id}}_sql' ng-model='connectionWindow.currentSqlQuery'
+               typeahead="column.name for column in connectionWindow.columns | filter:$viewValue | limitTo:8"
+               class='form-control'/>
+      </form>
+      <br/>
+
+      <div class=' eighty-height scrolling'>
+        <table id='{{connectionWindow.id}}_table'  class='table table-bordered table-condensed table-striped'>
+          <thead style='background-color:white;' >
+              <tr>
+                <th>
+                  <!-- filler for relations -->
+                </th>
+                <th ng-repeat='column in connectionWindow.columns'>{{column.name}}</th>
+              </tr>
+          </thead>
+          <tbody>
+              <tr ng-repeat='row in connectionWindow.rows'>
+                <td ng-click='showRelationMenu(connectionWindow.id, row.id, $event)' class='relations'>
+                  {{row.id}}
+                </td>
+                <td ng-repeat='value in row.rowData'>
+                  {{value.value}}
+                </td>
+              </tr>
+          </tbody>
+
+        </table>
+      </div>
+      <!-- modal window for relations -->
+      <div id='{{connectionWindow.id}}_relations' class='context_menu'>
+        <a href='#' class='up_and_left' ng-click="closeRelationMenu(connectionWindow.id)"><span
+        class="medium_glyph glyphicon glyphicon-remove-circle"></span></a>
+        <ul class='up_and_left'>
+          <a class='centered' ng-repeat='relation in connectionWindow.relations' href='#'
+             ng-click='newRelationWindow(connectionWindow, relation.name)'>{{relation.name}}<br/></a>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+  <!-- end of connectionWindows -->
+</div><!-- end of connectionWindows pane -->
