@@ -33,7 +33,7 @@
   <ul class='nav nav-tabs'>
     <li ng-repeat='connectionWindow in connectionWindows'>
       <a href=#{{connectionWindow.id}} data-toggle='tab' ng-click='showTab(connectionWindow.id)'>{{connectionWindow.title}}&nbsp&nbsp<span
-      ng-click='closeConnectionWindow(connectionWindow.id)'>X</span></a>
+      class="glyphicon glyphicon-remove-circle" ng-click='closeConnectionWindow(connectionWindow.id)'></a>
     </li>
   </ul>
   <!-- connectionWindows -->
