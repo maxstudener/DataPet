@@ -14,7 +14,7 @@ class TablesController < ApplicationController
 
     # in case the user is being mean
     if sql.match(/SELECT/i) && !sql.match(/SELECT TOP/i)
-      render nothing: true and return
+      raise 'You query was bad, and you should feel bad.'
     end
 
     result_set = @connection.execute_query(@connection.create_query(@full_table_name, sql, limit))
