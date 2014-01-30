@@ -24,23 +24,33 @@ function connectionWindowsController($scope, $http, $rootScope, $modal) {
     };
 
     $scope.submitQuery = function(connectionWindowId, sqlQuery){
+
+
         var connectionWindow = $scope.getConnectionWindow(connectionWindowId);
+        connectionWindow.badQuery = false;
+        connectionWindow.noData = false;
+        connectionWindow.relations = [];
+        connectionWindow.rows = [];
+        connectionWindow.columns = [];
         $http.post('/connections/' + connectionWindow.connectionName + '/tables/' + connectionWindow.schemaName + '/' + connectionWindow.tableName + '/query', { sql: sqlQuery, limit: connectionWindow.limit }).
             success(function(data, status, headers, config) {
-                connectionWindow.relations = [];
-                connectionWindow.rows = [];
-                connectionWindow.columns = [];
-                data['rows'].forEach(function(row, idx, arr){
-                    connectionWindow.rows.push(new Row(row, idx))
-                });
-                data['columns'].forEach(function(column, idx, arr){
-                   connectionWindow.columns.push(new Column(column));
-                });
-                data['relations'].forEach(function(relation, idx, arr){
-                    connectionWindow.relations.push(new Relation(relation.relation_name, relation));
-                });
+                if(data['rows'].length > 0){
+                    data['rows'].forEach(function(row, idx, arr){
+                        connectionWindow.rows.push(new Row(row, idx))
+                    });
+                    data['columns'].forEach(function(column, idx, arr){
+                        connectionWindow.columns.push(new Column(column));
+                    });
+                    data['relations'].forEach(function(relation, idx, arr){
+                        connectionWindow.relations.push(new Relation(relation.relation_name, relation));
+                    });
+                }else{
+                    connectionWindow.noData = true;
+                }
             }).
             error(function(data, status, headers, config) {
+                connectionWindow.badQuery = true;
+
                 // something went wrong
             });
     };

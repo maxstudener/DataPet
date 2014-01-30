@@ -50,7 +50,10 @@
       <br/>
 
       <div class=' eighty-height scrolling'>
-        <table id='{{connectionWindow.id}}_table'  class='table table-bordered table-condensed table-striped'>
+        <img src='/images/no_data.jpg' ng-show='connectionWindow.noData' />
+        <img src='/images/bad_query.jpg' ng-show='connectionWindow.badQuery' />
+
+        <table id='{{connectionWindow.id}}_table'  class='table table-bordered table-condensed table-striped' ng-show='connectionWindow.columns.length > 0'>
           <thead style='background-color:white;' >
               <tr>
                 <th>
