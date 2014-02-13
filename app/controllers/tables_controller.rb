@@ -18,7 +18,9 @@ class TablesController < ApplicationController
     end
 
     result_set = @connection.execute_query(@connection.create_query(@full_table_name, sql, limit))
-    relations = Relation.where(connection_name: connection_name, table_name: Query.unquote_table(@full_table_name)).all
+    
+    relations = Relation.where(from_connection_id: connection_name, from_table_name: Query.unquote_table(@full_table_name)).all
+    
 
     if result_set.present?
       render json: { columns: result_set.first.keys, rows: result_set.map{ |row| row.values }, relations: relations }
@@ -28,7 +30,7 @@ class TablesController < ApplicationController
   end
 
   def relations
-    render json: Relation.where(connection_name: params[:connection_name], table_name: @full_table_name).all
+    render json: Relation.where(from_connection_id: params[:connection_name], from_table_name: @full_table_name).all
   end
 
 end

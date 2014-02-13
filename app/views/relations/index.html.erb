@@ -1,15 +1,15 @@
-<div class='container'>
-  <br />
-  <% @relations.each do |relation| %>
-    <div class='row'>
-      <h3><%= "#{relation.connection_name} / #{relation.table_name} . #{relation.relation_name}" %></h3>
-      <% relation.attributes.each do |k,v| %>
-        <%= "#{k} : #{v}" %>
-        <br />
-      <% end %>
-      <br />
-      <%= button_to 'Delete', relation_path(relation.id), :method => :delete, class: 'btn btn-sm btn-danger'%>
-      <br />
-    </div>
-  <% end %>
+<script src="/javascripts/controllers/relations.js"></script>
+
+<div class="container" ng-controller="relationController" ng-init="initialize()">
+  <div class="row" ng-repeat="relation in relations">
+    <h3>{{relation.relation_name}}</h3>
+    <ui-codemirror ui-codemirror-opts="editorOptions" ng-model="relation.jsonString"></ui-codemirror>
+    <form ng-action="/relations/{{relation._id}}" class="button_to" method="post">
+      <div>
+        <input name="_method" type="hidden" value="delete">
+        <input class="btn btn-sm btn-danger" type="submit" value="Delete">
+        <input name="authenticity_token" type="hidden" value="<%= form_authenticity_token %>">
+      </div>
+    </form>
+  </div>
 </div>

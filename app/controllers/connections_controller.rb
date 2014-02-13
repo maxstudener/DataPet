@@ -1,7 +1,26 @@
 class ConnectionsController < ApplicationController
 
   def index
-    render json: Connection.all.map{ |connection_name| { name: connection_name } }
+    respond_to do |format|
+      format.html
+      format.json { render json: ConnectionAttributes.all }
+    end
+  end
+
+  def new
+  end
+
+  def show
+    @connection = ConnectionAttributes.where(id: params[:id]).first
+    respond_to do |format|
+      format.html
+      format.json { render json: @connection }
+    end
+  end
+
+  def create
+    con = ConnectionAttributes.create!(params["connection"])
+    render json: con
   end
 
   def tables

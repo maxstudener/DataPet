@@ -4,8 +4,8 @@ function connectionWindowsController($scope, $http, $rootScope, $modal) {
 
     // connectionWindows
 
-    $scope.createConnectionWindow = function(connectionName, tableName){
-        var connectionWindow = new ConnectionWindow(connectionName, tableName);
+    $scope.createConnectionWindow = function(connection, tableName){
+        var connectionWindow = new ConnectionWindow(connection, tableName);
         $scope.connectionWindows.push(connectionWindow);
         $scope.showTab(connectionWindow.id);
         return connectionWindow;
@@ -30,7 +30,8 @@ function connectionWindowsController($scope, $http, $rootScope, $modal) {
         connectionWindow.relations = [];
         connectionWindow.rows = [];
         connectionWindow.columns = [];
-        $http.post('/connections/' + connectionWindow.connectionName + '/tables/' + connectionWindow.schemaName + '/' + connectionWindow.tableName + '/query', { sql: sqlQuery, limit: connectionWindow.limit }).
+        console.log('fap', connectionWindowId)
+        $http.post('/connections/' + connectionWindow._id + '/tables/' + connectionWindow.schemaName + '/' + connectionWindow.tableName + '/query', { sql: sqlQuery, limit: connectionWindow.limit }).
             success(function(data, status, headers, config) {
                 if(data['rows'].length > 0){
                     data['rows'].forEach(function(row, idx, arr){
@@ -55,22 +56,42 @@ function connectionWindowsController($scope, $http, $rootScope, $modal) {
     // relations aka: connectionWindows
 
     $scope.newRelationWindow = function(connectionWindow, relationName){
+        console.log('relation window fap',connectionWindow, relationName)
         $scope.closeRelationMenu(connectionWindow.id);
 
         var relation = _.find(connectionWindow.relations, function(relation){
-            return relation.name == relationName;
+            return relation.relationAttributes.relation_name == relationName;
+        });
+        console.log('relation?', relation)
+
+        var relationConnectionId = relation.relationAttributes.to_connection_id;
+
+        $scope.getConnection(relationConnectionId, function(connection){
+
+          var row = connectionWindow.rows[$scope.currentRowId];
+          var rowData = {};
+          _.each(row.rowData, function(data){
+              rowData[connectionWindow.columns[data.id].name.toLowerCase()] = data.value
+          });
+          console.log('to table name?', relation.relationAttributes)
+          var newConnectionWindow = $scope.createConnectionWindow(connection, relation.relationAttributes.to_table_name);
+          $scope.getRelationData(newConnectionWindow, connectionWindow, relationName, rowData);
+
         });
 
-        var relationConnection = relation.relationAttributes.relation_connection_name;
-        var connection = (relationConnection !== undefined) ? relationConnection : connectionWindow.connectionName;
+    };
 
-        var row = connectionWindow.rows[$scope.currentRowId];
-        var rowData = {};
-        _.each(row.rowData, function(data){
-            rowData[connectionWindow.columns[data.id].name.toLowerCase()] = data.value
+    $scope.getConnection = function(id, cb){
+      if(id == undefined){
+        return cb(connectionWindow.connection);
+      }
+      $http.get('/connections/' + id + '.json').
+        success(function(data){
+          cb(data);
+        }).
+        error(function(){
+          cb(connectionWindow.connection);
         });
-        var newConnectionWindow = $scope.createConnectionWindow(connection, relation.relationAttributes.relation_table_name);
-        $scope.getRelationData(newConnectionWindow, connectionWindow, relationName, rowData);
     };
 
     $scope.getRelationData = function(connectionWindow, oldConnectionWindow, relationName, rowData){
@@ -79,7 +100,7 @@ function connectionWindowsController($scope, $http, $rootScope, $modal) {
         connectionWindow.relations = [];
         connectionWindow.rows = [];
         connectionWindow.columns = [];
-        $http.post('/connections/' + oldConnectionWindow.connectionName + '/tables/' + oldConnectionWindow.schemaName + '/' + oldConnectionWindow.tableName + '/relations/' + relationName + '/query', { rowData: rowData }).
+        $http.post('/connections/' + oldConnectionWindow._id + '/tables/' + oldConnectionWindow.schemaName + '/' + oldConnectionWindow.tableName + '/relations/' + relationName + '/query', { rowData: rowData }).
             success(function(data, status, headers, config) {
                 if(data['rows'].length > 0){
                     data['rows'].forEach(function(row, idx, arr){
@@ -128,7 +149,9 @@ function connectionWindowsController($scope, $http, $rootScope, $modal) {
     };
 
     $rootScope.$on('addConnectionWindow', function(event, data){
-        var connectionWindow = $scope.createConnectionWindow(data['connectionName'], data['tableName']);
+
+        var connectionWindow = $scope.createConnectionWindow(data['connection'], data['tableName']);
+        console.log('super fap', connectionWindow)
         $scope.submitQuery(connectionWindow.id, 'Select TOP ' + connectionWindow.limit + ' * FROM ' + '"' + connectionWindow.schemaName + '"."' + connectionWindow.tableName + '"');
     });
 
@@ -144,8 +167,9 @@ function connectionWindowsController($scope, $http, $rootScope, $modal) {
 
     // objects
 
-    var ConnectionWindow = function(connectionName, tableName){
+    var ConnectionWindow = function(connection, tableName){
         // split up the tableName
+        console.log('creat window fap', connection, tableName)
         var table_name_parts = tableName.split('.');
         if(table_name_parts[1] !== undefined){
             this.schemaName = table_name_parts[0];
@@ -156,9 +180,11 @@ function connectionWindowsController($scope, $http, $rootScope, $modal) {
         }
 
         var now = new Date();
+        this._id = connection._id;
+        this.connection = connection;
         this.id = now.getDay().toString() + now.getHours().toString() + now.getMinutes().toString() + now.getMilliseconds().toString();
-        this.title = connectionName + ' / ' + tableName;
-        this.connectionName = connectionName;
+        this.title = connection.name + ' / ' + tableName;
+        this.connectionName = connection.name;
         this.active = 'active'; // used as flag for ng-show in view
         this.rows = [];
         this.columns = [];

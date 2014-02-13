@@ -10,10 +10,18 @@
   <script src='/javascripts/bootstrap/ui-bootstrap.min.js'></script>
   <script src='/javascripts/bootstrap/ui-bootstrap-tpls.min.js'></script>
 
+
+  <link rel="stylesheet" type="text/css" href="/bower_components/codemirror/lib/codemirror.css">
+  <script type="text/javascript" src="/bower_components/codemirror/lib/codemirror.js"></script>
+  <script type="text/javascript" src="/bower_components/codemirror/mode/javascript/javascript.js"></script>
+  <script type="text/javascript" src="/bower_components/angular-ui-codemirror/ui-codemirror.js"></script>
+
   <script src='/javascripts/fixedHeaders.js'></script>
-  <script>angular.module('data-pet', ['ui.bootstrap'] );</script>
+  <script>var app = angular.module('data-pet', ['ui.bootstrap', 'ui.codemirror'] );</script>
 
   <%= csrf_meta_tags %>
+
+  <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
 </head>
 <body id='main' >
 
@@ -36,6 +44,7 @@
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">Connections <b class="caret"></b></a>
           <ul class="dropdown-menu">
+            <li><a href='<%= connections_path %>' >All</a></li>
             <li><a href='<%= new_connection_path %>'>New</a></li>
           </ul>
         </li>
@@ -44,9 +53,6 @@
           <ul class="dropdown-menu">
             <li><a href='<%= relations_path %>' >All</a></li>
             <li><a href='<%= new_relation_path %>'>New</a></li>
-            <!--<li><a href='#' onclick='applyFixedHeaders()' >Apply Fixed Headers</a></li>-->
-            <!--<li><a href='#' onclick='removeFixedHeaders()' >Remove Fixed Headers</a></li>-->
-            <!--<li><a href='#' onclick='reapplyFixedTableHeaders()' >ReApply Fixed Headers</a></li>-->
           </ul>
         </li>
       </ul>

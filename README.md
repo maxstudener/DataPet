@@ -1,5 +1,19 @@
 # DataPet
 
+Requires jruby
+
+##To active databases
+###Progress 10.2B
+place openedge.jar and pool.jar into Rail.root lib
+
+###Sql Server
+place jtds.jar in Rails.root lib
+
+Create Secret token file
+```
+DataPet::Application.config.secret_token = "secret"
+```
+
 Configurable database tool to allow quick naviagation between configured relations thru pop-up menus.
 
 ## todo 
