@@ -5,9 +5,9 @@ class RelationCalculator
     @data_hash = data_hash
 
     # find the configuration for this relation
-    relation = Relation.where(connection_name: connection_name, table_name: table_name, relation_name: relation_name).first
-    @connection_name = relation.relation_connection_name
-    @relation_table_name = relation.relation_table_name
+    relation = Relation.where(from_connection_id: connection_name, from_table_name: table_name, relation_name: relation_name).first
+    @connection_name = relation.to_connection_id
+    @relation_table_name = relation.to_table_name
     @where_clauses = relation.where_clauses
 
     @sql = "SELECT * FROM \"#{Query.quote_table(@relation_table_name)}\" WHERE "
@@ -45,8 +45,8 @@ class RelationCalculator
   end
 
   def create_join_clause(join)
-    join_column = join.join_column
-    from_column = join.from_column
+    join_column = join['join_column']
+    from_column = join['from_column']
 
     join_data = @join_data.collect{ |row| row[from_column.downcase.to_sym] }.join("','")
     raise 'Cannot join without values.' if join_data.blank?
@@ -55,14 +55,14 @@ class RelationCalculator
   end
 
   def create_where_clause(where)
-    column = where.relation_table_column
-    operator = where.comparison_operator
+    column = where['to_table_column']
+    operator = where['comparison_operator']
 
-    case where.comparison_type
+    case where['comparison_type']
       when 'Column'
-        my_value = @data_hash[where.comparison_value.downcase]
+        my_value = @data_hash[where['comparison_value'].to_s.downcase]
       when 'Value'
-        my_value = where.comparison_value
+        my_value = where['comparison_value']
 
       else
         raise "This type of WHERE clause is not supported."
@@ -112,7 +112,7 @@ class RelationCalculator
   end
 
   def relations
-    Relation.where(connection_name: @connection_name, table_name: Query.unquote_table( @relation_table_name)).all
+    Relation.where(from_connection_id: @connection_name, from_table_name: Query.unquote_table( @relation_table_name)).all
   end
 
 end

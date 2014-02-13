@@ -1,0 +1,12 @@
+<script src="/javascripts/controllers/connection-new.js"></script>
+
+<div class="container">
+
+  <div class="row" ng-controller="NewConnectionCtrl">
+    <br />
+    <ui-codemirror ui-codemirror-opts="editorOptions" ng-model="jsonDataString"></ui-codemirror>
+
+    <button class="btn btn-default btn-primary" ng-click="sendData()">Submit</button>
+
+  </div>
+</div>

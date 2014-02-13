@@ -1,7 +1,5 @@
 class Connection
 
-  DB_DIRECTORY = Rails.root.join('config', 'DataPet')
-  CONNECTIONS_DIRECTORY = Rails.root.join('config', 'DataPet', 'connections')
   MODIFY_WORDS = %w[ delete update set alter create drop insert truncate index lock ]
 
   def initialize(configuration)
@@ -43,26 +41,13 @@ class Connection
 
   class << self
 
-    def check_directory_structure
-      Dir.mkdir(DB_DIRECTORY) unless Dir.exists?(DB_DIRECTORY)
-      Dir.mkdir(CONNECTIONS_DIRECTORY) unless Dir.exists?(CONNECTIONS_DIRECTORY)
+    def get(id)
+      get_connection(get_configuration(id))
     end
 
-    def all
-      Connection.check_directory_structure
-
-      Dir.glob("#{CONNECTIONS_DIRECTORY}/*.yml").inject([]) do |connections, file|
-        file_name = file.split('.').first.split('/').last
-        connections << file_name
-      end
-    end
-
-    def get(connection_name)
-      get_connection(get_configuration(connection_name))
-    end
-
-    def get_configuration(connection_name)
-      YAML::load(ERB.new(IO.read("#{CONNECTIONS_DIRECTORY}/#{connection_name}.yml")).result)[connection_name].symbolize_keys!
+    def get_configuration(id)#todo
+      con = ConnectionAttributes.where(id: id).first
+      con.attributes.except("_id", "name").symbolize_keys!
     end
 
     def get_connection(configuration)
@@ -72,24 +57,8 @@ class Connection
         when 'progress'
           Connection::ProgressConnection.new(configuration)
         else
-          # use the default connection class
-          Connection.new(configuration) # this class is incomplete and will not work !!!
+          raise "Database Connection not yet supported!"
       end
-    end
-
-    def details(connection_name)
-      connection = Connection.get(connection_name)
-      tables = connection.tables.map do |full_table_name|
-        if full_table_name.match(/\./)
-          schema_name, table_name = full_table_name.split('.')
-        else
-          schema_name = ''
-          table_name = full_table_name
-        end
-
-        { connectionName: connection_name, schemaName: schema_name, tableName: table_name}
-      end
-      { name: connection_name, tables: tables }
     end
 
   end

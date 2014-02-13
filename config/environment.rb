@@ -3,13 +3,20 @@ require File.expand_path('../application', __FILE__)
 
 require 'sequel'
 
-# open edge driver
-require 'openedge.jar'
-require 'pool.jar'
-java_import 'com.ddtek.jdbc.openedge.OpenEdgeDriver'
+# open edge driver 10.2B
+if File.exists?(File.expand_path('../../lib/openedge.jar', __FILE__)) &&
+   File.exists?(File.expand_path('../../lib/pool.jar', __FILE__))
+
+  require 'lib/openedge.jar'
+  require 'lib/pool.jar'
+  java_import 'com.ddtek.jdbc.openedge.OpenEdgeDriver'
+
+end
 
 # jtds driver
-require 'jtds-1.3.1.jar'
+if File.exists?(File.expand_path('../../lib/jtds.jar', __FILE__))
+  require 'lib/jtds.jar'
+end
 
 
 ENV['FREETDSCONF'] = File.expand_path(File.dirname(__FILE__)) + "/freetds.conf"

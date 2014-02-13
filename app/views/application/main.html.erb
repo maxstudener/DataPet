@@ -14,12 +14,12 @@
   <br/>
   <ul>
     <li ng-repeat='connection in connections'>
-      <a href='#' ng-click='toggleDisplay(connection.name)'>{{connection.name}}</a>
+      <a href='#' ng-click='toggleDisplay(connection)'>{{connection.name}}</a>
 
       <div ng-show='connection.display'>
         <ul>
           <li ng-repeat='table in connection.tables | filter:tableFilter | orderBy:"fullTableName"'>
-            <a href='#' ng-click='createConnectionWindow(connection.name, table.fullTableName)'>{{table.fullTableName}}</a>
+            <a href='#' ng-click='createConnectionWindow(connection, table.fullTableName)'>{{table.fullTableName}}</a>
           </li>
         </ul>
       </div>
