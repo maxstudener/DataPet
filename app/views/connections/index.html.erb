@@ -1,4 +1,4 @@
-<script src="/javascripts/controllers/connection-attributes.js"></script>
+<script src="/javascripts/controllers/connection_index.js"></script>
 
 <div class="container" ng-controller="connectionController" ng-init="initialize()">
   <div class="row" ng-repeat="connection in connections">
@@ -6,8 +6,7 @@
     <ui-codemirror ui-codemirror-opts="editorOptions" ng-model="connection.jsonString"></ui-codemirror>
     <form ng-action="/relations/{{connection._id}}" class="button_to" method="post">
       <div>
-        <input name="_method" type="hidden" value="delete">
-        <input class="btn btn-sm btn-danger" type="submit" value="Delete">
+        <input class="btn btn-sm btn-danger" type="submit" value="Delete" ng-click='destroyConnection(connection._id)'>
         <input name="authenticity_token" type="hidden" value="<%= form_authenticity_token %>">
       </div>
     </form>

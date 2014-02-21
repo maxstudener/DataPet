@@ -40,5 +40,15 @@ class ConnectionsController < ApplicationController
     render json: tables.to_json
   end
 
+  def destroy
+    connection = ConnectionAttributes.find(params[:id])
+    if connection.destroy
+      flash[:success] = 'The connection was successfully destroyed.'
+    else
+      flash[:error] = 'There was an error destroying the connection.'
+    end
+    render nothing: true
+  end
+
 end
 
