@@ -42,7 +42,12 @@ class ConnectionsController < ApplicationController
 
   def destroy
     connection = ConnectionAttributes.find(params[:id])
-    render nothing: true
+    if connection.destroy
+      render nothing: true
+    else
+      raise 'There was an error destroying the connection.'
+    end
+
   end
 
 end
