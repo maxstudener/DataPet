@@ -24,6 +24,16 @@ class RelationsController < ApplicationController
     render json: relation
   end
 
+  def edit
+  end
+
+  def update
+    relation = Relation.where(id: params[:id]).first
+    relation.update_attributes!(params["relation"])
+
+    render json: relation
+  end
+
   def destroy
     relation = Relation.find(params[:id])
     if relation.destroy

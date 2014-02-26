@@ -23,6 +23,16 @@ class ConnectionsController < ApplicationController
     render json: con
   end
 
+  def edit
+  end
+
+  def update
+    connection = ConnectionAttributes.where(id: params[:id]).first
+    connection.update_attributes!(params["connection"])
+
+    render json: connection
+  end
+
   def tables
     set_connection
     connection_name = params[:connection_name]
