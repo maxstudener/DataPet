@@ -1,7 +1,7 @@
 function EditConnectionCtrl($scope, $filter, $http,$location,$log) {
 
   $scope.initLoad = function(){
-    $scope.url = $location.absUrl().replace('/edit', '')
+    $scope.url = $location.absUrl().replace('/edit', '');
     $http.get($scope.url + '.json').success(function(data){
       $scope.jsonData = data;
       delete $scope.jsonData['_id']; //no reason to edit id
