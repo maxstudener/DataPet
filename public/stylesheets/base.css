@@ -83,10 +83,6 @@ th {
     margin-bottom: 0 !important;
 }
 
-#main {
-    overflow: hidden;
-}
-
 ul.nav, ul.nav-tabs {
   border-style: none;
 }
