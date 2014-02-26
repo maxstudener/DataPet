@@ -6,6 +6,7 @@
 .connections {
     overflow: auto;
     background-color: #f8f8f8;
+    box-shadow: 0 0 1px rgba(0,0,0,0.5);
 }
 
 .context_menu {
@@ -84,4 +85,8 @@ th {
 
 #main {
     overflow: hidden;
+}
+
+ul.nav, ul.nav-tabs {
+  border-style: none;
 }
