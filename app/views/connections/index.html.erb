@@ -4,11 +4,8 @@
   <div class="row" ng-repeat="connection in connections">
     <h3>{{connection.name}}</h3>
     <ui-codemirror ui-codemirror-opts="editorOptions" ng-model="connection.jsonString"></ui-codemirror>
-    <form ng-action="/relations/{{connection._id}}" class="button_to" method="post">
-      <div>
-        <input class="btn btn-sm btn-danger" type="submit" value="Delete" ng-click='destroyConnection(connection._id)'>
-        <input name="authenticity_token" type="hidden" value="<%= form_authenticity_token %>">
-      </div>
-    </form>
+
+    <a class="btn btn-sm btn-primary" ng-href="/connections/{{connection._id}}/edit">Edit</a>
+    <button class="btn btn-sm btn-danger" ng-click='destroyConnection(connection._id)'>Delete</button>
   </div>
 </div>
