@@ -6,24 +6,28 @@
   <link rel='stylesheet' type='text/css' href='/stylesheets/base.css'/>
   <script src='/javascripts/jquery/jquery-2.0.3.min.js'></script>
   <script src='/javascripts/angular/angular.min.js'></script>
+  <script src='/javascripts/underscore/underscore.min.js'></script>
   <script src='/javascripts/bootstrap/ui-bootstrap.min.js'></script>
   <script src='/javascripts/bootstrap/ui-bootstrap-tpls.min.js'></script>
 
-  <!-- used for codemirror -->
+
   <link rel="stylesheet" type="text/css" href="/bower_components/codemirror/lib/codemirror.css">
   <script type="text/javascript" src="/bower_components/codemirror/lib/codemirror.js"></script>
   <script type="text/javascript" src="/bower_components/codemirror/mode/javascript/javascript.js"></script>
   <script type="text/javascript" src="/bower_components/angular-ui-codemirror/ui-codemirror.js"></script>
 
-  <script>var app = angular.module('data-pet', ['ui.bootstrap', 'ui.codemirror'] );</script>
+  <script src='/javascripts/fixedHeaders.js'></script>
+  <script>var app = angular.module('data-pet', ['ui.bootstrap', 'ui.codemirror']);</script>
 
   <%= csrf_meta_tags %>
 
   <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
 </head>
-<body id='main' >
 
-<div class='container-liquid full-height'>
+
+<body>
+
+<div class='container-liquid'>
   <nav id='top_navigation_bar' class="navbar navbar-default" role="navigation">
     <!-- Brand and toggle get grouped for better mobile display -->
     <div class="navbar-header">
@@ -33,7 +37,7 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href='/' >DataPet</a>
+      <a class="navbar-brand" href='/'>DataPet</a>
     </div>
 
     <!-- Collect the nav links, forms, and other content for toggling -->
@@ -42,22 +46,26 @@
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">Connections <b class="caret"></b></a>
           <ul class="dropdown-menu">
-            <li><a href='<%= connections_path %>' >All</a></li>
+            <li><a href='<%= connections_path %>'>All</a></li>
             <li><a href='<%= new_connection_path %>'>New</a></li>
           </ul>
         </li>
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">Relations <b class="caret"></b></a>
           <ul class="dropdown-menu">
-            <li><a href='<%= relations_path %>' >All</a></li>
+            <li><a href='<%= relations_path %>'>All</a></li>
             <li><a href='<%= new_relation_path %>'>New</a></li>
           </ul>
         </li>
       </ul>
-    </div><!-- /.navbar-collapse -->
+    </div>
+    <!-- /.navbar-collapse -->
   </nav>
-  <div class='container'><%= display_messages %></div>
-  <%= yield %>
+  <div id='main' class='container-liquid'>
+    <%= yield %>
+
+  </div>
+
 </div>
 
 </body>
@@ -67,8 +75,41 @@
 
 <script>
     // adjust the body tag to be full window height
-    window.onload=function(){
-        $('#main').height($(window).height() - $('#top_navigation_bar').height());
+    window.onload = function () {
+        resizeMain();
+    };
+
+    window.onresize = function () {
+        resizeMain();
+        resizeConnectionWindows();
+    };
+
+    function resizeMain() {
+        $('#main').height($(window).height() - 5 - $('#top_navigation_bar').height());
+    }
+
+    function resizeConnectionWindows() {
+        var x;
+        var formHeight = 0;
+
+        var tabHeight = document.getElementById('navigation_tabs').offsetHeight;
+        var forms = document.getElementsByClassName('test');
+
+        for (x = 0; x < forms.length; x++) {
+            var height = forms[x].offsetHeight;
+            if (height > formHeight) {
+                formHeight = height;
+            }
+        }
+
+        var datas = document.getElementsByClassName('data_content');
+        var tabs = document.getElementsByClassName('tab-pane');
+        var newHeight = $(window).height() - tabHeight - $('#top_navigation_bar').height() - 30;
+
+        for (x = 0; x < tabs.length; x++) {
+            tabs[x].style.height = newHeight + 'px';
+            datas[x].style.height = (newHeight - formHeight ) + 'px';
+        }
     }
 </script>
 

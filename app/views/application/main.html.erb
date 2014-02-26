@@ -28,28 +28,35 @@
 </div>
 
 <!-- connectionWindows pane -->
-<div class='col-sm-10 full-height' ng-controller='connectionWindowsController' >
+<div id='connection_window_pane' class='col-sm-10 full-height ' ng-controller='connectionWindowsController' >
   <!-- connectionWindow tabs -->
-  <ul class='nav nav-tabs'>
-    <li ng-repeat='connectionWindow in connectionWindows'>
-      <a href=#{{connectionWindow.id}} data-toggle='tab' ng-click='showTab(connectionWindow.id)'>{{connectionWindow.title}}&nbsp&nbsp<span
-      class="glyphicon glyphicon-remove-circle" ng-click='closeConnectionWindow(connectionWindow.id)'></a>
-    </li>
-  </ul>
+  <div id='navigation_tabs'>
+      <ul class='nav nav-tabs'>
+        <li ng-repeat='connectionWindow in connectionWindows'>
+          <a href=#{{connectionWindow.id}} data-toggle='tab' ng-click='showTab(connectionWindow.id)'>{{connectionWindow.title}}&nbsp&nbsp<span
+          class="glyphicon glyphicon-remove-circle" ng-click='closeConnectionWindow(connectionWindow.id)'></a>
+        </li>
+      </ul>
+  </div>
+
   <!-- connectionWindows -->
-  <div class='tab-content full-height'>
+  <div class='tab-content'>
     <div ng-repeat='connectionWindow in connectionWindows' id={{connectionWindow.id}}
          class='tab-pane {{connectionWindow.active}} full-height'>
-      <h3>{{connectionWindow.title}}</h3>
 
-      <form ng-submit='submitQuery(connectionWindow.id, connectionWindow.currentSqlQuery)'>
-        <input id='{{connectionWindow.id}}_sql' ng-model='connectionWindow.currentSqlQuery'
-               typeahead="column.name for column in connectionWindow.columns | filter:$viewValue | limitTo:8"
-               class='form-control'/>
-      </form>
-      <br/>
 
-      <div class=' eighty-height scrolling'>
+      <div class='test'>
+        <h3>{{connectionWindow.title}}</h3>
+
+        <form ng-submit='submitQuery(connectionWindow.id, connectionWindow.currentSqlQuery)'>
+          <input id='{{connectionWindow.id}}_sql' ng-model='connectionWindow.currentSqlQuery'
+                 typeahead="column.name for column in connectionWindow.columns | filter:$viewValue | limitTo:8"
+                 class='form-control'/>
+        </form>
+        <br/>
+      </div>
+
+      <div class='data_content scrolling'>
         <img src='/images/no_data.jpg' ng-show='connectionWindow.noData' />
         <img src='/images/bad_query.jpg' ng-show='connectionWindow.badQuery' />
 

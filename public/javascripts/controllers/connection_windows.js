@@ -21,6 +21,7 @@ function connectionWindowsController($scope, $http, $rootScope, $modal) {
         $scope.connectionWindows = $scope.connectionWindows.filter(function(connectionWindow){
             return connectionWindow.id != connectionWindowId;
         });
+        resizeConnectionWindows();
     };
 
     $scope.submitQuery = function(connectionWindowId, sqlQuery){
@@ -45,6 +46,7 @@ function connectionWindowsController($scope, $http, $rootScope, $modal) {
                 }else{
                     connectionWindow.noData = true;
                 }
+                resizeConnectionWindows();
             }).
             error(function() {
                 connectionWindow.badQuery = true;
@@ -117,6 +119,7 @@ function connectionWindowsController($scope, $http, $rootScope, $modal) {
                 }else{
                     connectionWindow.noData = true;
                 }
+                resizeConnectionWindows();
                 connectionWindow.currentSqlQuery = 'WHERE' + data['query'].split('WHERE')[1];
             }).
             error(function() {

@@ -81,3 +81,7 @@ th {
 #top_navigation_bar {
     margin-bottom: 0 !important;
 }
+
+#main {
+    overflow: hidden;
+}
