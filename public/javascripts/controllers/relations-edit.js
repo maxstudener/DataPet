@@ -204,7 +204,7 @@ function relationsController($scope, $http, $rootScope, $log, $location) {
 
     $scope.createRelation = function () {
       $log.warn($scope.relation);
-        $http.post($scope.url, { relation: $scope.relation }).success(function (data, status, headers, config) {
+        $http.put($scope.url, { relation: $scope.relation }).success(function (data, status, headers, config) {
                 $log.warn(data);
                 $scope.message = 'There relation saved.'
                 $scope.messageClass = 'success';
