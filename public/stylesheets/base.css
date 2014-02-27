@@ -86,3 +86,7 @@ th {
 ul.nav, ul.nav-tabs {
   border-style: none;
 }
+
+li.active {
+    font-weight: bold;
+}

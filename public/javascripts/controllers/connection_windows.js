@@ -22,6 +22,7 @@ function connectionWindowsController($scope, $http, $rootScope, $modal) {
             return connectionWindow.id != connectionWindowId;
         });
         resizeConnectionWindows();
+        $scope.connectionWindows[$scope.connectionWindows.length - 1].active = 'active';
     };
 
     $scope.submitQuery = function(connectionWindowId, sqlQuery){

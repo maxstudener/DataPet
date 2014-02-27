@@ -32,7 +32,7 @@
   <!-- connectionWindow tabs -->
   <div id='navigation_tabs'>
       <ul class='nav nav-tabs'>
-        <li ng-repeat='connectionWindow in connectionWindows'>
+        <li ng-repeat='connectionWindow in connectionWindows' class='{{connectionWindow.active}}'>
           <a href=#{{connectionWindow.id}} data-toggle='tab' ng-click='showTab(connectionWindow.id)'>{{connectionWindow.title}}&nbsp&nbsp<span
           class="glyphicon glyphicon-remove-circle" ng-click='closeConnectionWindow(connectionWindow.id)'></a>
         </li>
