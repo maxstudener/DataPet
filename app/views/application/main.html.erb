@@ -28,7 +28,7 @@
 </div>
 
 <!-- connectionWindows pane -->
-<div id='connection_window_pane' class='col-sm-10 full-height ' ng-controller='connectionWindowsController' >
+<div id='connection_window_pane' class='col-sm-10 full-height ' ng-controller='connectionWindowsController' style="padding-left:0px;">
   <!-- connectionWindow tabs -->
   <div id='navigation_tabs'>
       <ul class='nav nav-tabs'>
@@ -46,12 +46,13 @@
 
 
       <div class='test'>
-        <h3>{{connectionWindow.title}}</h3>
+        <h3 style="padding-left:5px;">{{connectionWindow.title}}</h3>
 
         <form ng-submit='submitQuery(connectionWindow.id, connectionWindow.currentSqlQuery)'>
           <input id='{{connectionWindow.id}}_sql' ng-model='connectionWindow.currentSqlQuery'
-                 typeahead="column.name for column in connectionWindow.columns | filter:$viewValue | limitTo:8"
-                 class='form-control'/>
+                 class='form-control'
+                 columnautocomplete
+                 />
         </form>
         <br/>
       </div>
