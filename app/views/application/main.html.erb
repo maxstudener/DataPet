@@ -45,9 +45,7 @@
          class='tab-pane {{connectionWindow.active}} full-height'>
 
 
-      <div class='test'>
-        <h3 style="padding-left:5px;">{{connectionWindow.title}}</h3>
-
+      <div class='test' style='margin-top: 2px;'>
         <form ng-submit='submitQuery(connectionWindow.id, connectionWindow.currentSqlQuery)'>
           <input id='{{connectionWindow.id}}_sql' ng-model='connectionWindow.currentSqlQuery'
                  class='form-control'
@@ -57,11 +55,11 @@
         <br/>
       </div>
 
-      <div class='data_content scrolling'>
+      <div class='data_content scrolling wrapper'>
         <img src='/images/no_data.jpg' ng-show='connectionWindow.noData' />
         <img src='/images/bad_query.jpg' ng-show='connectionWindow.badQuery' />
 
-        <table id='{{connectionWindow.id}}_table'  class='table table-bordered table-condensed table-striped' ng-show='connectionWindow.columns.length > 0'>
+        <table id='{{connectionWindow.id}}_table'  class='table table-bordered table-condensed table-striped fixed-table-header' ng-show='connectionWindow.columns.length > 0'>
           <thead style='background-color:white;' >
               <tr>
                 <th>

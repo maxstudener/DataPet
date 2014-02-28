@@ -34,25 +34,45 @@ function connectionWindowsController($scope, $http, $rootScope, $modal) {
         connectionWindow.columns = [];
         $http.post('/connections/' + connectionWindow._id + '/tables/' + connectionWindow.schemaName + '/' + connectionWindow.tableName + '/query', { sql: sqlQuery, limit: connectionWindow.limit }).
             success(function(data) {
-                if(data['rows'].length > 0){
-                    data['rows'].forEach(function(row, idx){
-                        connectionWindow.rows.push(new Row(row, idx))
-                    });
-                    data['columns'].forEach(function(column){
-                        connectionWindow.columns.push(new Column(column));
-                    });
-                    data['relations'].forEach(function(relation){
-                        connectionWindow.relations.push(new Relation(relation.relation_name, relation));
-                    });
-                }else{
-                    connectionWindow.noData = true;
-                }
-                resizeConnectionWindows();
+                $scope.fillTable(connectionWindow, data);
             }).
             error(function() {
                 connectionWindow.badQuery = true;
                 // something went wrong
             });
+    };
+
+    $scope.fillTable = function(connectionWindow, data){
+        var def = [];
+
+        if(data['rows'].length > 0){
+            data['rows'].forEach(function(row, idx){
+                def.push($scope.addRow(connectionWindow, row, idx));
+            });
+            data['columns'].forEach(function(column){
+                connectionWindow.columns.push(new Column(column));
+            });
+            data['relations'].forEach(function(relation){
+                connectionWindow.relations.push(new Relation(relation.relation_name, relation));
+            });
+        }else{
+            connectionWindow.noData = true;
+        }
+
+        $.when.apply($, def).done(function(){
+
+          setTimeout(function(){
+              fixTableHeaders();
+              resizeConnectionWindows();
+          }, 500);
+        });
+    };
+
+    $scope.addRow = function(connectionWindow, row, idx){
+        var dfd = $.Deferred();
+        connectionWindow.rows.push(new Row(row, idx));
+        dfd.resolve();
+        return dfd.promise();
     };
 
     // relations aka: connectionWindows
@@ -107,20 +127,7 @@ function connectionWindowsController($scope, $http, $rootScope, $modal) {
         connectionWindow.columns = [];
         $http.post('/connections/' + oldConnectionWindow._id + '/tables/' + oldConnectionWindow.schemaName + '/' + oldConnectionWindow.tableName + '/relations/' + relationName + '/query', { rowData: rowData }).
             success(function(data) {
-                if(data['rows'].length > 0){
-                    data['rows'].forEach(function(row, idx){
-                        connectionWindow.rows.push(new Row(row, idx));
-                    });
-                    data['columns'].forEach(function(column){
-                        connectionWindow.columns.push(new Column(column));
-                    });
-                    data['relations'].forEach(function(relation){
-                        connectionWindow.relations.push(new Relation(relation.relation_name, relation));
-                    });
-                }else{
-                    connectionWindow.noData = true;
-                }
-                resizeConnectionWindows();
+                $scope.fillTable(connectionWindow, data);
                 connectionWindow.currentSqlQuery = 'WHERE' + data['query'].split('WHERE')[1];
             }).
             error(function() {

@@ -10,6 +10,7 @@
   <script src='/javascripts/angular/angular.min.js'></script>
   <script src='/javascripts/bootstrap/ui-bootstrap.min.js'></script>
   <script src='/javascripts/bootstrap/ui-bootstrap-tpls.min.js'></script>
+  <script type="text/javascript" src="/javascripts/jquery/floatTHead.js"></script>
 
 
   <link rel="stylesheet" type="text/css" href="/bower_components/codemirror/lib/codemirror.css">
@@ -111,6 +112,15 @@
             tabs[x].style.height = newHeight + 'px';
             datas[x].style.height = (newHeight - formHeight ) + 'px';
         }
+    }
+
+    function fixTableHeaders(){
+        var $table = $('table.fixed-table-header');
+        $table.floatThead({
+            scrollContainer: function($table){
+                return $table.closest('.wrapper');
+            }
+        });
     }
 </script>
 
