@@ -108,7 +108,7 @@
 <!-- WHERE CLAUSES -->
 <div class='container'>
   <h3>Where&nbsp&nbsp<span class='glyphicon glyphicon-plus' ng-click='addWhereClause()'></span></h3>
-  <h6 ng-show='type=="has_many_through"' style='color:red;'>* Optional for 'has_many_through' relation type.</h6>
+  <h6 ng-show='type=="has_through"' style='color:red;'>* Optional for 'Has Through' relation type.</h6>
 
   <div ng-repeat='whereClause in relation.where_clauses'>
     <div class='row'>
@@ -181,7 +181,7 @@
 
 
 <!-- THROUGH RELATION -->
-<div class='container' ng-show='relation.relation_type=="has_many_through"'>
+<div class='container' ng-show='relation.relation_type=="has_through"'>
   <h3>Through</h3>
 
   <!-- Through Relation Name -->
