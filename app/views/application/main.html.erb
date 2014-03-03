@@ -28,7 +28,7 @@
 </div>
 
 <!-- connectionWindows pane -->
-<div id='connection_window_pane' class='col-sm-10 full-height ' ng-controller='connectionWindowsController' style="padding-left:0px;">
+<div id='connection_window_pane' class='col-sm-10 full-height ' ng-controller='connectionWindowsController' style="padding-left:0; padding-right: 0;">
   <!-- connectionWindow tabs -->
   <div id='navigation_tabs'>
       <ul class='nav nav-tabs'>
@@ -45,7 +45,7 @@
          class='tab-pane {{connectionWindow.active}} full-height'>
 
 
-      <div class='test' style='margin-top: 2px;'>
+      <div class='connection_window_form' style='margin-top: 2px;'>
         <form ng-submit='submitQuery(connectionWindow.id, connectionWindow.currentSqlQuery)'>
           <input id='{{connectionWindow.id}}_sql' ng-model='connectionWindow.currentSqlQuery'
                  class='form-control'

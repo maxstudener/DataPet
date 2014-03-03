@@ -95,7 +95,7 @@
         var formHeight = 0;
 
         var tabHeight = document.getElementById('navigation_tabs').offsetHeight;
-        var forms = document.getElementsByClassName('test');
+        var forms = document.getElementsByClassName('connection_window_form');
 
         for (x = 0; x < forms.length; x++) {
             var height = forms[x].offsetHeight;
@@ -106,7 +106,7 @@
 
         var datas = document.getElementsByClassName('data_content');
         var tabs = document.getElementsByClassName('tab-pane');
-        var newHeight = $(window).height() - tabHeight - $('#top_navigation_bar').height() - 30;
+        var newHeight = $(window).height() - tabHeight - $('#top_navigation_bar').height() - 5;
 
         for (x = 0; x < tabs.length; x++) {
             tabs[x].style.height = newHeight + 'px';

@@ -21,8 +21,11 @@ function connectionWindowsController($scope, $http, $rootScope, $modal) {
         $scope.connectionWindows = $scope.connectionWindows.filter(function(connectionWindow){
             return connectionWindow.id != connectionWindowId;
         });
-        resizeConnectionWindows();
+
         $scope.connectionWindows[$scope.connectionWindows.length - 1].active = 'active';
+        resizeConnectionWindows();
+
+        $(window).trigger('resize');
     };
 
     $scope.submitQuery = function(connectionWindowId, sqlQuery){
@@ -64,7 +67,8 @@ function connectionWindowsController($scope, $http, $rootScope, $modal) {
           setTimeout(function(){
               fixTableHeaders();
               resizeConnectionWindows();
-          }, 500);
+              $(window).trigger('resize');
+          }, 0);
         });
     };
 
@@ -175,6 +179,7 @@ function connectionWindowsController($scope, $http, $rootScope, $modal) {
             }else{
                 connectionWindow.active = '';
             }
+            $(window).trigger('resize');
         });
     };
 
