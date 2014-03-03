@@ -7,9 +7,11 @@
     <form ng-action="/relations/{{relation._id}}" class="button_to" method="post">
       <div>
         <input name="_method" type="hidden" value="delete">
+        <a class="btn btn-sm btn-primary" ng-href="/relations/{{relation._id}}/edit">Edit</a>
         <input class="btn btn-sm btn-danger" type="submit" value="Delete">
         <input name="authenticity_token" type="hidden" value="<%= form_authenticity_token %>">
       </div>
     </form>
+
   </div>
 </div>
