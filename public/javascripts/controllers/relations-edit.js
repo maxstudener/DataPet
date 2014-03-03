@@ -85,10 +85,10 @@ function relationsController($scope, $http, $rootScope, $log, $location) {
     $scope.changedType = function(){
       if($scope.relation.relation_type == 'has_through'){
         $scope.relation.join_clauses = [new JoinClause()];
-        $scope.relation.where_clauses = undefined;
+        $scope.relation.where_clauses = [];
       }else{
         $scope.relation.where_clauses = [new WhereClause()];
-        $scope.relation.join_clauses = undefined;
+        $scope.relation.join_clauses = [];
       }
     }
 
