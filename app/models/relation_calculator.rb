@@ -13,10 +13,10 @@ class RelationCalculator
     @sql = "SELECT * FROM \"#{Query.quote_table(@relation_table_name)}\" WHERE "
 
     case relation.relation_type
-      when 'has_many'
+      when 'has'
         add_where_clauses
 
-      when 'has_many_through'
+      when 'has_through'
         through_relation = RelationCalculator.new(connection_name, table_name, relation.through_relation.relation_name, data_hash)
 
         @join_data = through_relation.compute
@@ -68,26 +68,32 @@ class RelationCalculator
         raise "This type of WHERE clause is not supported."
     end
 
-    "\"#{Query.quote_table(@relation_table_name+'.'+column)}\" #{comparison_to_sql(operator)} '#{my_value}'"
+    "\"#{Query.quote_table(@relation_table_name+'.'+column)}\" #{comparison_sql(operator, my_value)}"
   end
 
-  def comparison_to_sql(comparison)
-    case comparison
+  def comparison_sql(comparison_operator, my_value)
+    comparison = ''
+    case comparison_operator
       when 'Equal To'
-        '='
+        comparison = '='
       when 'Greater Than'
-        '>'
+        comparison = '>'
       when 'Less Than'
-        '<'
+        comparison = '<'
       when 'Like'
-        'LIKE'
+        comparison = 'LIKE'
       when 'In'
-        'IN'
+        comparison = 'IN'
       when 'Not Equal To'
-        '!='
+        comparison = '!='
+      when 'Not NULL'
+        return 'IS NOT NULL'
+      when 'NULL'
+        return 'IS NULL'
       else
         raise "#{comparison} operator is not supported."
     end
+    "#{comparison} '#{my_value}'"
   end
 
   def sql

@@ -12,17 +12,19 @@ function relationsController($scope, $http, $rootScope, $log) {
     $scope.toConnection = {};
 
     $scope.types = [
-      { name: 'Has Many', value: 'has_many' },
-      { name: 'Has Many Through', value: 'has_many_through' }
+      { name: 'Has', value: 'has' },
+      { name: 'Has Through', value: 'has_through' }
     ];
 
     $scope.comparisonOperators = [
-      { name: 'Equal To' },
-      { name: 'Greater Than' },
-      { name: 'Less Than' },
-      { name: 'Like' },
-      { name: 'Not Equal To' },
-      { name: 'In' }
+        { name: 'Equal To' },
+        { name: 'Greater Than' },
+        { name: 'Less Than' },
+        { name: 'Like' },
+        { name: 'Not Equal To' },
+        { name: 'In' },
+        { name: 'Not NULL' },
+        { name: 'NULL'}
     ];
 
     $scope.comparisonTypes = [
@@ -83,7 +85,7 @@ function relationsController($scope, $http, $rootScope, $log) {
     };
 
     $scope.changedType = function(){
-      if($scope.relation.relation_type == 'has_many_through'){
+      if($scope.relation.relation_type == 'has_through'){
         $scope.relation.join_clauses = [new JoinClause()];
         $scope.relation.where_clauses = undefined;
       }else{

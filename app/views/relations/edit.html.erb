@@ -21,22 +21,6 @@
   </div>
   <br/>
 
-  <!-- Relation Type -->
-  <div class='row'>
-    <div class='col-xs-3 right'>
-      <label>Relation Type</label>
-    </div>
-    <div class='col-xs-9'>
-      <select class='form-control'
-              ng-model='relation.relation_type'
-              ng-change="changedType()"
-      >
-        <option ng-repeat='type in types' value='{{type.value}}'>{{type.name}}</option>
-      </select>
-    </div>
-  </div>
-  <br/>
-
   <!-- Connection Name -->
   <div class='row'>
     <div class='col-xs-3 right'>
@@ -69,6 +53,22 @@
     </div>
   </div>
 
+  <br/>
+
+  <!-- Relation Type -->
+  <div class='row'>
+    <div class='col-xs-3 right'>
+      <label>Relation Type</label>
+    </div>
+    <div class='col-xs-9'>
+      <select class='form-control'
+              ng-model='relation.relation_type'
+              ng-change="changedType()"
+      >
+        <option ng-repeat='type in types' value='{{type.value}}'>{{type.name}}</option>
+      </select>
+    </div>
+  </div>
   <br/>
 
   <!-- Relation Connection Name -->
@@ -147,7 +147,7 @@
     <br/>
 
     <!-- Where Clause / Comparison Type -->
-    <div class='row'>
+    <div class='row' ng-hide='whereClause.comparison_operator == "NULL" || whereClause.comparison_operator == "Not NULL"'>
       <div class='col-xs-3 right'>
         <label>Comparison Type</label>
       </div>
@@ -162,7 +162,7 @@
     <br/>
 
     <!-- Where Clause / Comparison Value -->
-    <div class='row'>
+    <div class='row' ng-hide='whereClause.comparison_operator == "NULL" || whereClause.comparison_operator == "Not NULL"'>
       <div class='col-xs-3 right'>
         <label ng-show='whereClause.comparison_type=="Value"'>Comparison Value</label>
         <label ng-show='whereClause.comparison_type=="Column"'>Column from {{relation.from_table_name}}</label>
