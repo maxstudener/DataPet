@@ -45,14 +45,13 @@
          class='tab-pane {{connectionWindow.active}} full-height'>
 
 
-      <div class='connection_window_form' style='margin-top: 2px;'>
+      <div class='connection_window_form' style='margin-bottom: 5px; margin-top: 5px; padding-left: 5px; padding-right: 5px'>
         <form ng-submit='submitQuery(connectionWindow.id, connectionWindow.currentSqlQuery)'>
           <input id='{{connectionWindow.id}}_sql' ng-model='connectionWindow.currentSqlQuery'
                  class='form-control'
                  columnautocomplete
                  />
         </form>
-        <br/>
       </div>
 
       <div class='data_content scrolling wrapper'>

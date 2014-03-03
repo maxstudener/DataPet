@@ -95,3 +95,9 @@ li.active {
 ul.ui-autocomplete {
     z-index: 1002;
 }
+
+.tab-content {
+    border-top-color: lightgray;
+    border-top-width: thin;
+    border-top-style: solid;
+}
