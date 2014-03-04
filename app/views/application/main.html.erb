@@ -70,7 +70,7 @@
           <tbody>
               <tr ng-repeat='row in connectionWindow.rows'>
                 <td ng-click='showRelationMenu(connectionWindow.id, row.id, $event)' class='relations'>
-                  {{row.id}}
+                  {{row.id+1}}
                 </td>
                 <td ng-repeat='value in row.rowData'>
                   {{value.value}}
