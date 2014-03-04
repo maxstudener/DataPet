@@ -44,11 +44,11 @@
     <div ng-repeat='connectionWindow in connectionWindows' id={{connectionWindow.id}}
          class='tab-pane {{connectionWindow.active}} full-height'>
 
+      <div class='connection_window_header'>
+        <form ng-submit='submitQuery(connectionWindow.id, connectionWindow.currentSqlQuery, connectionWindow.maxRows)'>
 
-      <div class='connection_window_form' style='margin-bottom: 5px; margin-top: 5px; padding-left: 5px; padding-right: 5px;'>
-        <form ng-submit='submitQuery(connectionWindow.id, connectionWindow.currentSqlQuery)'>
           <input id='{{connectionWindow.id}}_sql' ng-model='connectionWindow.currentSqlQuery'
-                 class='form-control'
+                 class='form-control connection_window_input'
                  columnautocomplete
                  />
         </form>
@@ -79,7 +79,19 @@
           </tbody>
 
         </table>
+
       </div>
+
+      <div class='connection_window_footer row'>
+        <div class='col-sm-2'>
+          <input id='{{connectionWindow.id}}_max_rows' ng-model='connectionWindow.maxRows'
+                 class='form-control connection_window_input'
+                 placeholder='max rows'
+          />
+        </div>
+
+      </div>
+
       <!-- modal window for relations -->
       <div id='{{connectionWindow.id}}_relations' class='context_menu'>
         <a href='#' class='up_and_left' ng-click="closeRelationMenu(connectionWindow.id)"><span
@@ -90,6 +102,7 @@
         </ul>
       </div>
     </div>
+
 
   </div>
   <!-- end of connectionWindows -->

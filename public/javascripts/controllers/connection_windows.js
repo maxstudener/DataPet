@@ -28,14 +28,14 @@ function connectionWindowsController($scope, $http, $rootScope, $modal) {
         $(window).trigger('resize');
     };
 
-    $scope.submitQuery = function(connectionWindowId, sqlQuery){
+    $scope.submitQuery = function(connectionWindowId, sqlQuery, maxRows){
         var connectionWindow = $scope.getConnectionWindow(connectionWindowId);
         connectionWindow.badQuery = false;
         connectionWindow.noData = false;
         connectionWindow.relations = [];
         connectionWindow.rows = [];
         connectionWindow.columns = [];
-        $http.post('/connections/' + connectionWindow._id + '/tables/' + connectionWindow.schemaName + '/' + connectionWindow.tableName + '/query', { sql: sqlQuery, limit: connectionWindow.limit }).
+        $http.post('/connections/' + connectionWindow._id + '/tables/' + connectionWindow.schemaName + '/' + connectionWindow.tableName + '/query', { sql: sqlQuery, limit: connectionWindow.maxRows }).
             success(function(data) {
                 $scope.fillTable(connectionWindow, data);
             }).

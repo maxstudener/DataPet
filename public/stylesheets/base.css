@@ -101,3 +101,14 @@ ul.ui-autocomplete {
     border-top-width: thin;
     border-top-style: solid;
 }
+
+.connection_window_footer {
+    padding: 0 5px 0 5px;
+}
+
+.connection_window_input {
+    padding-left: 5px;
+    padding-right: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}

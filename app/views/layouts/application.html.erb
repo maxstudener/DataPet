@@ -95,10 +95,11 @@
         var formHeight = 0;
 
         var tabHeight = document.getElementById('navigation_tabs').offsetHeight;
-        var forms = document.getElementsByClassName('connection_window_form');
+        var headers = document.getElementsByClassName('connection_window_header');
+        var footers = document.getElementsByClassName('connection_window_footer');
 
-        for (x = 0; x < forms.length; x++) {
-            var height = forms[x].offsetHeight;
+        for (x = 0; x < headers.length; x++) {
+            var height = headers[x].offsetHeight + footers[x].offsetHeight;
             if (height > formHeight) {
                 formHeight = height;
             }
