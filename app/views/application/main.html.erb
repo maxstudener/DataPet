@@ -89,6 +89,9 @@
                  placeholder='max rows'
           />
         </div>
+        <div class='col-sm-2 col-sm-offset-8'>
+          <input readonly value='{{connectionWindow.rows.length}}/{{connectionWindow.maxRows}}' class='form-control {{connectionWindow.isTruncated}} connection_window_input' />
+        </div>
 
       </div>
 

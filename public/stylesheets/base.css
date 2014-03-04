@@ -112,3 +112,7 @@ ul.ui-autocomplete {
     margin-top: 5px;
     margin-bottom: 5px;
 }
+
+input.form-control.truncated {
+    background-color: #fffdc3;
+}

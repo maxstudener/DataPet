@@ -58,8 +58,11 @@ function connectionWindowsController($scope, $http, $rootScope, $modal) {
             data['relations'].forEach(function(relation){
                 connectionWindow.relations.push(new Relation(relation.relation_name, relation));
             });
+            connectionWindow.isTruncated = (connectionWindow.rows.length >= connectionWindow.maxRows) ? 'truncated' : '';
+
         }else{
             connectionWindow.noData = true;
+            connectionWindow.isTruncated = '';
         }
 
         $.when.apply($, def).done(function(){
@@ -186,6 +189,7 @@ function connectionWindowsController($scope, $http, $rootScope, $modal) {
     // objects
 
     var ConnectionWindow = function(connection, tableName){
+        this.maxRows = 50;
         // split up the tableName
         console.log('creat window fap', connection, tableName)
         var table_name_parts = tableName.split('.');
