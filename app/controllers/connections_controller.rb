@@ -57,7 +57,6 @@ class ConnectionsController < ApplicationController
     else
       raise 'There was an error destroying the connection.'
     end
-
   end
 
 end

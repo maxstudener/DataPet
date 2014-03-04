@@ -37,11 +37,10 @@ class RelationsController < ApplicationController
   def destroy
     relation = Relation.find(params[:id])
     if relation.destroy
-      flash[:success] = 'The relation was successfully destroyed.'
+      render nothing: true
     else
-      flash[:error] = 'There was an error destroying the relation.'
+      raise 'There was an error destroying the relation.'
     end
-    redirect_to request.referrer
   end
 
   def query

@@ -17,10 +17,9 @@ function connectionController($scope, $filter, $http) {
         })
         $scope.connections = data;
       })
-  }
+  };
 
     $scope.destroyConnection = function(connectionId){
-        console.log(connectionId);
         $http.delete('/connections/' + connectionId).
             success(function(){
                 $scope.connections = $scope.connections.filter(function(connection){
