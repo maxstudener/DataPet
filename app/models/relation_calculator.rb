@@ -118,7 +118,13 @@ class RelationCalculator
   end
 
   def relations
-    Relation.where(from_connection_id: @connection_name, from_table_name: Query.unquote_table( @relation_table_name)).all
+    relations = []
+    mongoid_relations = Relation.includes(:to_connection).where(from_connection_id: @connection_name, from_table_name: Query.unquote_table( @relation_table_name)).all
+    mongoid_relations.each do |relation|
+      relation['to_connection_name'] = relation.to_connection.name
+      relations << relation
+    end
+    relations
   end
 
 end

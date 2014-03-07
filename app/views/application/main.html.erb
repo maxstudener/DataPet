@@ -1,5 +1,7 @@
 <script src='/javascripts/controllers/connections.js'></script>
 <script src='/javascripts/controllers/connection_windows.js'></script>
+<script src='/javascripts/spinner.js'></script>
+<script src='/javascripts/spin.min.js'></script>
 
 <!-- connections pane -->
 <div class='col-sm-2 connections full-height'
@@ -33,7 +35,7 @@
   <div id='navigation_tabs'>
       <ul class='nav nav-tabs'>
         <li ng-repeat='connectionWindow in connectionWindows' class='{{connectionWindow.active}}'>
-          <a href=#{{connectionWindow.id}} data-toggle='tab' ng-click='showTab(connectionWindow.id)'>{{connectionWindow.title}}&nbsp&nbsp<span
+          <a href=#{{connectionWindow.id}} data-toggle='tab' ng-click='showConnectionWindow(connectionWindow.id)'>{{connectionWindow.title}}&nbsp&nbsp<span
           class="glyphicon glyphicon-remove-circle" ng-click='closeConnectionWindow(connectionWindow.id)'></a>
         </li>
       </ul>
@@ -45,7 +47,7 @@
          class='tab-pane {{connectionWindow.active}} full-height'>
 
       <div class='connection_window_header connection_window_input'>
-        <form ng-submit='submitQuery(connectionWindow.id, connectionWindow.currentSqlQuery, connectionWindow.maxRows)'>
+        <form ng-submit='submitQuery(connectionWindow.id, connectionWindow.currentSqlQuery)'>
 
           <input id='{{connectionWindow.id}}_sql' ng-model='connectionWindow.currentSqlQuery'
                  class='form-control'
@@ -55,8 +57,8 @@
       </div>
 
       <div class='data_content scrolling wrapper'>
-        <img src='/images/no_data.jpg' ng-show='connectionWindow.noData' />
-        <img src='/images/bad_query.jpg' ng-show='connectionWindow.badQuery' />
+        <img src='/images/no_data.jpg' ng-show='connectionWindow.state==="no_data"' />
+        <img src='/images/bad_query.jpg' ng-show='connectionWindow.state==="bad_query"' />
 
         <table id='{{connectionWindow.id}}_table'  class='table table-bordered table-condensed table-striped fixed-table-header' ng-show='connectionWindow.columns.length > 0'>
           <thead style='background-color:white;' >
@@ -84,13 +86,15 @@
 
       <div class='connection_window_footer row'>
         <div class='col-sm-2'>
-          <input id='{{connectionWindow.id}}_max_rows' ng-model='connectionWindow.maxRows'
-                 class='form-control connection_window_input'
-                 placeholder='max rows'
-          />
+          <form ng-submit='submitQuery(connectionWindow.id, connectionWindow.currentSqlQuery)'>
+            <input id='{{connectionWindow.id}}_max_rows' ng-model='connectionWindow.maxRows'
+                   class='form-control connection_window_input'
+                   placeholder='max rows'
+            />
+          </form>
         </div>
         <div class='col-sm-2 col-sm-offset-8'>
-          <input readonly value='{{connectionWindow.rows.length}}/{{connectionWindow.maxRows}}' class='form-control {{connectionWindow.isTruncated}} connection_window_input' />
+          <input readonly value='{{connectionWindow.rows.length}}/{{connectionWindow.maxRows}}' class='form-control {{connectionWindow.state}} connection_window_input' />
         </div>
 
       </div>
@@ -101,7 +105,7 @@
         class="medium_glyph glyphicon glyphicon-remove-circle"></span></a>
         <ul class='up_and_left'>
           <a class='centered' ng-repeat='relation in connectionWindow.relations' href='#'
-             ng-click='newRelationWindow(connectionWindow, relation.name)'>{{relation.name}}<br/></a>
+             ng-click='newRelationWindow(connectionWindow.id, relation.name)'>{{relation.name}}<br/></a>
         </ul>
       </div>
     </div>

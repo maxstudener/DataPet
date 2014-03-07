@@ -56,6 +56,8 @@ class Connection
           Connection::SqlServerConnection.new(configuration)
         when 'progress'
           Connection::ProgressConnection.new(configuration)
+        when 'mysql'
+          Connection::MysqlConnection.new(configuration)
         else
           raise "Database Connection not yet supported!"
       end

@@ -18,6 +18,10 @@ if File.exists?(File.expand_path('../../lib/jtds.jar', __FILE__))
   require 'lib/jtds.jar'
 end
 
+# mysql driver
+if File.exists?(File.expand_path('../../lib/mysql.jar', __FILE__))
+  require 'lib/mysql.jar'
+end
 
 ENV['FREETDSCONF'] = File.expand_path(File.dirname(__FILE__)) + "/freetds.conf"
 

@@ -2,12 +2,14 @@ function connectionWindowsController($scope, $http, $rootScope, $modal) {
     $scope.connectionWindows = []; // any connectionWindow object in this Array will be shown as a tab in view
     $scope.currentRowId = null; // holds the last selected rowId in order to lookup data before fetching a relation
 
-    // connectionWindows
 
-    $scope.createConnectionWindow = function(connection, tableName){
-        var connectionWindow = new ConnectionWindow(connection, tableName);
+    // ********** start of connectionWindows ********** //
+
+
+    $scope.createConnectionWindow = function(connectionObject, tableName){
+        var connectionWindow = new ConnectionWindow(connectionObject, tableName);
         $scope.connectionWindows.push(connectionWindow);
-        $scope.showTab(connectionWindow.id);
+        $scope.showConnectionWindow(connectionWindow.id);
         return connectionWindow;
     };
 
@@ -18,58 +20,89 @@ function connectionWindowsController($scope, $http, $rootScope, $modal) {
     };
 
     $scope.closeConnectionWindow = function(connectionWindowId){
+        var activateLastTab = false;
+        var connectionWindow = $scope.getConnectionWindow(connectionWindowId);
+        if(connectionWindow.active === 'active'){
+            activateLastTab = true;
+        }
+
         $scope.connectionWindows = $scope.connectionWindows.filter(function(connectionWindow){
             return connectionWindow.id != connectionWindowId;
         });
 
-        $scope.connectionWindows[$scope.connectionWindows.length - 1].active = 'active';
-        resizeConnectionWindows();
-
-        $(window).trigger('resize');
+        if(activateLastTab){
+            // activate the last tab available
+            $scope.connectionWindows[$scope.connectionWindows.length - 1].active = 'active';
+            $(window).trigger('resize');
+        }
     };
 
-    $scope.submitQuery = function(connectionWindowId, sqlQuery, maxRows){
+    $scope.showConnectionWindow = function(connectionWindowId){
+        $scope.connectionWindows.forEach(function(connectionWindow){
+            if(connectionWindowId == connectionWindow.id){
+                connectionWindow.active = 'active'; // show this connectionWindow
+            }else{
+                connectionWindow.active = ''; // hide this connectionWindow
+            }
+
+            // resize the window
+            $(window).trigger('resize');
+        });
+    };
+
+
+    // ********** end of connectionWindows ********** //
+
+
+    // ********** start of data operations ********** //
+
+
+    $scope.submitQuery = function(connectionWindowId, sqlQuery){
+        var spinner = startSpinner(connectionWindowId);
         var connectionWindow = $scope.getConnectionWindow(connectionWindowId);
-        connectionWindow.badQuery = false;
-        connectionWindow.noData = false;
-        connectionWindow.relations = [];
-        connectionWindow.rows = [];
-        connectionWindow.columns = [];
-        $http.post('/connections/' + connectionWindow._id + '/tables/' + connectionWindow.schemaName + '/' + connectionWindow.tableName + '/query', { sql: sqlQuery, limit: connectionWindow.maxRows }).
+        var url = '/connections/' + connectionWindow.connectionId + '/tables/' + connectionWindow.schemaName + '/' + connectionWindow.tableName + '/query';
+
+        connectionWindow.reset(); // clear the columns, rows, relations, and state of the connectionWindow
+
+        $http.post(url, { sqlQuery: sqlQuery, maxRows: connectionWindow.maxRows }).
             success(function(data) {
                 $scope.fillTable(connectionWindow, data);
+                spinner.stop();
             }).
             error(function() {
-                connectionWindow.badQuery = true;
-                // something went wrong
+                connectionWindow.state = 'bad_query';
+                spinner.stop();
             });
     };
 
     $scope.fillTable = function(connectionWindow, data){
         var def = [];
-
         if(data['rows'].length > 0){
-            data['rows'].forEach(function(row, idx){
-                def.push($scope.addRow(connectionWindow, row, idx));
-            });
+
+            // set the state to truncated if the result set is greater than or equal to the maxRows for the connectionWindow
+            if(data['rows'].length >= connectionWindow.maxRows){
+                connectionWindow.state = 'truncated';
+            }
+
             data['columns'].forEach(function(column){
                 connectionWindow.columns.push(new Column(column));
             });
+
+            data['rows'].forEach(function(row, idx){
+                // rows change the size of the table columns so we must defer calling fixTableHeaders() until all the data is loaded
+                def.push($scope.addRow(connectionWindow, row, idx));
+            });
+
             data['relations'].forEach(function(relation){
                 connectionWindow.relations.push(new Relation(relation.relation_name, relation));
             });
-            connectionWindow.isTruncated = (connectionWindow.rows.length >= connectionWindow.maxRows) ? 'truncated' : '';
 
         }else{
-            connectionWindow.noData = true;
-            connectionWindow.isTruncated = '';
+            connectionWindow.state = 'no_data';
         }
 
         $.when.apply($, def).done(function(){
-
           setTimeout(function(){
-              fixTableHeaders();
-              resizeConnectionWindows();
               $(window).trigger('resize');
           }, 0);
         });
@@ -82,68 +115,56 @@ function connectionWindowsController($scope, $http, $rootScope, $modal) {
         return dfd.promise();
     };
 
-    // relations aka: connectionWindows
 
-    $scope.newRelationWindow = function(connectionWindow, relationName){
-        console.log('relation window fap',connectionWindow, relationName)
-        $scope.closeRelationMenu(connectionWindow.id);
+    // ********** start of data operations ********** //
 
+
+    // ********** start of relations aka: connectionWindows ********** //
+
+
+    $scope.newRelationWindow = function(connectionWindowId, relationName){
+        $scope.closeRelationMenu(connectionWindowId); // close the pop-up menu
+        var connectionWindow = $scope.getConnectionWindow(connectionWindowId);
         var relation = connectionWindow.relations.filter(function(relation){
-            return relation.relationAttributes.relation_name = relationName;
+            return relation.name == relationName;
         })[0];
 
-        console.log('relation?', relation)
+        var relationConnectionObject = {
+            name: relation.relationAttributes.to_connection_name,
+            '_id': relation.relationAttributes.to_connection_id
+        };
 
-        var relationConnectionId = relation.relationAttributes.to_connection_id;
+        var row = connectionWindow.rows[$scope.currentRowId];
+        var rowData = {};
 
-        $scope.getConnection(relationConnectionId, function(connection){
-
-          var row = connectionWindow.rows[$scope.currentRowId];
-          var rowData = {};
-
-          row.rowData.forEach(function(data){
-              rowData[connectionWindow.columns[data.id].name.toLowerCase()] = data.value
-          });
-
-          console.log('to table name?', relation.relationAttributes)
-          var newConnectionWindow = $scope.createConnectionWindow(connection, relation.relationAttributes.to_table_name);
-          $scope.getRelationData(newConnectionWindow, connectionWindow, relationName, rowData);
-
+        row.rowData.forEach(function(data){
+            rowData[connectionWindow.columns[data.id].name.toLowerCase()] = data.value
         });
 
-    };
-
-    $scope.getConnection = function(id, cb){
-      if(id == undefined){
-        return cb(connectionWindow.connection);
-      }
-      $http.get('/connections/' + id + '.json').
-        success(function(data){
-          cb(data);
-        }).
-        error(function(){
-          cb(connectionWindow.connection);
-        });
+        var newConnectionWindow = $scope.createConnectionWindow(relationConnectionObject, relation.relationAttributes.to_table_name);
+        $scope.getRelationData(newConnectionWindow, connectionWindow, relationName, rowData);
     };
 
     $scope.getRelationData = function(connectionWindow, oldConnectionWindow, relationName, rowData){
-        connectionWindow.badQuery = false;
-        connectionWindow.noData = false;
-        connectionWindow.relations = [];
-        connectionWindow.rows = [];
-        connectionWindow.columns = [];
-        $http.post('/connections/' + oldConnectionWindow._id + '/tables/' + oldConnectionWindow.schemaName + '/' + oldConnectionWindow.tableName + '/relations/' + relationName + '/query', { rowData: rowData }).
+        connectionWindow.reset();
+
+        var url = '/connections/' + oldConnectionWindow.connectionId + '/tables/' + oldConnectionWindow.schemaName + '/' + oldConnectionWindow.tableName + '/relations/' + relationName + '/query';
+        $http.post(url, { rowData: rowData }).
             success(function(data) {
                 $scope.fillTable(connectionWindow, data);
                 connectionWindow.currentSqlQuery = 'WHERE' + data['query'].split('WHERE')[1];
             }).
             error(function() {
-                connectionWindow.badQuery = true;
-                // something went wrong
+                connectionWindow.state = 'bad_query';
             });
     };
 
-    // relationMenus
+
+    // ********** end of relations aka: connectionWindows ********** //
+
+
+    // ********** start of relation menus ********** //
+
 
     $scope.showRelationMenu = function(connectionWindowId, rowId, $event){
         connectionWindow = $scope.getConnectionWindow(connectionWindowId);
@@ -160,7 +181,12 @@ function connectionWindowsController($scope, $http, $rootScope, $modal) {
         $('#' + connectionWindowId + '_relations').hide();
     };
 
-    // general functions
+
+    // ********** end of relation menus ********** //
+
+
+    // ********** start of general functions ********** //
+
 
     // only keeping track of the rowId, regardless of which connectionWindow it was in
     // the user can only have one active window at a time
@@ -169,62 +195,80 @@ function connectionWindowsController($scope, $http, $rootScope, $modal) {
     };
 
     $rootScope.$on('addConnectionWindow', function(event, data){
-
         var connectionWindow = $scope.createConnectionWindow(data['connection'], data['tableName']);
-        console.log('super fap', connectionWindow)
-        $scope.submitQuery(connectionWindow.id, 'Select TOP ' + connectionWindow.limit + ' * FROM ' + '"' + connectionWindow.schemaName + '"."' + connectionWindow.tableName + '"');
+        $(window).trigger('resize');
+        if(connectionWindow.schemaName !== ''){
+            $scope.submitQuery(connectionWindow.id, 'Select TOP ' + connectionWindow.maxRows + ' * FROM ' + '"' + connectionWindow.schemaName + '"."' + connectionWindow.tableName + '"');
+        }else{
+            $scope.submitQuery(connectionWindow.id, 'Select TOP ' + connectionWindow.maxRows + ' * FROM ' + '"' + connectionWindow.tableName + '"');
+        }
     });
 
-    $scope.showTab = function(connectionWindowId){
-        $scope.connectionWindows.forEach(function(connectionWindow){
-            if(connectionWindowId == connectionWindow.id){
-                connectionWindow.active = 'active';
-            }else{
-                connectionWindow.active = '';
-            }
-            $(window).trigger('resize');
-        });
+
+    // ********** end of general functions ********** //
+
+
+    // ********** start of connectionWindow Object ********** //
+
+
+    var ConnectionWindow = function(connectionObject, fullTableName){
+        this.generateId();
+        this.generateTableParts(fullTableName);
+
+        // attributes not cleared between queries
+        this.connectionId = connectionObject._id;
+        this.title = connectionObject.name + ' / ' + fullTableName; // displayed in tab
+        this.active = 'active'; // used as flag for the current connectionWindow via CSS class
+        this.maxRows = 50; // maximium result set size for this connectionWindow
+        this.currentSqlQuery = ''; // displayed in the form for this connectionWindow
+
+        // attributes cleared between queries with reset()
+        this.state = '';
+        this.columns = [];
+        this.rows = [];
+        this.relations = [];
     };
 
-    // objects
-
-    var ConnectionWindow = function(connection, tableName){
-        this.maxRows = 50;
-        // split up the tableName
-        console.log('creat window fap', connection, tableName)
-        var table_name_parts = tableName.split('.');
-        if(table_name_parts[1] !== undefined){
-            this.schemaName = table_name_parts[0];
-            this.tableName = table_name_parts[1];
-        }else{
-            this.schemaName = '';
-            this.tableName = table_name_parts[0];
-        }
-
-        var now = new Date();
-        this._id = connection._id;
-        this.connection = connection;
-        this.id = now.getDay().toString() + now.getHours().toString() + now.getMinutes().toString() + now.getMilliseconds().toString();
-        this.title = connection.name + ' / ' + tableName;
-        this.connectionName = connection.name;
-        this.active = 'active'; // used as flag for ng-show in view
+    // clears the current states and data for the connectionWindow
+    ConnectionWindow.prototype.reset = function(){
+        this.state = '';
+        this.relations = [];
         this.rows = [];
         this.columns = [];
-        this.relations = [];
-        this.currentSqlQuery = ''; // displayed in form for connectionWindow
-        this.limit = 50;
     };
+
+    // split fullTableName into schema and table parts
+    ConnectionWindow.prototype.generateTableParts = function(fullTableName){
+        var tableNameParts = fullTableName.split('.');
+        if(tableNameParts[1] !== undefined){
+            this.schemaName = tableNameParts[0];
+            this.tableName = tableNameParts[1];
+        }else{
+            this.schemaName = '';
+            this.tableName = tableNameParts[0];
+        }
+    };
+
+    // generate a unique id to reference this table, database id doesn't handle multiple instances of the same window
+    ConnectionWindow.prototype.generateId = function(){
+        var now = new Date();
+        this.id = now.getDay().toString() + now.getHours().toString() + now.getMinutes().toString() + now.getMilliseconds().toString();
+    };
+
+
+    // ********** end of connectionWindow Object ********** //
+
 
     var Column = function(columnName){
         this.name = columnName;
-        this.width = 0;
     };
 
     var Row = function(rowData, idx){
         this.id = idx;
         var row = this;
         this.rowData = [];
-        // values need and index for ng-repeat in view
+
+        // without an index ng-repeat fails on duplicate values
         rowData.forEach(function(value, idx, arr){
             row.rowData.push(new Value(value, idx));
         });
