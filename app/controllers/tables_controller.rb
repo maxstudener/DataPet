@@ -34,4 +34,8 @@ class TablesController < ApplicationController
     end
   end
 
+  def relations
+    render json: Relation.where(from_connection_id: params[:connection_name], from_table_name: @full_table_name).all
+  end
+
 end
