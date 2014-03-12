@@ -104,6 +104,7 @@ function connectionWindowsController($scope, $http, $rootScope, $modal) {
         $.when.apply($, def).done(function(){
           setTimeout(function(){
               $(window).trigger('resize');
+              fixTableHeaders();
           }, 0);
         });
     };
