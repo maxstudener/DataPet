@@ -81,7 +81,7 @@ class RelationCalculator
       when 'Less Than'
         comparison = '<'
       when 'Like'
-        return "LIKE %'#{my_value}'%"
+        return "LIKE '%#{my_value}%'"
       when 'In'
         comparison = 'IN'
       when 'Not Equal To'
