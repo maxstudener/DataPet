@@ -9,20 +9,18 @@ class TablesController < ApplicationController
 
   def query
     sql = params[:sqlQuery]
-    limit = params[:maxRows]
-    connection_name = params[:connection_name]
+    max_rows = params[:maxRows]
+    connection_id = params[:connection_name]
 
-    # in case the user is being mean
-    if sql.match(/SELECT/i) && !sql.match(/SELECT TOP/i)
-      raise 'You query was bad, and you should feel bad.'
-    end
+    query = @connection.create_query(@full_table_name, sql, max_rows)
+    result_set = @connection.execute_query(query)
 
-    result_set = @connection.execute_query(@connection.create_query(@full_table_name, sql, limit))
+    mongoid_relations = Relation.includes(:to_connection).where(
+      from_connection_id: connection_id,
+      from_table_name: @connection.unformat_table_name(@full_table_name)
+    ).all
 
-    relations = []
-    mongoid_relations = Relation.includes(:to_connection).where(from_connection_id: connection_name, from_table_name: Query.unquote_table(@full_table_name)).all
-
-    mongoid_relations.each do |relation|
+    relations = mongoid_relations.inject([]) do |relations, relation|
       relation['to_connection_name'] = relation.to_connection.name
       relations << relation
     end

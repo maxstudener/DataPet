@@ -19,7 +19,6 @@ class RelationsController < ApplicationController
   end
 
   def create
-    # convert camelCased params to snake_case
     relation = Relation.create!(params["relation"])
     render json: relation
   end
@@ -47,7 +46,7 @@ class RelationsController < ApplicationController
     set_table
 
     # fetch the relative data, columns, rows, and final sql query
-    relation = RelationCalculator.new(params[:connection_name], @full_table_name, params[:relation_name], params[:rowData])
+    relation = RelationCalculator.new(params[:connection_name], @full_table_name, params[:relation_name], params[:rowData], params[:maxRows])
 
     render json: {
                    columns: relation.columns,

@@ -17,4 +17,26 @@ class ProgressConnection < Connection
     result_set = execute_query(column_fetch_sql, true)
     result_set.collect { |row| row[:col] }
   end
+
+  def create_limit_statement(max_rows)
+    ''
+  end
+
+  def create_top_statement(max_rows)
+    " TOP #{max_rows}"
+  end
+
+  def table_interpolation_character
+    # this is the character that will surround the schema and table name when generating sql
+    '"'
+  end
+
+  def format_table_name(table_name)
+    super(table_name, table_interpolation_character)
+  end
+
+  def unformat_table_name(table_name)
+    super(table_name, table_interpolation_character)
+  end
+
 end

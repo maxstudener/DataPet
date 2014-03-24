@@ -150,7 +150,7 @@ function connectionWindowsController($scope, $http, $rootScope, $modal) {
         connectionWindow.reset();
 
         var url = '/connections/' + oldConnectionWindow.connectionId + '/tables/' + oldConnectionWindow.schemaName + '/' + oldConnectionWindow.tableName + '/relations/' + relationName + '/query';
-        $http.post(url, { rowData: rowData }).
+        $http.post(url, { rowData: rowData, maxRows: connectionWindow.maxRows }).
             success(function(data) {
                 $scope.fillTable(connectionWindow, data);
                 connectionWindow.currentSqlQuery = 'WHERE' + data['query'].split('WHERE')[1];
@@ -198,11 +198,7 @@ function connectionWindowsController($scope, $http, $rootScope, $modal) {
     $rootScope.$on('addConnectionWindow', function(event, data){
         var connectionWindow = $scope.createConnectionWindow(data['connection'], data['tableName']);
         $(window).trigger('resize');
-        if(connectionWindow.schemaName !== ''){
-            $scope.submitQuery(connectionWindow.id, 'Select TOP ' + connectionWindow.maxRows + ' * FROM ' + '"' + connectionWindow.schemaName + '"."' + connectionWindow.tableName + '"');
-        }else{
-            $scope.submitQuery(connectionWindow.id, 'Select TOP ' + connectionWindow.maxRows + ' * FROM ' + '"' + connectionWindow.tableName + '"');
-        }
+        $scope.submitQuery(connectionWindow.id, '');
     });
 
 

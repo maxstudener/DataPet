@@ -1,4 +1,5 @@
-class SqlServerConnection < Connection
+class StubConnection < Connection
+  # an example stub for creating new connection types
 
   def initialize(configuration)
     @configuration = configuration
@@ -6,24 +7,31 @@ class SqlServerConnection < Connection
   end
 
   def tables
-    # return an array of schema + table names seperated by '.'
-    table_fetch_sql = "SELECT SCHEMA_NAME(schema_id)+'.'+name AS FullTableName FROM sys.tables"
+    # create sql to fetch tables
+    table_fetch_sql = ''
     result_set = execute_query(table_fetch_sql, true)
-    result_set.collect { |row| row[:fulltablename] }
+    # return an array of tables
+    result_set.collect { |row| row[:table_name] }
   end
 
   def columns(schema_name, table_name)
-    column_fetch_sql = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '#{table_name}' AND TABLE_SCHEMA = '#{schema_name}'"
+    # create sql to fetch columns
+    column_fetch_sql = ''
     result_set = execute_query(column_fetch_sql, true)
+    # return an array of columns
     result_set.collect { |row| row[:column_name] }
   end
 
   def create_limit_statement(max_rows)
+    # return the line below if this connection type uses LIMIT
+    # " LIMIT #{max_rows}"
     ''
   end
 
   def create_top_statement(max_rows)
-    " TOP #{max_rows}"
+    # return the line below if this connection type uses TOP
+    # " TOP #{max_rows}"
+    ''
   end
 
   def table_interpolation_character

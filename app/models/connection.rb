@@ -11,8 +11,8 @@ class Connection
     Sequel.connect(@configuration)
   end
 
-  def create_query(table_name, sql, limit = 50)
-    Query.new(table_name, sql, limit).sql
+  def create_query(table_name, sql, max_rows = 50)
+    Query.new(self, table_name, sql, max_rows).sql
   end
 
   # relation.rb calls execute_query with safety_is_off = true
@@ -39,13 +39,32 @@ class Connection
     true
   end
 
+  def create_limit_statement(_)
+    ''
+  end
+
+  def create_top_statement(_)
+    ''
+  end
+
+  def format_table_name(table_name, tic)
+    # remove any tics present
+    table_name.gsub!(tic, '')
+    # surround the schema and table names with tics, seperated by a period
+    %Q|#{tic}#{table_name.split('.').join("#{tic}.#{tic}")}#{tic}|
+  end
+
+  def unformat_table_name(table_name, tic)
+    table_name.gsub(tic, '')
+  end
+
   class << self
 
     def get(id)
       get_connection(get_configuration(id))
     end
 
-    def get_configuration(id)#todo
+    def get_configuration(id)
       con = ConnectionAttributes.where(id: id).first
       con.attributes.except("_id", "name").symbolize_keys!
     end

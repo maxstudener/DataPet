@@ -1,6 +1,6 @@
 class RelationCalculator
 
-  def initialize(connection_name, table_name, relation_name, data_hash)
+  def initialize(connection_name, table_name, relation_name, data_hash, max_rows = 50)
     @table_name = table_name
     @data_hash = data_hash
 
@@ -9,8 +9,12 @@ class RelationCalculator
     @connection_name = relation.to_connection_id
     @relation_table_name = relation.to_table_name
     @where_clauses = relation.where_clauses
+    @to_connection = Connection.get(relation.to_connection_id)
 
-    @sql = "SELECT * FROM \"#{Query.quote_table(@relation_table_name)}\" WHERE "
+    top_sql = @to_connection.create_top_statement(max_rows)
+    limit_sql = @to_connection.create_limit_statement(max_rows)
+
+    @sql = "SELECT #{top_sql} * FROM #{@to_connection.format_table_name(@relation_table_name)} WHERE "
 
     case relation.relation_type
       when 'has'
@@ -31,6 +35,8 @@ class RelationCalculator
       else
         raise "#{relation.relation_type} relationship is not supported."
     end
+
+    @sql += " #{limit_sql}"
     @result_set = compute
   end
 
@@ -51,7 +57,7 @@ class RelationCalculator
     join_data = @join_data.collect{ |row| row[from_column.downcase.to_sym] }.join("','")
     raise 'Cannot join without values.' if join_data.blank?
 
-    "\"#{Query.quote_table(@relation_table_name+'.'+join_column)}\" IN ('#{join_data}')"
+    "#{@to_connection.format_table_name(@relation_table_name+'.'+join_column)} IN ('#{join_data}')"
   end
 
   def create_where_clause(where)
@@ -68,7 +74,7 @@ class RelationCalculator
         raise "This type of WHERE clause is not supported."
     end
 
-    "\"#{Query.quote_table(@relation_table_name+'.'+column)}\" #{comparison_sql(operator, my_value)}"
+    "#{@to_connection.format_table_name(@relation_table_name+'.'+column)} #{comparison_sql(operator, my_value)}"
   end
 
   def comparison_sql(comparison_operator, my_value)
@@ -102,7 +108,7 @@ class RelationCalculator
 
   def compute
     connection = Connection.get(@connection_name)
-    connection.execute_query(connection.create_query(@table_name, @sql), true)
+    connection.execute_query(@sql, true)
   end
 
   def result_set
@@ -119,7 +125,7 @@ class RelationCalculator
 
   def relations
     relations = []
-    mongoid_relations = Relation.includes(:to_connection).where(from_connection_id: @connection_name, from_table_name: Query.unquote_table( @relation_table_name)).all
+    mongoid_relations = Relation.includes(:to_connection).where(from_connection_id: @connection_name, from_table_name: @to_connection.unformat_table_name( @relation_table_name)).all
     mongoid_relations.each do |relation|
       relation['to_connection_name'] = relation.to_connection.name
       relations << relation
