@@ -16,7 +16,9 @@
   <br/>
   <ul>
     <li ng-repeat='connection in connections'>
-      <a href='#' ng-click='toggleDisplay(connection)'>{{connection.name}}</a>
+      <font ng-show='connection.state=="loading"'>{{connection.name}} ... loading</font>
+      <a ng-show='connection.state=="loaded"' href='#' class='{{connection.state}}' ng-click='toggleDisplay(connection)'>{{connection.name}}</a>
+      <font style='color:red;' ng-show='connection.state=="error"'>{{connection.name}} ... error</font>
 
       <div ng-show='connection.display'>
         <ul>

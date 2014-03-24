@@ -14,12 +14,11 @@ DataPet::Application.routes.draw do
   # connection
   match 'connections/:connection_name/:action', controller: :connections
 
-  resources :connections
+  resources :connections do
+    collection do
+      post :test
+    end
+  end
   resources :relations
-
-
-  match '/testing', controller: :application, action: :testing
-  match '/scrolling_tables', controller: :application, action: :scrolling_tables
-
 
 end

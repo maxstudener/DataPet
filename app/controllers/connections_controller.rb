@@ -23,6 +23,17 @@ class ConnectionsController < ApplicationController
     render json: con
   end
 
+  def test
+    begin
+      con = Connection.get_connection(params['connection'])
+      # attempt to execute a query against the connection
+      con.tables
+    rescue Exception => e
+      render :json => { :message_class => 'bg-danger', :message => e.message } and return
+    end
+    render :json => { :message_class => 'bg-success', :message => 'The connection test was successful.' }
+  end
+
   def edit
   end
 

@@ -1,4 +1,6 @@
 function NewConnectionCtrl($scope, $filter, $http) {
+  $scope.message = '';
+  $scope.messageClass = '';
 
   // example JSON
   $scope.jsonData = {
@@ -24,7 +26,17 @@ function NewConnectionCtrl($scope, $filter, $http) {
   $scope.sendData = function(){
     $scope.jsonData = JSON.parse($scope.jsonDataString);
     $http.post('/connections', {'connection': $scope.jsonData}).success(function(){
-      alert('success');
+      $scope.messageClass = 'bg-success';
+      $scope.message = "The connection was successfully created."
     });
-  }
+  };
+
+  $scope.testConnection = function(){
+      $scope.jsonData = JSON.parse($scope.jsonDataString);
+      $http.post('/connections/test', {'connection': $scope.jsonData}).success(function(data){
+          $scope.messageClass = data['message_class'];
+          $scope.message = data['message'];
+      });
+  };
+
 }

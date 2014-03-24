@@ -8,6 +8,7 @@ function connectionsController($scope, $http, $rootScope) {
         success(function(data, status, headers, config) {
           $scope.connections = data;
           data.forEach(function(connection, idx, arr){
+            connection.state = 'loading';
             connection.tables = $scope.getTables(connection);
           });
         }).
@@ -20,9 +21,11 @@ function connectionsController($scope, $http, $rootScope) {
       $http.get('/connections/' + connection._id + '/tables').
         success(function (data, status, headers, config) {
           connection.tables = data;
+          connection.state = 'loaded';
         }).
         error(function (data, status, headers, config) {
             // something went wrong
+            connection.state = 'error';
         });
     };
 
