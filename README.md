@@ -24,8 +24,11 @@ A web application for viewing databases and quickly navigating between relations
   * SQL Server  
     Rename the jtds-<version>.jar file to jtds.jar and place it in Rails.root/lib.
 
-  * Progress/OpenEdge 
+  * Progress/OpenEdge  
     Place openedge.jar and pool.jar in Rails.root/lib.
+
+  * MySQL  
+    Place mysql.jar in Rails.root/lib.
 
 ### Adding Connections
 
