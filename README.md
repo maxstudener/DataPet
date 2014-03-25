@@ -2,8 +2,9 @@
 
 A web application for viewing databases and quickly navigating between relations.  Allows for multiple database connections and custom relation definitions configurable via web interface.  Navigate through data quickly using the relations button alongside each result set record.
 
-### Currently Supported Databases ( working on more )
+### Currently Supported Databases
 
+  * MySql
   * MSSQL
   * Progress/OpenEdge
 
@@ -48,8 +49,3 @@ Note: Any key-value pair compatible with the Sequel gem will work.
 ### Adding Relations
 
 After a database connection has been set-up you can start configuring relations.  The interface will auto-complete as much as possible and allows for relations across tables, through other relations, and across connections.  Once a relation has been set up. You can quickly access relation data after querying the 'from' table for the relation by clicking the numbered blue table cell for the any record in the result set.
-
-### TODO
-
-  * Support MySQL
-  * Create better documentation
