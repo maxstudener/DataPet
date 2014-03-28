@@ -1,9 +1,10 @@
 class ConnectionsController < ApplicationController
+  http_basic_authenticate_with :name => "admin", :password => "you_should_change_this", only: [ :new, :edit, :show, :create, :update, :destroy ]
 
   def index
     respond_to do |format|
       format.html
-      format.json { render json: ConnectionAttributes.all }
+      format.json { render json: ConnectionAttributes.all_without_creds }
     end
   end
 
