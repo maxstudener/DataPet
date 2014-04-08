@@ -48,7 +48,6 @@
              ng-model='relation.from_table_name'
              typeahead='table.fullTableName for table in fromConnection.tables | filter:$viewValue | limitTo:8'
              typeahead-on-select='loadColumns(relation.from_connection_id, relation.from_table_name); loadRelations(relation.from_connection_id, relation.from_table_name)'
-             typeahead-editable=false
       />
     </div>
   </div>
@@ -98,7 +97,6 @@
              ng-model='relation.to_table_name'
              typeahead='table.fullTableName for table in toConnection.tables | filter:$viewValue | limitTo:8'
              typeahead-on-select='loadColumns(relation.to_connection_id, relation.to_table_name)'
-             typeahead-editable=false
       />
     </div>
   </div>
@@ -124,8 +122,7 @@
         <input class='form-control'
                autocomplete="off"
                ng-model='whereClause.to_table_column'
-               typeahead='column for column in columnData[relation.to_connection_id][relation.to_table_name] | filter:$viewValue | limitTo:8'
-               typeahead-editable=false
+               typeahead='column for column in columnData[relation.to_connection_id][relation.to_table_name] | filter:$viewValue | limitTo:15'
         >
       </div>
     </div>
@@ -171,7 +168,7 @@
         <input class='form-control'
                autocomplete="off"
                ng-model='whereClause.comparison_value'
-               typeahead='column for column in columnData[relation.from_connection_id][relation.from_table_name] | filter:$viewValue | limitTo:8'
+               typeahead='column for column in columnData[relation.from_connection_id][relation.from_table_name] | filter:$viewValue | limitTo:15'
         >
       </div>
     </div>
@@ -216,8 +213,7 @@
         <input class='form-control'
                autocomplete="off"
                ng-model='joinClause.from_column'
-               typeahead='column for column in columnData[throughRelation.to_connection_id][throughRelation.to_table_name] | filter:$viewValue | limitTo:8'
-               typeahead-editable=false
+               typeahead='column for column in columnData[throughRelation.to_connection_id][throughRelation.to_table_name] | filter:$viewValue | limitTo:15'
         >
       </div>
     </div>
@@ -232,8 +228,7 @@
         <input class='form-control'
                autocomplete="off"
                ng-model='joinClause.join_column'
-               typeahead='column for column in columnData[relation.to_connection_id][relation.to_table_name] | filter:$viewValue | limitTo:8'
-               typeahead-editable=false
+               typeahead='column for column in columnData[relation.to_connection_id][relation.to_table_name] | filter:$viewValue | limitTo:15'
         >
       </div>
     </div>
