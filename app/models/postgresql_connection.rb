@@ -16,7 +16,7 @@ class PostgresqlConnection < Connection
 
   def columns(schema_name, table_name)
     # create sql to fetch columns
-    column_fetch_sql = "SELECT column_name FROM information_schema.columns WHERE TABLE_SCHEMA = '#{schema}' AND TABLE_NAME = '#{table_name}'"
+    column_fetch_sql = "SELECT column_name FROM information_schema.columns WHERE TABLE_SCHEMA = '#{schema_name}' AND TABLE_NAME = '#{table_name}'"
     result_set = execute_query(column_fetch_sql, true)
     # return an array of columns
     result_set.collect { |row| row[:column_name] }
