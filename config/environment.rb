@@ -23,6 +23,11 @@ if File.exists?(File.expand_path('../../lib/mysql.jar', __FILE__))
   require 'lib/mysql.jar'
 end
 
+# postgresql driver
+if File.exists?(File.expand_path('../../lib/postgresql.jar', __FILE__))
+  require 'lib/postgresql.jar'
+end
+
 ENV['FREETDSCONF'] = File.expand_path(File.dirname(__FILE__)) + "/freetds.conf"
 
 # Initialize the rails application

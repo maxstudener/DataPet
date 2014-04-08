@@ -77,6 +77,8 @@ class Connection
           Connection::ProgressConnection.new(configuration)
         when 'mysql'
           Connection::MysqlConnection.new(configuration)
+        when 'postgresql'
+          Connection::PostgresqlConnection.new(configuration)
         else
           raise "Database Connection not yet supported!"
       end
