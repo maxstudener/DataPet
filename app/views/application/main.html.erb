@@ -3,6 +3,10 @@
 <script src='/javascripts/spinner.js'></script>
 <script src='/javascripts/spin.min.js'></script>
 
+<!-- auto complete for filter -->
+<script src='/javascripts/directives/column_autocomplete.js'></script>
+
+
 <!-- connections pane -->
 <div class='col-sm-2 connections full-height'
      ng-controller='connectionsController'
@@ -59,9 +63,6 @@
       </div>
 
       <div class='data_content scrolling wrapper'>
-        <img src='/images/no_data.jpg' ng-show='connectionWindow.state==="no_data"' />
-        <img src='/images/bad_query.jpg' ng-show='connectionWindow.state==="bad_query"' />
-
         <table id='{{connectionWindow.id}}_table'  class='table table-bordered table-condensed table-striped fixed-table-header' ng-show='connectionWindow.columns.length > 0'>
           <thead style='background-color:white;' >
               <tr>
@@ -116,3 +117,53 @@
   </div>
   <!-- end of connectionWindows -->
 </div><!-- end of connectionWindows pane -->
+
+<script>
+    // adjust the body tag to be full window height
+    window.onload = function () {
+        resizeMain();
+    };
+
+    window.onresize = function () {
+        resizeMain();
+        resizeConnectionWindows();
+    };
+
+    function resizeMain() {
+        $('#main').height($(window).height() - 5 - $('#top_navigation_bar').height());
+    }
+
+    function resizeConnectionWindows() {
+        var x;
+        var formHeight = 0;
+
+        var tabHeight = document.getElementById('navigation_tabs').offsetHeight;
+        var headers = document.getElementsByClassName('connection_window_header');
+        var footers = document.getElementsByClassName('connection_window_footer');
+
+        for (x = 0; x < headers.length; x++) {
+            var height = headers[x].offsetHeight + footers[x].offsetHeight;
+            if (height > formHeight) {
+                formHeight = height;
+            }
+        }
+
+        var datas = document.getElementsByClassName('data_content');
+        var tabs = document.getElementsByClassName('tab-pane');
+        var newHeight = $(window).height() - tabHeight - $('#top_navigation_bar').height() - 15;
+
+        for (x = 0; x < tabs.length; x++) {
+            tabs[x].style.height = newHeight + 'px';
+            datas[x].style.height = (newHeight - formHeight ) + 'px';
+        }
+    }
+
+    function fixTableHeaders(){
+        var $table = $('table.fixed-table-header');
+        $table.floatThead({
+            scrollContainer: function($table){
+                return $table.closest('.wrapper');
+            }
+        });
+    }
+</script>

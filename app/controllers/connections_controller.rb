@@ -30,9 +30,9 @@ class ConnectionsController < ApplicationController
       # attempt to execute a query against the connection
       con.tables
     rescue Exception => e
-      render :json => { :message_class => 'bg-danger', :message => e.message } and return
+      render :json => { :status => 'fail', :message => e.message } and return
     end
-    render :json => { :message_class => 'bg-success', :message => 'The connection test was successful.' }
+    render :json => { :status => 'success', :message => 'The connection test was successful.' }
   end
 
   def edit

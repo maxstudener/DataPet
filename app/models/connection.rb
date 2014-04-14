@@ -79,6 +79,8 @@ class Connection
           Connection::MysqlConnection.new(configuration)
         when 'postgresql'
           Connection::PostgresqlConnection.new(configuration)
+        when 'sqlite3'
+          Connection::Sqlite3Connection.new(configuration)
         else
           raise "Database Connection not yet supported!"
       end

@@ -1,5 +1,5 @@
-class StubConnection < Connection
-  # an example stub for creating new connection adapters
+class Sqlite3Connection < Connection
+  # an example stub for creating new connection types
 
   def initialize(configuration)
     @configuration = configuration
@@ -8,29 +8,25 @@ class StubConnection < Connection
 
   def tables
     # create sql to fetch tables
-    table_fetch_sql = ''
+    table_fetch_sql = "SELECT tbl_name AS TABLE_NAME FROM sqlite_master WHERE type='table';"
     result_set = execute_query(table_fetch_sql, true)
     # return an array of tables
-    result_set.collect { |row| row[:table_name] }
+    result_set.collect { |row| row[:TABLE_NAME] }
   end
 
   def columns(schema_name, table_name)
     # create sql to fetch columns
-    column_fetch_sql = ''
+    column_fetch_sql = "PRAGMA table_info(#{table_name})"
     result_set = execute_query(column_fetch_sql, true)
     # return an array of columns
-    result_set.collect { |row| row[:column_name] }
+    result_set.collect { |row| row[:name] }
   end
 
   def create_limit_statement(max_rows)
-    # return the line below if this connection type uses LIMIT
-    # " LIMIT #{max_rows}"
-    ''
+    " LIMIT #{max_rows}"
   end
 
   def create_top_statement(max_rows)
-    # return the line below if this connection type uses TOP
-    # " TOP #{max_rows}"
     ''
   end
 

@@ -1,17 +1,17 @@
-<script src="/javascripts/controllers/connection-new.js"></script>
+<script src="/javascripts/controllers/connections.js"></script>
 
 <div class="container">
-
-  <div class="row" ng-controller="NewConnectionCtrl">
-    <br />
-    <p ng-show='message!==""' style='padding: 10px 10px 10px 10px'  class='{{messageClass}}'>
-      {{message}}
-    </p>
-    <br />
+  <div ng-controller="connectionsController">
+    <br/>
     <ui-codemirror ui-codemirror-opts="editorOptions" ng-model="jsonDataString"></ui-codemirror>
-
-    <!--<button class="btn btn-default btn-danger" ng-click="testConnection()">Test</button>-->
-    <button class="btn btn-default btn-primary" ng-click="sendData()">Submit</button>
-
+    <br/>
+    <div class='row'>
+      <div class='col-sm-2'>
+        <button class="btn btn-default btn-danger expand" ng-click="testConnection()">Test</button>
+      </div>
+      <div class='col-sm-2'>
+        <button class="btn btn-default btn-primary expand" ng-click="createConnection()">Submit</button>
+      </div>
+    </div>
   </div>
 </div>

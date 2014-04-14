@@ -1,10 +1,7 @@
-<script src='/javascripts/controllers/relations-edit.js'></script>
+<script src='/javascripts/controllers/relations.js'></script>
 
-<div class='container' ng-controller='relationsController' ng-init='initialize()'>
-<br />
-<div ng-show='message !== null' class='alert alert-{{messageClass}}' >
-  {{message}}
-</div>
+<div class='container' ng-controller='relationsController' ng-init='initializeEditPage()'>
+
 <h3>Edit Relation</h3>
 
 <!-- GENERAL INFORMATION -->
@@ -240,6 +237,6 @@
     <hr/>
   </div>
 </div>
-<input type='button' value='Update Relation' class='btn btn-primary' ng-click='createRelation()'/>
+<input type='button' value='Update Relation' class='btn btn-primary' ng-click='updateRelation()'/>
 </div>
 <br /><br />

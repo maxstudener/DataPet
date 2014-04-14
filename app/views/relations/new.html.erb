@@ -1,10 +1,7 @@
-<script src='/javascripts/controllers/relations-new.js'></script>
+<script src='/javascripts/controllers/relations.js'></script>
 
-<div class='container' ng-controller='relationsController' ng-init='initialize()'>
-<br />
-<div ng-show='message !== null' class='alert alert-{{messageClass}}' >
-  {{message}}
-</div>
+<div class='container' ng-controller='relationsController' ng-init='initializeNewPage()'>
+
 <h3>New Relation</h3>
 
 <!-- GENERAL INFORMATION -->

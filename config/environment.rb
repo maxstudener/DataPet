@@ -28,6 +28,11 @@ if File.exists?(File.expand_path('../../lib/postgresql.jar', __FILE__))
   require 'lib/postgresql.jar'
 end
 
+# sqlite3 driver
+if File.exists?(File.expand_path('../../lib/sqlite.jar', __FILE__))
+  require 'lib/sqlite.jar'
+end
+
 ENV['FREETDSCONF'] = File.expand_path(File.dirname(__FILE__)) + "/freetds.conf"
 
 # Initialize the rails application

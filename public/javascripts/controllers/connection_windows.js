@@ -1,4 +1,4 @@
-function connectionWindowsController($scope, $http, $rootScope, $modal) {
+function connectionWindowsController($scope, $http, $rootScope) {
     $scope.connectionWindows = []; // any connectionWindow object in this Array will be shown as a tab in view
     $scope.currentRowId = null; // holds the last selected rowId in order to lookup data before fetching a relation
 
@@ -64,13 +64,13 @@ function connectionWindowsController($scope, $http, $rootScope, $modal) {
 
         connectionWindow.reset(); // clear the columns, rows, relations, and state of the connectionWindow
 
-        $http.post(url, { sqlQuery: sqlQuery, maxRows: connectionWindow.maxRows }).
-            success(function(data) {
+        $http.post(url, { sqlQuery: sqlQuery, maxRows: connectionWindow.maxRows })
+            .success(function(data) {
                 $scope.fillTable(connectionWindow, data);
                 spinner.stop();
-            }).
-            error(function() {
-                connectionWindow.state = 'bad_query';
+            })
+            .error(function() {
+                $rootScope.$emit('sendNoticeToUser', { text: 'There was an error retrieving data.', class: 'alert-danger' });
                 spinner.stop();
             });
     };
@@ -82,6 +82,8 @@ function connectionWindowsController($scope, $http, $rootScope, $modal) {
             // set the state to truncated if the result set is greater than or equal to the maxRows for the connectionWindow
             if(data['rows'].length >= connectionWindow.maxRows){
                 connectionWindow.state = 'truncated';
+                $rootScope.$emit('sendNoticeToUser', { text: 'The result set may be limited by max rows.', class: 'alert-warning' });
+
             }
 
             data['columns'].forEach(function(column){
@@ -98,7 +100,7 @@ function connectionWindowsController($scope, $http, $rootScope, $modal) {
             });
 
         }else{
-            connectionWindow.state = 'no_data';
+            $rootScope.$emit('sendNoticeToUser', { text: 'The query returned no data.', class: 'alert-info' });
         }
 
         $.when.apply($, def).done(function(){
@@ -150,13 +152,13 @@ function connectionWindowsController($scope, $http, $rootScope, $modal) {
         connectionWindow.reset();
 
         var url = '/connections/' + oldConnectionWindow.connectionId + '/tables/' + oldConnectionWindow.schemaName + '/' + oldConnectionWindow.tableName + '/relations/' + relationName + '/query';
-        $http.post(url, { rowData: rowData, maxRows: connectionWindow.maxRows }).
-            success(function(data) {
+        $http.post(url, { rowData: rowData, maxRows: connectionWindow.maxRows })
+            .success(function(data) {
                 $scope.fillTable(connectionWindow, data);
                 connectionWindow.currentSqlQuery = 'WHERE' + data['query'].split('WHERE')[1];
-            }).
-            error(function() {
-                connectionWindow.state = 'bad_query';
+            })
+            .error(function() {
+                $rootScope.$emit('sendNoticeToUser', { text: 'There was an error retrieving data.', class: 'alert-danger' });
             });
     };
 

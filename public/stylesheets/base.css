@@ -51,8 +51,6 @@ td.relations:hover {
 
 td {
     white-space: nowrap;
-    max-width: 400px;
-    overflow: auto;
 }
 
 th {
@@ -114,5 +112,23 @@ ul.ui-autocomplete {
 }
 
 input.form-control.truncated {
-    background-color: #fffdc3;
+    background-color: #fcf8e3;
+}
+
+a.expand, button.expand {
+    width: 100%;
+    margin: 5px 5px 5px 5px;
+}
+
+
+div.alert-custom {
+    position: absolute;
+    right: 10px;
+    min-width: 200px;
+    width: auto;
+    padding: 10px 20px 10px 20px;
+    text-align: center;
+    z-index: 1001;
+    -webkit-box-shadow: 0 1px 10px 2px rgba(25, 25, 25, .5);
+    box-shadow: 0 1px 10px 2px rgba(25, 25, 25, .5);
 }

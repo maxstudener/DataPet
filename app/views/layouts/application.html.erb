@@ -2,33 +2,45 @@
 <html ng-app='data-pet'>
 <head>
   <title>DataPet</title>
-  <link rel='stylesheet' type='text/css' href='/stylesheets/jquery.ui.all.css'/>
+
+  <!-- css files -->
   <link rel='stylesheet' type='text/css' href='/stylesheets/bootstrap/bootstrap.min.css'/>
+  <link rel='stylesheet' type='text/css' href='/stylesheets/jquery.ui.all.css'/>
   <link rel='stylesheet' type='text/css' href='/stylesheets/base.css'/>
-  <script src='/javascripts/jquery/jquery-2.0.3.min.js'></script>
-  <script src='/javascripts/jquery/jquery-ui.js'></script>
+
+  <!-- angular js -->
   <script src='/javascripts/angular/angular.min.js'></script>
+  <script>var app = angular.module('data-pet', ['ui.bootstrap', 'ui.codemirror']);</script>
+
+  <!-- bootstrap -->
   <script src='/javascripts/bootstrap/ui-bootstrap.min.js'></script>
   <script src='/javascripts/bootstrap/ui-bootstrap-tpls.min.js'></script>
+
+  <!-- jQuery -->
+  <script src='/javascripts/jquery/jquery-2.0.3.min.js'></script>
+  <script src='/javascripts/jquery/jquery-ui.js'></script>
+
+  <!-- floatTHead used for sticky table headers -->
   <script type="text/javascript" src="/javascripts/jquery/floatTHead.js"></script>
 
-
+  <!-- code mirror used for JSON editing -->
   <link rel="stylesheet" type="text/css" href="/bower_components/codemirror/lib/codemirror.css">
   <script type="text/javascript" src="/bower_components/codemirror/lib/codemirror.js"></script>
   <script type="text/javascript" src="/bower_components/codemirror/mode/javascript/javascript.js"></script>
   <script type="text/javascript" src="/bower_components/angular-ui-codemirror/ui-codemirror.js"></script>
 
-  <script>var app = angular.module('data-pet', ['ui.bootstrap', 'ui.codemirror']);</script>
+
+  <!-- noticesController used to display messages to the user -->
+  <script src='/javascripts/controllers/notices.js'></script>
+
 
   <%= csrf_meta_tags %>
-
-  <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
 </head>
-
 
 <body>
 
 <div class='container-liquid'>
+
   <nav id='top_navigation_bar' class="navbar navbar-default" role="navigation">
     <!-- Brand and toggle get grouped for better mobile display -->
     <div class="navbar-header">
@@ -62,67 +74,19 @@
     </div>
     <!-- /.navbar-collapse -->
   </nav>
+
   <div id='main' class='container-liquid'>
     <%= yield %>
-
   </div>
 
 </div>
 
-<script src='/javascripts/directives/column_autocomplete.js'></script>
+<!-- notices -->
+<div ng-controller='noticesController'>
+  <div ng-repeat='notice in notices' ng-click='removeNotice(notice.id)' class='alert alert-custom {{notice.class}}' style='top:{{notice.top}}px'>
+    {{notice.text}}
+  </div>
+</div>
+
 </body>
 </html>
-
-
-
-<script>
-    // adjust the body tag to be full window height
-    window.onload = function () {
-        resizeMain();
-    };
-
-    window.onresize = function () {
-        resizeMain();
-        resizeConnectionWindows();
-    };
-
-    function resizeMain() {
-        $('#main').height($(window).height() - 5 - $('#top_navigation_bar').height());
-    }
-
-    function resizeConnectionWindows() {
-        var x;
-        var formHeight = 0;
-
-        var tabHeight = document.getElementById('navigation_tabs').offsetHeight;
-        var headers = document.getElementsByClassName('connection_window_header');
-        var footers = document.getElementsByClassName('connection_window_footer');
-
-        for (x = 0; x < headers.length; x++) {
-            var height = headers[x].offsetHeight + footers[x].offsetHeight;
-            if (height > formHeight) {
-                formHeight = height;
-            }
-        }
-
-        var datas = document.getElementsByClassName('data_content');
-        var tabs = document.getElementsByClassName('tab-pane');
-        var newHeight = $(window).height() - tabHeight - $('#top_navigation_bar').height() - 15;
-
-        for (x = 0; x < tabs.length; x++) {
-            tabs[x].style.height = newHeight + 'px';
-            datas[x].style.height = (newHeight - formHeight ) + 'px';
-        }
-    }
-
-    function fixTableHeaders(){
-        var $table = $('table.fixed-table-header');
-        $table.floatThead({
-            scrollContainer: function($table){
-                return $table.closest('.wrapper');
-            }
-        });
-    }
-</script>
-
-

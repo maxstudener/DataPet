@@ -1,12 +1,14 @@
-<script src="/javascripts/controllers/connection-edit.js"></script>
+<script src="/javascripts/controllers/connections.js"></script>
 
 <div class="container">
-
-  <div class="row" ng-controller="EditConnectionCtrl" ng-init="initLoad()">
+  <div class="row" ng-controller="connectionsController" ng-init="initializeEditPage()">
     <br />
     <ui-codemirror ui-codemirror-opts="editorOptions" ng-model="jsonDataString"></ui-codemirror>
-
-    <button class="btn btn-default btn-primary" ng-click="sendData()">Update</button>
-
+    <br />
+    <div class='row'>
+      <div class='col-sm-2'>
+        <button class="btn btn-default btn-primary expand" ng-click="updateConnection()">Update</button>
+      </div>
+    </div>
   </div>
 </div>
