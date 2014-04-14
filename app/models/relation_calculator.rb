@@ -54,7 +54,7 @@ class RelationCalculator
     join_column = join['join_column']
     from_column = join['from_column']
 
-    join_data = @join_data.collect{ |row| row[from_column.downcase.to_sym] }.join("','")
+    join_data = @join_data.collect{ |row| row[from_column.to_sym] }.join("','")
     raise 'Cannot join without values.' if join_data.blank?
 
     "#{@to_connection.format_table_name(@relation_table_name+'.'+join_column)} IN ('#{join_data}')"
