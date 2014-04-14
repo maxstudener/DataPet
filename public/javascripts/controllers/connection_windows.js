@@ -32,7 +32,10 @@ function connectionWindowsController($scope, $http, $rootScope) {
 
         if(activateLastTab){
             // activate the last tab available
-            $scope.connectionWindows[$scope.connectionWindows.length - 1].active = 'active';
+            var newActiveWindow = $scope.connectionWindows[$scope.connectionWindows.length - 1];
+            if(newActiveWindow !== undefined){
+                newActiveWindow.active = 'active';
+            }
             $(window).trigger('resize');
         }
     };
