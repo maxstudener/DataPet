@@ -12,7 +12,7 @@ function noticesController($scope, $rootScope, $timeout) {
     });
 
     // removes a notice when clicked by user
-    // shifts all remaining notices up if to compensate
+    // shifts remaining notices up to compensate
     $scope.removeNotice = function(noticeId){
         $scope.notices = $scope.notices.filter(function(notice){
             if(notice.id > noticeId){
