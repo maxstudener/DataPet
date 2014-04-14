@@ -22,8 +22,17 @@ class RelationCalculator
 
       when 'has_through'
         through_relation = RelationCalculator.new(connection_name, table_name, relation.through_relation.relation_name, data_hash)
+        join_records = through_relation.compute
 
-        @join_data = through_relation.compute
+        # need the keys to be downcase for use later
+        @join_data = join_records.inject([]) do |join_data, join_record|
+          new_data = {}
+          join_record.each do |key, value|
+            new_data[key.downcase.to_sym] = value
+          end
+          join_data << new_data
+        end
+
         @join_clauses = relation.join_clauses
 
         add_join_clauses
@@ -54,7 +63,7 @@ class RelationCalculator
     join_column = join['join_column']
     from_column = join['from_column']
 
-    join_data = @join_data.collect{ |row| row[from_column.to_sym] }.join("','")
+    join_data = @join_data.collect{ |row| row[from_column.downcase.to_sym] }.join("','")
     raise 'Cannot join without values.' if join_data.blank?
 
     "#{@to_connection.format_table_name(@relation_table_name+'.'+join_column)} IN ('#{join_data}')"
