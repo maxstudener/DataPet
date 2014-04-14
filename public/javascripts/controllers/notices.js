@@ -1,5 +1,5 @@
-function noticesController($scope, $rootScope) {
-    $scope.nextId = 0;
+function noticesController($scope, $rootScope, $timeout) {
+    $scope.currentId = 0;
     $scope.notices = [];
 
     // places a notice in the upper right corner of the page for the user
@@ -18,15 +18,19 @@ function noticesController($scope, $rootScope) {
             if(notice.id > noticeId){
                 notice.top -= 50;
             }
-            return notice.id != noticeId;
+            return notice.id !== noticeId;
         });
     };
 
     var Notice = function(data){
-        this.id = $scope.nextId++;
+        var id = $scope.currentId++;
+        this.id = id;
         this.text = data.text;
         this.class = data.class;
         this.top = ($scope.notices.length * 50 ) + 10;
+        $timeout(function(){
+            $scope.removeNotice(id);
+        }, 8000);
     };
 
 }

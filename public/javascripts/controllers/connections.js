@@ -134,7 +134,6 @@ function connectionsController($scope, $rootScope, $http, $location) {
         $http.post('/connections', {'connection': $scope.jsonData})
             .success(function () {
                 $rootScope.$emit('sendNoticeToUser', { text: 'Connection Created!', class: 'alert-success' });
-                window.location = '/connections';
             })
             .error(function () {
                 $rootScope.$emit('sendNoticeToUser', { text: 'There was an error creating the connection.', class: 'alert-danger' });
