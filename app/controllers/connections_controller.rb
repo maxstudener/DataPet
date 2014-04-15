@@ -26,9 +26,14 @@ class ConnectionsController < ApplicationController
 
   def test
     begin
-      con = Connection.get_connection(params['connection'])
-      # attempt to execute a query against the connection
-      con.tables
+      # timeout after 10 seconds so we dont hang the server
+      Timeout::timeout(10) {
+        con = Connection.get_connection(params['connection'])
+        # attempt to execute a query against the connection
+        con.tables
+      }
+    rescue TimeoutError => e
+      render json => { :status => 'fail', :message => 'The connection took too long to respond.' } and return
     rescue Exception => e
       render :json => { :status => 'fail', :message => e.message } and return
     end
