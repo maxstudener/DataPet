@@ -1,5 +1,5 @@
 class ConnectionsController < ApplicationController
-  http_basic_authenticate_with :name => "admin", :password => "you_should_change_this", only: [ :new, :edit, :show, :create, :update, :destroy ]
+  http_basic_authenticate_with :name => "admin", :password => "dataPet", only: [ :new, :edit, :show, :create, :update, :destroy ]
 
   def index
     respond_to do |format|
