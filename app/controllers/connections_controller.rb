@@ -1,5 +1,7 @@
 class ConnectionsController < ApplicationController
-  http_basic_authenticate_with :name => "admin", :password => "dataPet", only: [ :new, :edit, :show, :create, :update, :destroy ]
+  if DataPetAuthorization::REQUIRE_AUTH
+    http_basic_authenticate_with :name => DataPetAuthorization::USERNAME, :password => DataPetAuthorization::PASSWORD, only: [ :new, :edit, :show, :create, :update, :destroy ]
+  end
 
   def index
     respond_to do |format|
