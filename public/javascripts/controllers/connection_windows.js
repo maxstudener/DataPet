@@ -158,7 +158,7 @@ function connectionWindowsController($scope, $http, $rootScope) {
         $http.post(url, { rowData: rowData, maxRows: connectionWindow.maxRows })
             .success(function(data) {
                 $scope.fillTable(connectionWindow, data);
-                connectionWindow.currentSqlQuery = 'WHERE' + data['query'].split('WHERE')[1];
+                connectionWindow.currentSqlQuery = 'WHERE' + data['query'].split(' WHERE ')[1];
             })
             .error(function() {
                 $rootScope.$emit('sendNoticeToUser', { text: 'There was an error retrieving data.', class: 'alert-danger' });
@@ -224,6 +224,9 @@ function connectionWindowsController($scope, $http, $rootScope) {
         this.maxRows = 50; // maximium result set size for this connectionWindow
         this.currentSqlQuery = ''; // displayed in the form for this connectionWindow
 
+        this.connectionName = connectionObject.name;
+        this.fullTableName = fullTableName;
+
         // attributes cleared between queries with reset()
         this.state = '';
         this.columns = [];
@@ -286,5 +289,51 @@ function connectionWindowsController($scope, $http, $rootScope) {
         this.relationAttributes = relationAttributes;
     };
 
+    // this is an experiment to generate a link to open DataPet, open a connectionWindow, and query a table
+
+    $scope.server = location.host;
+
+    $(function(){
+        // In order to create something meaningful, each of the following must be present:
+        //   connection_id
+        //   connection_name
+        //   full_table_name
+        //   query
+
+        var paramsHash = {};
+        var queryString = location.search;
+        var querySplit = queryString.split('?');
+
+        for(var x=0;x<querySplit.length;x++){
+            try{
+                var paramPieces = querySplit[x].split(':');
+                if(paramPieces[0] !== '' && paramPieces[1] != ''){
+                    paramsHash[paramPieces[0]] = paramPieces[1];
+                }
+            }
+            catch(err){
+                console.log(err);
+            }
+        }
+
+        var connection = {};
+        connection._id = decodeURI(paramsHash['connection_id']);
+        connection.name = decodeURI(paramsHash['connection_name']);
+        var tableName = decodeURI(paramsHash['full_table_name']);
+        var query = decodeURI(paramsHash['query']).split(' LIMIT ')[0];
+
+        console.log(connection._id);
+        console.log(connection.name);
+        console.log(tableName);
+        console.log(query);
+
+
+        if(connection._id !== 'undefined' && connection.name !== 'undefined' && tableName !== 'undefined' && query !== 'undefined'){
+            var connectionWindow = $scope.createConnectionWindow(connection, tableName);
+            connectionWindow.currentSqlQuery = query;
+            $(window).trigger('resize');
+            $scope.submitQuery(connectionWindow.id, query);
+        }
+    });
 }
 

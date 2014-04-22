@@ -6,7 +6,6 @@
 <!-- auto complete for filter -->
 <script src='/javascripts/directives/column_autocomplete.js'></script>
 
-
 <!-- connections pane -->
 <div class='col-sm-2 connections full-height'
      ng-controller='connectionsController'
@@ -51,6 +50,7 @@
   <div class='tab-content'>
     <div ng-repeat='connectionWindow in connectionWindows' id={{connectionWindow.id}}
          class='tab-pane {{connectionWindow.active}} full-height'>
+      <a style='float:right; margin-right:30px;' href='{{server}}?connection_id:{{connectionWindow.connectionId}}?connection_name:{{connectionWindow.connectionName}}?full_table_name:{{connectionWindow.fullTableName}}?query:{{connectionWindow.currentSqlQuery}}?max_rows:{{connectionWindow.maxRows}}'>Link Me</a>
 
       <div class='connection_window_header connection_window_input'>
         <form ng-submit='submitQuery(connectionWindow.id, connectionWindow.currentSqlQuery)'>
