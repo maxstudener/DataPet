@@ -172,9 +172,16 @@ function relationsController($scope, $rootScope, $location, $http) {
     };
 
     $scope.updateFromConnection = function() {
-        $scope.fromConnection = $scope.connections.filter(function(connection){
+        var connection = $scope.connections.filter(function(connection){
             return connection._id == $scope.relation.from_connection_id;
         })[0];
+
+        $scope.fromConnection = connection;
+
+        // convenience feature - set toConnection to same connection
+        // 9 out of 10 times a relation is on the same connection
+        $('#to_connection').val(connection._id);
+        $scope.toConnection = connection;
     };
 
     $scope.updateToConnection = function() {
