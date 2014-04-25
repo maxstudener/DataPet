@@ -32,6 +32,10 @@ module ApplicationHelper
     end
   end
 
+  def target_blank?
+    request.url.match(/(relations|connections)/) ? '' : 'target="_blank"'
+  end
+
 
 
 end

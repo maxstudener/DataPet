@@ -35,6 +35,7 @@ function connectionsController($scope, $rootScope, $http, $location) {
             })
             .error(function () {
                 connection.state = 'error';
+                $rootScope.$emit('sendNoticeToUser', { text: 'There was an error retrieving table data for ' + connection.name + '.', class: 'alert-danger' });
             });
     };
 

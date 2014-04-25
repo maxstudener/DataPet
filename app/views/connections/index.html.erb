@@ -4,7 +4,7 @@
 
   <div class="row" ng-repeat="connection in connections">
     <br />
-    <div class='col-sm-4 col-xs-12' style='text-align: right'>
+    <div class='col-sm-4 col-xs-12' style='text-align: left'>
       <b>{{connection.name}}</b>
     </div>
     <div class='col-sm-2 col-xs-12' >
@@ -12,6 +12,9 @@
     </div>
     <div class='col-sm-2 col-xs-12' >
       <button class="btn btn-sm btn-danger expand" ng-click='destroyConnection(connection._id)'>Delete</button>
+    </div>
+    <div class='col-sm-12 col-xs-12'>
+      <hr />
     </div>
   </div>
 

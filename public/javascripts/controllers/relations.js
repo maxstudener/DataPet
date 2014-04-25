@@ -167,7 +167,7 @@ function relationsController($scope, $rootScope, $location, $http) {
                 connection.tables = data;
             })
             .error(function(){
-                $rootScope.$emit('sendNoticeToUser', { text: 'There was an error retrieving data.', class: 'alert-danger' });
+                $rootScope.$emit('sendNoticeToUser', { text: 'There was an error retrieving table data for ' + connection.name + '.', class: 'alert-danger' });
             });
     };
 
@@ -182,6 +182,7 @@ function relationsController($scope, $rootScope, $location, $http) {
         // 9 out of 10 times a relation is on the same connection
         $('#to_connection').val(connection._id);
         $scope.toConnection = connection;
+        $scope.relation.to_connection_id = connection._id;
     };
 
     $scope.updateToConnection = function() {
