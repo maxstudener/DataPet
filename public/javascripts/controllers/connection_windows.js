@@ -159,6 +159,7 @@ function connectionWindowsController($scope, $http, $rootScope) {
             .success(function(data) {
                 $scope.fillTable(connectionWindow, data);
                 connectionWindow.currentSqlQuery = 'WHERE' + data['query'].split(' WHERE ')[1];
+                connectionWindow.currentSqlQuery = connectionWindow.currentSqlQuery.split(' LIMIT ')[0];
             })
             .error(function() {
                 $rootScope.$emit('sendNoticeToUser', { text: 'There was an error retrieving data.', class: 'alert-danger' });
@@ -322,13 +323,17 @@ function connectionWindowsController($scope, $http, $rootScope) {
         var tableName = decodeURI(paramsHash['full_table_name']);
         var query = decodeURI(paramsHash['query']).split(' LIMIT ')[0];
 
+        if(query === 'undefined'){
+            query = '';
+        }
+
         console.log(connection._id);
         console.log(connection.name);
         console.log(tableName);
         console.log(query);
 
 
-        if(connection._id !== 'undefined' && connection.name !== 'undefined' && tableName !== 'undefined' && query !== 'undefined'){
+        if(connection._id !== 'undefined' && connection.name !== 'undefined' && tableName !== 'undefined' ){
             var connectionWindow = $scope.createConnectionWindow(connection, tableName);
             connectionWindow.currentSqlQuery = query;
             $(window).trigger('resize');
