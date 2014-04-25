@@ -51,7 +51,7 @@
     <div ng-repeat='connectionWindow in connectionWindows' id={{connectionWindow.id}}
          class='tab-pane {{connectionWindow.active}} full-height'>
       <a style='float:right; margin-right:30px;' href='?connection_id:{{connectionWindow.connectionId}}?connection_name:{{connectionWindow.connectionName}}?full_table_name:{{connectionWindow.fullTableName}}?query:{{connectionWindow.currentSqlQuery}}?max_rows:{{connectionWindow.maxRows}}'>Link Me</a>
-
+      <br />
       <div class='connection_window_header connection_window_input'>
         <form ng-submit='submitQuery(connectionWindow.id, connectionWindow.currentSqlQuery)'>
 
