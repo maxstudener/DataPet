@@ -9,10 +9,10 @@
 
   <!-- Relation Name -->
   <div class='row'>
-    <div class='col-xs-3 right'>
+    <div class='col-xs-12 col-sm-3 right'>
       <label>Relation Name</label>
     </div>
-    <div class='col-xs-9'>
+    <div class='col-xs-12 col-sm-6'>
       <input type='text' class='form-control' ng-model='relation.relation_name'/>
     </div>
   </div>
@@ -20,10 +20,10 @@
 
   <!-- Connection Name -->
   <div class='row'>
-    <div class='col-xs-3 right'>
+    <div class='col-xs-12 col-sm-3 right'>
       <label>From Connection Name</label>
     </div>
-    <div class='col-xs-9'>
+    <div class='col-xs-12 col-sm-6'>
       <select class='form-control'
               ng-model='relation.from_connection_id'
               ng-change='updateFromConnection()'
@@ -36,10 +36,10 @@
 
   <!-- Table Name -->
   <div class='row'>
-    <div class='col-xs-3 right'>
+    <div class='col-xs-12 col-sm-3 right'>
       <label>From Table Name</label>
     </div>
-    <div class='col-xs-9'>
+    <div class='col-xs-12 col-sm-6'>
       <input class='form-control'
              autocomplete="off"
              ng-model='relation.from_table_name'
@@ -53,10 +53,10 @@
 
   <!-- Relation Type -->
   <div class='row'>
-    <div class='col-xs-3 right'>
+    <div class='col-xs-12 col-sm-3 right'>
       <label>Relation Type</label>
     </div>
-    <div class='col-xs-9'>
+    <div class='col-xs-12 col-sm-6'>
       <select class='form-control'
               ng-model='relation.relation_type'
               ng-change="changedType()"
@@ -69,10 +69,10 @@
 
   <!-- Relation Connection Name -->
   <div class='row'>
-    <div class='col-xs-3 right'>
+    <div class='col-xs-12 col-sm-3 right'>
       <label>To Connection Name</label>
     </div>
-    <div class='col-xs-9'>
+    <div class='col-xs-12 col-sm-6'>
       <select id='to_connection'
               class='form-control'
               ng-model='relation.to_connection_id'
@@ -86,10 +86,10 @@
 
   <!-- Relation Table Name -->
   <div class='row'>
-    <div class='col-xs-3 right'>
+    <div class='col-xs-12 col-sm-3 right'>
       <label>To Table Name</label>
     </div>
-    <div class='col-xs-9'>
+    <div class='col-xs-12 col-sm-6'>
       <input class='form-control'
              autocomplete="off"
              ng-model='relation.to_table_name'
@@ -113,10 +113,10 @@
 
     <!-- Where Clause / Relation Table Column -->
     <div class='row'>
-      <div class='col-xs-3 right'>
+      <div class='col-xs-12 col-sm-3 right'>
         <label ng-show='relation.to_connection_id !== null'>Column to {{relation.to_table_name}}</label>
       </div>
-      <div class='col-xs-9'>
+      <div class='col-xs-12 col-sm-6'>
         <input class='form-control'
                autocomplete="off"
                ng-model='whereClause.to_table_column'
@@ -128,10 +128,10 @@
 
     <!-- Where Clause / Comparison Operator -->
     <div class='row'>
-      <div class='col-xs-3 right'>
+      <div class='col-xs-12 col-sm-3 right'>
         <label>Is</label>
       </div>
-      <div class='col-xs-9'>
+      <div class='col-xs-12 col-sm-6'>
         <select class='form-control'
                 ng-model='whereClause.comparison_operator'
         >
@@ -143,10 +143,10 @@
 
     <!-- Where Clause / Comparison Type -->
     <div class='row' ng-hide='whereClause.comparison_operator == "NULL" || whereClause.comparison_operator == "Not NULL"'>
-      <div class='col-xs-3 right'>
+      <div class='col-xs-12 col-sm-3 right'>
         <label>Comparison Type</label>
       </div>
-      <div class='col-xs-9'>
+      <div class='col-xs-12 col-sm-6'>
         <select class='form-control'
                 ng-model='whereClause.comparison_type'
         >
@@ -158,11 +158,11 @@
 
     <!-- Where Clause / Comparison Value -->
     <div class='row' ng-hide='whereClause.comparison_operator == "NULL" || whereClause.comparison_operator == "Not NULL"'>
-      <div class='col-xs-3 right'>
+      <div class='col-xs-12 col-sm-3 right'>
         <label ng-show='whereClause.comparison_type=="Value"'>Comparison Value</label>
         <label ng-show='whereClause.comparison_type=="Column"'>Column from {{relation.from_table_name}}</label>
       </div>
-      <div class='col-xs-9'>
+      <div class='col-xs-12 col-sm-6'>
         <input class='form-control'
                autocomplete="off"
                ng-model='whereClause.comparison_value'
@@ -181,10 +181,10 @@
 
   <!-- Through Relation Name -->
   <div class='row'>
-    <div class='col-xs-3 right'>
+    <div class='col-xs-12 col-sm-3 right'>
       <label>Through Relation Name</label>
     </div>
-    <div class='col-xs-9'>
+    <div class='col-xs-12 col-sm-6'>
       <select class='form-control'
               ng-model='relation.through_relation_id'
               ng-change='loadRelationColumns(relation.through_relation_id)'
@@ -204,10 +204,10 @@
 
     <!-- From Column -->
     <div class='row'>
-      <div class='col-xs-3 right'>
+      <div class='col-xs-12 col-sm-3 right'>
         Column from {{throughRelation.to_table_name}}
       </div>
-      <div class='col-xs-9'>
+      <div class='col-xs-12 col-sm-6'>
         <input class='form-control'
                autocomplete="off"
                ng-model='joinClause.from_column'
@@ -219,10 +219,10 @@
 
     <!-- Join Column -->
     <div class='row'>
-      <div class='col-xs-3 right'>
+      <div class='col-xs-12 col-sm-3 right'>
         Column from {{relation.to_table_name}}
       </div>
-      <div class='col-xs-9'>
+      <div class='col-xs-12 col-sm-6'>
         <input class='form-control'
                autocomplete="off"
                ng-model='joinClause.join_column'
