@@ -64,32 +64,55 @@ function relationsController($scope, $rootScope, $location, $http) {
 
 
     $scope.initializeEditPage = function () {
+        $scope.loadData();
+    };
+
+    $scope.loadData = function() {
+        $scope.loadConnectionData(function(){
+            // now get the relation we are editing
+            $http.get($scope.url + '.json')
+                .success(function(data){
+                    $scope.relation = data;
+                    $scope.fromConnection = $scope.connections.filter(function(connection){
+                        return connection._id == $scope.relation.from_connection_id;
+                    })[0];
+                    $scope.toConnection = $scope.connections.filter(function(connection){
+                        return connection._id == $scope.relation.to_connection_id;
+                    })[0];
+                    $scope.loadRelations($scope.relation.from_connection_id, $scope.relation.from_table_name);
+                    $scope.loadRelationColumns($scope.relation.through_relation_id);
+
+                    $scope.loadColumns($scope.relation.from_connection_id, $scope.relation.from_table_name);
+                    $scope.loadColumns($scope.relation.to_connection_id, $scope.relation.to_table_name);
+                })
+                .error(function(){
+                    $rootScope.$emit('sendNoticeToUser', { text: 'There was an error retrieving relation data.', class: 'alert-danger' });
+                });
+        });
+    };
+
+    $scope.loadConnectionData = function(cb){
         // get connection data
         $http.get('/connections.json')
             .success(function (data) {
                 $scope.connections = data;
 
+                var connectionToProcess = data.length;
+                var monitorProgress = setInterval(function(){
+                   if(connectionToProcess <= 0 ){
+                       cb();
+                       clearInterval(monitorProgress);
+                   }
+                }, 500);
+
                 $scope.connections.forEach(function (connection, idx, arr) {
-                    $scope.getTables(connection);
+                    $scope.getTables(connection, function(){
+                        connectionToProcess--;
+                    });
                 });
 
                 $scope.fromConnection = $scope.connections[0];
                 $scope.toConnection = $scope.connections[0];
-
-                // now get the relation we are editing
-                $http.get($scope.url + '.json')
-                    .success(function(data){
-                        $scope.relation = data;
-                        $scope.fromConnection = $scope.connections.filter(function(connection){
-                            return connection._id == $scope.relation.from_connection_id;
-                        })[0];
-                        $scope.toConnection = $scope.connections.filter(function(connection){
-                            return connection._id == $scope.relation.to_connection_id;
-                        })[0];
-                    })
-                    .error(function(){
-                        $rootScope.$emit('sendNoticeToUser', { text: 'There was an error retrieving data.', class: 'alert-danger' });
-                    });
             })
             .error(function(){
                 $rootScope.$emit('sendNoticeToUser', { text: 'There was an error retrieving data.', class: 'alert-danger' });
@@ -161,10 +184,13 @@ function relationsController($scope, $rootScope, $location, $http) {
     //********** connection objects **********//
 
 
-    $scope.getTables = function (connection) {
+    $scope.getTables = function (connection, cb) {
         $http.get('/connections/' + connection._id + '/tables')
             .success(function (data) {
                 connection.tables = data;
+                if(connection.tables !== undefined){
+                    cb();
+                }
             })
             .error(function(){
                 $rootScope.$emit('sendNoticeToUser', { text: 'There was an error retrieving table data for ' + connection.name + '.', class: 'alert-danger' });
@@ -205,24 +231,24 @@ function relationsController($scope, $rootScope, $location, $http) {
     //********** table objects **********//
 
 
-    $scope.loadColumns = function (id, tableName) {
+    $scope.loadColumns = function (connectionId, tableName) {
         var connection = $scope.connections.filter(function(connection){
-            return connection._id == id;
+            return connection._id == connectionId;
         })[0];
 
-        if (id === undefined || tableName == undefined) {
+        if (connection === undefined || tableName == undefined) {
             return 1;
         } else {
             var table = connection.tables.filter(function (table) {
                 return table.fullTableName == tableName;
             })[0];
 
-            $http.get('/connections/' + id + '/tables/' + table.schemaName + '/' + table.tableName + '/columns')
+            $http.get('/connections/' + connectionId + '/tables/' + table.schemaName + '/' + table.tableName + '/columns')
                 .success(function (data, status, headers, config) {
-                    if ($scope.columnData[id] === undefined) {
-                        $scope.columnData[id] = {};
+                    if ($scope.columnData[connectionId] === undefined) {
+                        $scope.columnData[connectionId] = {};
                     }
-                    $scope.columnData[id][tableName] = data;
+                    $scope.columnData[connectionId][tableName] = data;
                 })
                 .error(function(){
                     $rootScope.$emit('sendNoticeToUser', { text: 'There was an error retrieving data.', class: 'alert-danger' });
@@ -287,24 +313,24 @@ function relationsController($scope, $rootScope, $location, $http) {
     //********** relation objects **********//
 
 
-    $scope.loadRelations = function (id, tableName) {
+    $scope.loadRelations = function (connectionId, tableName) {
         var connection = $scope.connections.filter(function(connection){
-            return connection._id == id;
+            return connection._id == connectionId;
         })[0];
 
-        if (id === undefined || tableName == undefined) {
+        if (connectionId === undefined || tableName == undefined) {
             return 1;
         } else {
             var table = connection.tables.filter(function (table) {
                 return table.fullTableName == tableName;
             })[0];
 
-            $http.get('/connections/' + id + '/tables/' + table.schemaName + '/' + table.tableName + '/relations')
+            $http.get('/connections/' + connectionId + '/tables/' + table.schemaName + '/' + table.tableName + '/relations')
                 .success(function (data) {
-                    if ($scope.relationData[id] === undefined) {
-                        $scope.relationData[id] = {};
+                    if ($scope.relationData[connectionId] === undefined) {
+                        $scope.relationData[connectionId] = {};
                     }
-                    $scope.relationData[id][tableName] = data;
+                    $scope.relationData[connectionId][tableName] = data;
                 })
                 .error(function(){
                     $rootScope.$emit('sendNoticeToUser', { text: 'There was an error retrieving data.', class: 'alert-danger' });
