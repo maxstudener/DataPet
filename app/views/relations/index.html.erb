@@ -1,10 +1,17 @@
 <script src="/javascripts/controllers/relations.js"></script>
 
 <div class="container" ng-controller="relationsController" ng-init="initializeIndexPage()">
-  <div class="row" ng-repeat="relation in relations">
+  <br />
+  <input class='form-control' placeholder='Filter...'
+         ng-model='relationFilter'
+  />
+
+  <div class="row" ng-repeat="relation in relations | filter:relationFilter | orderBy:'from_connection_name'">
     <br/>
-    <div class='col-sm-4 col-xs-12' style='text-align: right'>
-      <b>{{relation.relation_name}}</b>
+    <div class='col-sm-4 col-xs-12' style='text-align: left'>
+      <b>{{relation.from_connection_name + ' / ' + relation.from_table_name}}</b>
+      <br />
+      {{relation.relation_name}}
     </div>
     <div class='col-sm-2 col-xs-12'>
       <a class="btn btn-sm btn-primary expand" ng-href="/relations/{{relation._id}}/edit">Edit</a>
@@ -12,5 +19,9 @@
     <div class='col-sm-2 col-xs-12'>
       <button class="btn btn-sm btn-danger expand" ng-click='destroyRelation(relation._id)'>Delete</button>
     </div>
+    <div class='col-sm-12 col-xs-12'>
+      <hr />
+    </div>
   </div>
+
 </div>

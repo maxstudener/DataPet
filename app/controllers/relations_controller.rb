@@ -3,7 +3,7 @@ class RelationsController < ApplicationController
   def index
     respond_to do |format|
       format.html
-      format.json { render json: Relation.all }
+      format.json { render json: Relation.all_with_connection_names }
     end
   end
 
