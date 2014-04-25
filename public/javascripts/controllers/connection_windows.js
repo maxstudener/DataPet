@@ -327,12 +327,6 @@ function connectionWindowsController($scope, $http, $rootScope) {
             query = '';
         }
 
-        console.log(connection._id);
-        console.log(connection.name);
-        console.log(tableName);
-        console.log(query);
-
-
         if(connection._id !== 'undefined' && connection.name !== 'undefined' && tableName !== 'undefined' ){
             var connectionWindow = $scope.createConnectionWindow(connection, tableName);
             connectionWindow.currentSqlQuery = query;
