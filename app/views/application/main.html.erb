@@ -113,9 +113,13 @@
       </div>
 
       <div class='row_detail' ng-show='rowDetail.show'>
-        <a class='up_and_left' href='#' ng-click="closeRowDetail()">
-          <span class="medium_glyph glyphicon glyphicon-remove-circle"></span>
+        <a  href='#' ng-click="closeRowDetail()">
+          <span style='margin: 10px 0 10px 10px;' class="medium_glyph glyphicon glyphicon-remove-circle"></span>
         </a>
+        <input class='form-control' placeholder='Column Name...'
+               ng-model='columnFilter'
+               style='margin: 0 10px 10px 10px;'
+        />
         <table class='table table-bordered table-condensed table-striped'>
           <thead>
           <tr>
@@ -123,7 +127,7 @@
             <th>Value</th>
           </tr>
           </thead>
-          <tr ng-repeat='column in rowDetail.columns'>
+          <tr ng-repeat='column in rowDetail.columns | filter:columnFilter'>
             <th>{{column.name}}</th>
             <td>{{rowDetail.data[column.name]}}</td>
           </tr>
