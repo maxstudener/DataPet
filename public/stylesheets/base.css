@@ -128,6 +128,18 @@ div.alert-custom {
     width: auto;
     padding: 10px 20px 10px 20px;
     text-align: center;
+    z-index: 1002;
+    -webkit-box-shadow: 0 1px 10px 2px rgba(25, 25, 25, .5);
+    box-shadow: 0 1px 10px 2px rgba(25, 25, 25, .5);
+}
+
+div.row_detail {
+    position: absolute;
+    top: 0;
+    right:0;
+    bottom: 0;
+    left: 0;
+    background-color: white;
     z-index: 1001;
     -webkit-box-shadow: 0 1px 10px 2px rgba(25, 25, 25, .5);
     box-shadow: 0 1px 10px 2px rgba(25, 25, 25, .5);

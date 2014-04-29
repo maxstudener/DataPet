@@ -290,6 +290,7 @@ function connectionWindowsController($scope, $http, $rootScope) {
         this.relationAttributes = relationAttributes;
     };
 
+
     // this is an experiment to generate a link to open DataPet, open a connectionWindow, and query a table
 
     $scope.server = location.host;
@@ -334,5 +335,35 @@ function connectionWindowsController($scope, $http, $rootScope) {
             $scope.submitQuery(connectionWindow.id, query);
         }
     });
+
+
+    // open row detail when user double clicks a row
+
+    $scope.rowDetail = { columns: [], data: {}, show: false, sort: 'none' };
+
+    $scope.displayRowDetail = function(data, columns){
+        $scope.rowDetail.show = true;
+        $scope.rowDetail.columns = columns;
+        columns.forEach(function(column, idx, arr){
+           $scope.rowDetail.data[column.name] = data[idx].value;
+        });
+
+    };
+
+    $scope.closeRowDetail = function(){
+        $scope.rowDetail = { columns: [], data: {}, show: false };
+
+    };
+
+    $scope.sortRowDetail = function(){
+        var sorted = $scope.rowDetail.sort;
+        if(sorted == 'none' || sorted == 'desc'){
+            $scope.rowDetail.columns.sort(function(a, b){ return a.name.localeCompare(b.name) });
+            $scope.rowDetail.sort = 'asc';
+        }else{
+            $scope.rowDetail.columns.sort(function(a, b){ return b.name.localeCompare(a.name) });
+            $scope.rowDetail.sort = 'desc';
+        }
+    };
 }
 

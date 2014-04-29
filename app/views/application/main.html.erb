@@ -73,7 +73,7 @@
               </tr>
           </thead>
           <tbody>
-              <tr ng-repeat='row in connectionWindow.rows'>
+              <tr ng-repeat='row in connectionWindow.rows' ng-dblclick='displayRowDetail(row.rowData, connectionWindow.columns)'>
                 <td ng-click='showRelationMenu(connectionWindow.id, row.id, $event)' class='relations'>
                   {{row.id+1}}
                 </td>
@@ -110,6 +110,24 @@
           <a class='centered' ng-repeat='relation in connectionWindow.relations' href='#'
              ng-click='newRelationWindow(connectionWindow.id, relation.name)'>{{relation.name}}<br/></a>
         </ul>
+      </div>
+
+      <div class='row_detail' ng-show='rowDetail.show'>
+        <a class='up_and_left' href='#' ng-click="closeRowDetail()">
+          <span class="medium_glyph glyphicon glyphicon-remove-circle"></span>
+        </a>
+        <table class='table table-bordered table-condensed table-striped'>
+          <thead>
+          <tr>
+            <th ng-click='sortRowDetail()'>Column</th>
+            <th>Value</th>
+          </tr>
+          </thead>
+          <tr ng-repeat='column in rowDetail.columns'>
+            <th>{{column.name}}</th>
+            <td>{{rowDetail.data[column.name]}}</td>
+          </tr>
+        </table>
       </div>
     </div>
 
