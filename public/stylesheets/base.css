@@ -134,6 +134,7 @@ div.alert-custom {
 }
 
 div.row_detail {
+    overflow: scroll;
     position: absolute;
     top: 0;
     right:0;
