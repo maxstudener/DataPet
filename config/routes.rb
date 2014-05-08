@@ -17,8 +17,10 @@ DataPet::Application.routes.draw do
   resources :connections do
     collection do
       post :test
+      post :query
     end
   end
   resources :relations
+  resources :sql_windows
 
 end

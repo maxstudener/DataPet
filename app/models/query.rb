@@ -10,10 +10,11 @@ class Query
 
     # format the table name for for use with the connection type
     formatted_table_name = connection.format_table_name(table_name)
+    @sql = ''
 
-    @sql = "SELECT #{top_sql} * FROM #{formatted_table_name} "
+    @sql = "SELECT #{top_sql} * FROM #{formatted_table_name} " if table_name.present?
 
-    if user_query.present?
+    if user_query.present? && table_name.present?
       if user_query.match(/^WHERE/i) || user_query.match(/^ORDER\s{1}BY/i)
         # the user has supplied a WHERE or ORDER BY clause
       else
@@ -22,9 +23,11 @@ class Query
       end
       # add the user_query
       @sql += user_query
+    else
+      @sql += user_query
     end
 
-    @sql += " #{limit_sql} "
+    @sql += " #{limit_sql} " if table_name.present?
 
     @sql.force_encoding('utf-8')
   end

@@ -154,4 +154,14 @@ function connectionsController($scope, $rootScope, $http, $location) {
             });
     };
 
+
+    $scope.test = function(connectionId, sqlQuery){
+        console.log(connectionId);
+
+        $rootScope.$emit('addSqlWindow', { connectionId: connectionId, sqlQuery: sqlQuery });
+
+    };
+
+    $scope.sqlWindow = {};
+
 }

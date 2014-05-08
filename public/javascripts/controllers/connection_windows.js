@@ -1,4 +1,5 @@
 function connectionWindowsController($scope, $http, $rootScope) {
+    $scope.sqlWindows = [];
     $scope.connectionWindows = []; // any connectionWindow object in this Array will be shown as a tab in view
     $scope.currentRowId = null; // holds the last selected rowId in order to lookup data before fetching a relation
 
@@ -15,6 +16,12 @@ function connectionWindowsController($scope, $http, $rootScope) {
 
     $scope.getConnectionWindow = function(connectionWindowId){
         return $scope.connectionWindows.filter(function(connectionWindow){
+            return connectionWindow.id == connectionWindowId;
+        })[0];
+    };
+
+    $scope.getSqlWindow = function(connectionWindowId){
+        return $scope.sqlWindows.filter(function(connectionWindow){
             return connectionWindow.id == connectionWindowId;
         })[0];
     };
@@ -64,6 +71,24 @@ function connectionWindowsController($scope, $http, $rootScope) {
         var spinner = startSpinner(connectionWindowId);
         var connectionWindow = $scope.getConnectionWindow(connectionWindowId);
         var url = '/connections/' + connectionWindow.connectionId + '/tables/' + connectionWindow.schemaName + '/' + connectionWindow.tableName + '/query';
+
+        connectionWindow.reset(); // clear the columns, rows, relations, and state of the connectionWindow
+
+        $http.post(url, { sqlQuery: sqlQuery, maxRows: connectionWindow.maxRows })
+            .success(function(data) {
+                $scope.fillTable(connectionWindow, data);
+                spinner.stop();
+            })
+            .error(function() {
+                $rootScope.$emit('sendNoticeToUser', { text: 'There was an error retrieving data.', class: 'alert-danger' });
+                spinner.stop();
+            });
+    };
+
+    $scope.submitSqlWindowQuery = function(connectionWindowId, sqlQuery){
+        var spinner = startSpinner(connectionWindowId);
+        var connectionWindow = $scope.getSqlWindow(connectionWindowId);
+        var url = '/connections/' + connectionWindow.connectionId + '/query';
 
         connectionWindow.reset(); // clear the columns, rows, relations, and state of the connectionWindow
 
@@ -205,6 +230,15 @@ function connectionWindowsController($scope, $http, $rootScope) {
         var connectionWindow = $scope.createConnectionWindow(data['connection'], data['tableName']);
         $(window).trigger('resize');
         $scope.submitQuery(connectionWindow.id, '');
+    });
+
+    $rootScope.$on('addSqlWindow', function(event, data){
+        $scope.sqlWindows = [];
+        var connectionObject = { '_id': data['connectionId'], name: 'RAW' }
+        var sqlWindow = new ConnectionWindow(connectionObject, 'SQL');
+        $scope.sqlWindows.push(sqlWindow);
+        $scope.submitSqlWindowQuery(sqlWindow.id, data['sqlQuery']);
+        $(window).trigger('resize');
     });
 
 

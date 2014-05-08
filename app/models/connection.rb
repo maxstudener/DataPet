@@ -55,7 +55,7 @@ class Connection
   end
 
   def unformat_table_name(table_name, tic)
-    table_name.gsub(tic, '')
+    table_name.gsub(tic, '') if table_name.present?
   end
 
   class << self

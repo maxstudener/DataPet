@@ -52,6 +52,31 @@ class ConnectionsController < ApplicationController
     render json: connection
   end
 
+  def query
+    set_connection
+    sql = params[:sqlQuery]
+    connection_id = params[:connection_name]
+
+    query = @connection.create_query('', sql)
+    result_set = @connection.execute_query(query)
+
+    mongoid_relations = Relation.includes(:to_connection).where(
+        from_connection_id: connection_id,
+        from_table_name: @connection.unformat_table_name(@full_table_name)
+    ).all
+
+    relations = mongoid_relations.inject([]) do |relations, relation|
+      relation['to_connection_name'] = relation.to_connection.name
+      relations << relation
+    end
+
+    if result_set.present?
+      render json: { columns: result_set.first.keys, rows: result_set.map{ |row| row.values }, relations: relations }
+    else
+      render json: { columns: [], rows: [], relations: relations }
+    end
+  end
+
   def tables
     set_connection
     connection_name = params[:connection_name]
