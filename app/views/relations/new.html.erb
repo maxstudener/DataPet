@@ -103,12 +103,12 @@
 
 <!-- WHERE CLAUSES -->
 <div class='container'>
-  <h3>Where&nbsp&nbsp<span class='glyphicon glyphicon-plus' ng-click='addWhereClause()'></span></h3>
+  <h3>Where&nbsp&nbsp<span class='fa fa-plus' ng-click='addWhereClause()'></span></h3>
   <h6 ng-show='type=="has_through"' style='color:red;'>* Optional for 'Has Through' relation type.</h6>
 
   <div ng-repeat='whereClause in relation.where_clauses'>
     <div class='row'>
-      <span style='float:right;' class='glyphicon glyphicon-remove' ng-click='removeWhereClause(whereClause.id)'></span>
+      <span style='float:right;' class='fa fa-power-off' ng-click='removeWhereClause(whereClause.id)'></span>
     </div>
 
     <!-- Where Clause / Relation Table Column -->
@@ -195,11 +195,11 @@
   </div>
 
   <!-- JOIN CLAUSES -->
-  <h3>Joining&nbsp&nbsp<span class='glyphicon glyphicon-plus' ng-click='addJoinClause()'></span></h3>
+  <h3>Joining&nbsp&nbsp<span class='fa fa-plus' ng-click='addJoinClause()'></span></h3>
 
   <div ng-repeat='joinClause in relation.join_clauses'>
     <div class='row'>
-      <span style='float:right;' class='glyphicon glyphicon-remove' ng-click='removeJoinClause(joinClause.id)'></span>
+      <span style='float:right;' class='fa fa-power-off' ng-click='removeJoinClause(joinClause.id)'></span>
     </div>
 
     <!-- From Column -->

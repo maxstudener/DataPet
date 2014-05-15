@@ -24,7 +24,7 @@
        <div class="list-group">
 
         <div class="list-group-item" ng-repeat='connection in connections'>
-          
+
           <font ng-show='connection.state=="loading"'>{{connection.name}} ... loading</font>
           <a ng-show='connection.state=="loaded"' href='#' class='{{connection.state}}' ng-click='toggleDisplay(connection)'>{{connection.name}}</a>
           <font style='color:red;' ng-show='connection.state=="error"'>{{connection.name}} ... error</font>
@@ -53,7 +53,7 @@
       <ul class='nav nav-tabs'>
         <li ng-repeat='connectionWindow in connectionWindows' class='{{connectionWindow.active}}'>
           <a href=#{{connectionWindow.id}} data-toggle='tab' ng-click='showConnectionWindow(connectionWindow.id)'>{{connectionWindow.title}}&nbsp&nbsp<span
-          class="glyphicon glyphicon-remove-circle" ng-click='closeConnectionWindow(connectionWindow.id)'></a>
+          class="fa fa-power-off" ng-click='closeConnectionWindow(connectionWindow.id)'></a>
         </li>
       </ul>
   </div>
@@ -117,7 +117,7 @@
       <!-- modal window for relations -->
       <div id='{{connectionWindow.id}}_relations' class='context_menu'>
         <a href='#' class='up_and_left' ng-click="closeRelationMenu(connectionWindow.id)"><span
-        class="medium_glyph glyphicon glyphicon-remove-circle"></span></a>
+        class="fa fa-power-off"></span></a>
         <ul class='up_and_left'>
           <a class='centered' ng-repeat='relation in connectionWindow.relations' href='#'
              ng-click='newRelationWindow(connectionWindow.id, relation.name)'>{{relation.name}}<br/></a>
@@ -126,7 +126,7 @@
 
       <div class='row_detail' ng-show='rowDetail.show'>
         <a  href='#' ng-click="closeRowDetail()">
-          <span style='margin: 10px 0 10px 10px;' class="medium_glyph glyphicon glyphicon-remove-circle"></span>
+          <span style='margin: 10px 0 10px 10px;' class="fa fa-power-off"></span>
         </a>
         <input class='form-control' placeholder='Column Name...'
                ng-model='columnFilter'
