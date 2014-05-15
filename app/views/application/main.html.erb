@@ -6,36 +6,46 @@
 <!-- auto complete for filter -->
 <script src='/javascripts/directives/column_autocomplete.js'></script>
 
-<!-- connections pane -->
-<div class='col-sm-2 connections full-height'
-     ng-controller='connectionsController'
-     ng-init='getConnections()'
->
-  <br />
-  <input class='form-control' placeholder='Table Name...'
-         ng-model='tableFilter'
-         ng-change='displayAllConnections()'
-  />
-  <br/>
-  <ul>
-    <li ng-repeat='connection in connections'>
-      <font ng-show='connection.state=="loading"'>{{connection.name}} ... loading</font>
-      <a ng-show='connection.state=="loaded"' href='#' class='{{connection.state}}' ng-click='toggleDisplay(connection)'>{{connection.name}}</a>
-      <font style='color:red;' ng-show='connection.state=="error"'>{{connection.name}} ... error</font>
 
-      <div ng-show='connection.display'>
-        <ul style='padding-left:10px;'>
-          <li ng-repeat='table in connection.tables | filter:tableFilter | orderBy:"fullTableName"'>
-            <a href='#' ng-click='createConnectionWindow(connection, table.fullTableName)'>{{table.fullTableName}}</a>
-          </li>
-        </ul>
-      </div>
-    </li>
-  </ul>
+<!-- connections pane -->
+<%= content_for(:sidebar) do %>
+<div class="sidebar sidebar-left" toggleable parent-active-class="sidebar-left-in" id="mainSidebar" ng-controller='connectionsController' ng-init='getConnections()'>
+  <h1 class="app-name">DataPet</h1>
+
+  <div class="scrollable">
+
+      <input 
+             class='form-control' placeholder='Table Name...'
+             ng-model='tableFilter'
+             ng-change='displayAllConnections()'
+      />
+    <div class="scrollable-content">
+
+       <div class="list-group">
+
+        <div class="list-group-item" ng-repeat='connection in connections'>
+          <font ng-show='connection.state=="loading"'>{{connection.name}} ... loading</font>
+          <a ng-show='connection.state=="loaded"' href='#' class='{{connection.state}}' ng-click='toggleDisplay(connection)'>{{connection.name}}</a>
+          <font style='color:red;' ng-show='connection.state=="error"'>{{connection.name}} ... error</font>
+
+          <div ng-show='connection.display'>
+            <div class="list-group" toggle="off" bubble target="mainSidebar">
+              <div class="list-group-item" toggle="off" target="mainSidebar" bubble ng-repeat='table in connection.tables | filter:tableFilter | orderBy:"fullTableName"'>
+                <a href='#' ng-click='createConnectionWindow(connection, table.fullTableName)'>{{table.fullTableName}}</a>
+              </div>
+            </div>
+          </div>
+        </div><!-- connections list-group-item -->
+
+      </div><!-- list-group -->
+
+    </div>
+  </div>
 </div>
+<% end %>
 
 <!-- connectionWindows pane -->
-<div id='connection_window_pane' class='col-sm-10 full-height ' ng-controller='connectionWindowsController' style="padding-left:0; padding-right: 0;">
+<div id='connection_window_pane' ng-controller='connectionWindowsController' style="padding-left:0; padding-right: 0;">
   <!-- connectionWindow tabs -->
   <div id='navigation_tabs'>
       <ul class='nav nav-tabs'>

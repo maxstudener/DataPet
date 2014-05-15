@@ -3,14 +3,18 @@
 <head>
   <title>DataPet</title>
 
+
   <!-- css files -->
   <link rel='stylesheet' type='text/css' href='/stylesheets/bootstrap/bootstrap.min.css'/>
   <link rel='stylesheet' type='text/css' href='/stylesheets/jquery.ui.all.css'/>
   <link rel='stylesheet' type='text/css' href='/stylesheets/base.css'/>
+  <link rel="stylesheet" type='text/css' href="/stylesheets/mobile-angular-ui-base.css">
+  <link rel="stylesheet" type='text/css' href="/stylesheets/mobile-angular-ui-desktop.css">
 
   <!-- angular js -->
   <script src='/javascripts/angular/angular.min.js'></script>
-  <script>var app = angular.module('data-pet', ['ui.bootstrap', 'ui.codemirror']);</script>
+  <script src="/javascripts/angular/mobile-angular-ui.min.js"></script>
+  <script>var app = angular.module('data-pet', ['ui.bootstrap', 'ui.codemirror', 'mobile-angular-ui']);</script>
 
   <!-- jQuery -->
   <script src='/javascripts/jquery/jquery-2.0.3.min.js'></script>
@@ -42,48 +46,69 @@
 
 <body>
 
-<div class='container-liquid'>
+<%= yield :sidebar %>
 
-  <nav id='top_navigation_bar' class="navbar navbar-default" role="navigation">
-    <!-- Brand and toggle get grouped for better mobile display -->
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#top_navigation">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <a class="navbar-brand" href='/'>DataPet</a>
+<div class="sidebar sidebar-right ng-scope" toggleable="" parent-active-class="sidebar-right-in" id="rightSidebar">
+  <div class="scrollable">
+    <div class="scrollable-content">
+      <div class="list-group" toggle="off" bubble="" target="rightSidebar">
+
+
+          <div class="list-group-item">
+            <a <%= target_blank? %> href='<%= connections_path %>' class="btn btn-navbar">Connections</a>
+          </div>
+          <div class="list-group-item">
+            <a <%= target_blank? %> href='<%= new_connection_path %>' class="btn btn-navbar">New Connection</i></a>
+          </div>
+              
+          <div class="list-group-item">
+            <a <%= target_blank? %> href='<%= relations_path %>' class="btn btn-navbar">Relations</a>
+          </div>
+          <div class="list-group-item">
+            <a <%= target_blank? %> href='<%= new_relation_path %>' class="btn btn-navbar">New Relation</a>
+          </div>
+
+          
+          <div class="list-group-item">
+            <a <%= target_blank? %> href='<%= sql_windows_path %>' class="btn btn-navbar">New SQL Window</a>
+          </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="app">
+
+  <div class="navbar navbar-app navbar-absolute-top">
+
+    <div class="navbar-brand navbar-brand-center">
+      <span><a href="/">DataPet</a></span>
     </div>
 
-    <!-- Collect the nav links, forms, and other content for toggling -->
-    <div class="collapse navbar-collapse" id="top_navigation">
-      <ul class="nav navbar-nav">
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Connections <b class="caret"></b></a>
-          <ul class="dropdown-menu">
-            <li><a <%= target_blank? %> href='<%= connections_path %>'>All</a></li>
-            <li><a <%= target_blank? %> href='<%= new_connection_path %>'>New</a></li>
-          </ul>
-        </li>
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Relations <b class="caret"></b></a>
-          <ul class="dropdown-menu">
-            <li><a <%= target_blank? %> href='<%= relations_path %>'>All</a></li>
-            <li><a <%= target_blank? %> href='<%= new_relation_path %>'>New</a></li>
-          </ul>
-        </li>
-        <li><a <%= target_blank? %> href='<%= sql_windows_path %>'>New SQL Window</a></li>
-      </ul>
+    <div class="btn-group pull-left">
+      <div ng-click="toggle('mainSidebar')" class="btn btn-navbar sidebar-toggle">
+        <i class="fa fa-bars"></i> Databases
+      </div>
     </div>
-    <!-- /.navbar-collapse -->
-  </nav>
 
-  <div id='main' class='container-liquid'>
-    <%= yield %>
+    <div class="btn-group pull-right">
+      <div ng-click="toggle('rightSidebar')" class="btn btn-navbar ng-scope">
+        Menu <i class="fa fa-bars"></i>
+      </div>
+    </div>
+
   </div>
 
+  <div class='app-body'>
+    <div class="app-content">
+      <%= yield %>
+    </div>
+  </div>
 </div>
+
+
 
 <!-- notices -->
 <div ng-controller='noticesController'>
