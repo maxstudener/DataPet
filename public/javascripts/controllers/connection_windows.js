@@ -203,7 +203,7 @@ function connectionWindowsController($scope, $http, $rootScope) {
         if(connectionWindow.relations.length > 0){
             $scope.setCurrentRowId(rowId);
             var menu = $('#' + connectionWindowId + '_relations');
-            menu.css('left', '0px' );
+            menu.css('left', '15px' );
             menu.css('top', ($event.clientY - $('#top_navigation_bar').height()) + 'px' );
             menu.show();
         }

@@ -53,7 +53,7 @@
       <ul class='nav nav-tabs'>
         <li ng-repeat='connectionWindow in connectionWindows' class='{{connectionWindow.active}}'>
           <a href=#{{connectionWindow.id}} data-toggle='tab' ng-click='showConnectionWindow(connectionWindow.id)'>{{connectionWindow.title}}&nbsp&nbsp<span
-          class="fa fa-times-circle-o" ng-click='closeConnectionWindow(connectionWindow.id)'></a>
+          class="custom fa fa-times" ng-click='closeConnectionWindow(connectionWindow.id)'></a>
         </li>
       </ul>
   </div>
@@ -116,17 +116,19 @@
 
       <!-- modal window for relations -->
       <div id='{{connectionWindow.id}}_relations' class='context_menu'>
-        <a href='#' class='up_and_left' ng-click="closeRelationMenu(connectionWindow.id)"><span
-        class="fa fa-times-circle-o"></span></a>
-        <ul class='up_and_left'>
+        <a href='#' class='up_and_left' ng-click="closeRelationMenu(connectionWindow.id)">
+          <span class="custom fa fa-times"></span>
+        </a>
+        <ul>
           <a class='centered' ng-repeat='relation in connectionWindow.relations' href='#'
              ng-click='newRelationWindow(connectionWindow.id, relation.name)'>{{relation.name}}<br/></a>
         </ul>
+        <br />
       </div>
 
       <div class='row_detail' ng-show='rowDetail.show'>
         <a  href='#' ng-click="closeRowDetail()">
-          <span style='margin: 10px 0 10px 10px;' class="fa fa-times-circle-o"></span>
+          <span style='margin: 10px 0 10px 10px;' class="custom fa fa-times"></span>
         </a>
         <input class='form-control' placeholder='Column Name...'
                ng-model='columnFilter'

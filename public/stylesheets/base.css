@@ -29,9 +29,7 @@
     text-align: center;
 }
 
-.up_and_left {
-    position: relative;
-}
+
 
 td.relations {
     background-color: #91baff !important;
@@ -142,4 +140,19 @@ div.row_detail {
     z-index: 1001;
     -webkit-box-shadow: 0 1px 10px 2px rgba(25, 25, 25, .5);
     box-shadow: 0 1px 10px 2px rgba(25, 25, 25, .5);
+}
+
+span.custom {
+    font-size: 1.5em;
+    color: #474747;
+}
+
+span.custom:hover {
+    color: red;
+}
+
+.up_and_left {
+    position: relative;
+    top: -10px;
+    left: -5px;
 }
