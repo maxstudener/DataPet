@@ -108,7 +108,7 @@
 
   <div ng-repeat='whereClause in relation.where_clauses'>
     <div class='row'>
-      <span style='float:right;' class='fa fa-power-off' ng-click='removeWhereClause(whereClause.id)'></span>
+      <span style='float:right;' class='fa fa-times-circle-o' ng-click='removeWhereClause(whereClause.id)'></span>
     </div>
 
     <!-- Where Clause / Relation Table Column -->
@@ -199,7 +199,7 @@
 
   <div ng-repeat='joinClause in relation.join_clauses'>
     <div class='row'>
-      <span style='float:right;' class='fa fa-power-off' ng-click='removeJoinClause(joinClause.id)'></span>
+      <span style='float:right;' class='fa fa-times-circle-o' ng-click='removeJoinClause(joinClause.id)'></span>
     </div>
 
     <!-- From Column -->
