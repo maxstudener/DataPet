@@ -31,7 +31,7 @@
 
           <div ng-show='connection.display'>
             <ul>
-              <li toggle="off" bubble target="mainSidebar" ng-repeat='table in connection.tables | filter:tableFilter | orderBy:"fullTableName"'>
+              <li ng-repeat='table in connection.tables | filter:tableFilter | orderBy:"fullTableName"'>
                 <a href='#' ng-click='createConnectionWindow(connection, table.fullTableName)'>{{table.fullTableName}}</a>
               </li>
             </ul>
