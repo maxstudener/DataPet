@@ -144,15 +144,19 @@ function relationsController($scope, $rootScope, $location, $http) {
                 $scope.connections = data;
 
                 $scope.connections.forEach(function (connection, idx, arr) {
-                    $scope.getTables(connection);
+                    $scope.getTables(connection, function(){
+                        // do nothing
+                    });
                 });
 
                 $scope.relation = {
                     from_connection_id: $scope.connections[0]._id,
                     to_connection_id: $scope.connections[0]._id,
+                    structure:  $scope.connections[0].structure,
                     relation_type: $scope.types[0].value,
                     where_clauses: [ new WhereClause() ],
                 };
+                console.log($scope.relation);
 
                 $scope.fromConnection = $scope.connections[0];
                 $scope.toConnection = $scope.connections[0];
@@ -209,6 +213,7 @@ function relationsController($scope, $rootScope, $location, $http) {
         $('#to_connection').val(connection._id);
         $scope.toConnection = connection;
         $scope.relation.to_connection_id = connection._id;
+        $scope.relation.structure = connection.structure;
     };
 
     $scope.updateToConnection = function() {

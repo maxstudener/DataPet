@@ -20,7 +20,7 @@ class Relation
     mongoid_relations = Relation.includes(:to_connection).all
 
     relations = mongoid_relations.inject([]) do |relations, relation|
-      relation['from_connection_name'] = relation.from_connection.name
+      relation['from_connection_name'] = relation.from_connection.name  unless relation.from_connection.blank?
       relations << relation
     end
   end

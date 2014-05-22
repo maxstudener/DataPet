@@ -1,6 +1,6 @@
 <script src="/javascripts/controllers/relations.js"></script>
 
-<div class="scrollable-content" ng-controller="relationsController" ng-init="initializeIndexPage()">
+<div class="container scrollable-content" ng-controller="relationsController" ng-init="initializeIndexPage()">
   <br />
   <input class='form-control' placeholder='Filter...'
          ng-model='relationFilter'
@@ -19,7 +19,7 @@
     <div class='col-sm-2 col-xs-12'>
       <button class="btn btn-sm btn-danger expand" ng-click='destroyRelation(relation._id)'>Delete</button>
     </div>
-    <div class='col-sm-12 col-xs-12'>
+    <div class='col-sm-4 col-xs-12'>
       <hr />
     </div>
   </div>

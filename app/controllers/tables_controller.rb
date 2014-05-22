@@ -12,11 +12,15 @@ class TablesController < ApplicationController
     max_rows = params[:maxRows]
     connection_id = params[:connection_name]
 
+    from_connection = ConnectionAttributes.where(
+        _id: connection_id
+    ).first
+
     query = @connection.create_query(@full_table_name, sql, max_rows)
     result_set = @connection.execute_query(query)
 
     mongoid_relations = Relation.includes(:to_connection).where(
-      from_connection_id: connection_id,
+      structure: from_connection.structure,
       from_table_name: @connection.unformat_table_name(@full_table_name)
     ).all
 
