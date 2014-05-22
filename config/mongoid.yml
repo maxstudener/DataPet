@@ -6,3 +6,13 @@ development:
         - localhost:27017
   options:
     allow_dynamic_fields: true
+
+# sharing is caring wtf?
+production:
+  sessions:
+    default:
+      database: mongoid
+      hosts:
+        - localhost:27017
+  options:
+    allow_dynamic_fields: true
