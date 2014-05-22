@@ -3,60 +3,6 @@
 <head>
   <title>DataPet</title>
 
-  <!-- -->
-
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <script type="text/javascript">
-      // Make sense of the page on load
-      addEventListener("load", function()
-      {
-          updateOrientation();
-          window.onorientationchange = updateOrientation;
-      }, false);
-
-      // "Hide" the navbar
-      function hideAddressbar()
-      {
-          window.scrollTo(0, 1);
-      }
-
-      function updateOrientation()
-      {
-          // Orientation
-          var orientation = window.orientation;
-          switch (orientation)
-          {
-              case 0:
-                  document.body.setAttribute("class","portrait");
-                  break;
-              case 90:
-                  document.body.setAttribute("class","landscape");
-                  break;
-              case -90:
-                  document.body.setAttribute("class","landscape");
-                  break;
-          }
-
-          // Chrome mode
-          if (orientation == 0 && window.innerHeight > 400 ||  orientation != 0 && window.innerHeight > 290) // we're in fullscreen mode, either orientation
-          {
-              document.body.setAttribute("class", document.body.className + " fullscreen");
-          }
-          else
-          {
-              document.body.setAttribute("class", document.body.className + " chromed");
-          }
-
-          hideAddressbar();
-      }
-
-  </script>
-
-  <!-- -->
-
-
   <!-- css files -->
   <!-- <link rel='stylesheet' type='text/css' href='/stylesheets/bootstrap/bootstrap.min.css'/> -->
   <link rel='stylesheet' type='text/css' href='/stylesheets/jquery.ui.all.css'/>
@@ -94,6 +40,8 @@
   <!-- noticesController used to display messages to the user -->
   <script src='/javascripts/controllers/notices.js'></script>
   <%= csrf_meta_tags %>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 </head>
 
 <body>
