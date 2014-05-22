@@ -7,6 +7,6 @@ class ConnectionAttributes
  def self.all_without_creds
    ConnectionAttributes.where(
        environment: Rails.env
-   ).map{|c| { '_id' => c._id, name: c.name, structure: c.structure } }
+   ).map{|c| { '_id' => c._id, name: c.name } }
  end
 end
