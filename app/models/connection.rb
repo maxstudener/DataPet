@@ -8,7 +8,7 @@ class Connection
   end
 
   def establish_connection
-    Sequel.connect(@configuration)
+    @conn = Sequel.connect(@configuration)
   end
 
   def create_query(table_name, sql, max_rows = 50)
@@ -18,12 +18,17 @@ class Connection
   # relation.rb calls execute_query with safety_is_off = true
   # calling without a second parameter will attempt to ensure that the query is readonly
   def execute_query(sql, safety_is_off = false)
-    if safety_is_off || is_select_query?(sql)
-      Rails.logger.info sql
-      @db[sql].all
-    else
-      raise 'Only SELECT statements are allowed.'
+    begin
+       if safety_is_off || is_select_query?(sql)
+         Rails.logger.info sql
+         @db[sql].all
+      else
+        raise 'Only SELECT statements are allowed.'
+      end
+    ensure
+      @conn.disconnect
     end
+
   end
 
   def db
