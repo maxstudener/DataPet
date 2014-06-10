@@ -8,7 +8,7 @@ class Connection
   end
 
   def establish_connection
-    @conn = Sequel.connect(@configuration)
+    Sequel.connect(@configuration)
   end
 
   def create_query(table_name, sql, max_rows = 50)
@@ -26,7 +26,7 @@ class Connection
         raise 'Only SELECT statements are allowed.'
       end
     ensure
-      @conn.disconnect
+      @db.disconnect
     end
 
   end
