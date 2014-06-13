@@ -7,7 +7,6 @@ A web application for viewing databases and quickly navigating between relations
 ### Currently Supported Databases
 
   * MySql
-  * MSSQL
   * Progress/OpenEdge
   * PostgreSQL
   * Sqlite
@@ -15,6 +14,5 @@ A web application for viewing databases and quickly navigating between relations
 ### Requirements
 
   * JRuby
-  * MongoDB ( application database )
   * JDBC Drivers for your database types
   * Git
