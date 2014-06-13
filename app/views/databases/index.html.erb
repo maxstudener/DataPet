@@ -1,0 +1,23 @@
+<div ng-controller="databasesController" ng-init='initIndex()' class='scrollable-content container'>
+
+    <div class="row" ng-repeat="database in databases">
+      <br />
+      <div class='col-sm-8 col-xs-12' style='text-align: left'>
+        <b>{{database.name}}</b>
+      </div>
+      <div class='col-sm-2 col-xs-12' >
+        <a class="btn btn-sm btn-primary expand" ng-href="/databases/{{database.id}}/edit">Edit</a>
+      </div>
+      <div class='col-sm-2 col-xs-12' >
+        <button class="btn btn-sm btn-danger expand" ng-click='destroyDatabase(database.id)'>Delete</button>
+      </div>
+      <div class='col-sm-12 col-xs-12'>
+        <hr />
+      </div>
+    </div>
+
+</div>
+
+<%= content_for :javascripts do %>
+    <script type="text/javascript" src="/javascripts/angular/controllers/databases/databases_controller.js"></script>
+<% end %>

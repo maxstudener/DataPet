@@ -1,133 +1,108 @@
-<script src='/javascripts/controllers/connections.js'></script>
-<script src='/javascripts/controllers/connection_windows.js'></script>
-<script src='/javascripts/spinner.js'></script>
-<script src='/javascripts/spin.min.js'></script>
+<link rel='stylesheet' href='/stylesheets/jquery.ui.all.css'/>
 
-<!-- auto complete for filter -->
-<script src='/javascripts/directives/column_autocomplete.js'></script>
-
-
-<!-- connections pane -->
 <%= content_for(:sidebar) do %>
-<div class="sidebar sidebar-left" toggleable parent-active-class="sidebar-left-in" id="mainSidebar" ng-controller='connectionsController' ng-init='getConnections()'>
-  <h1 class="app-name">DataPet</h1>
+    <div class="sidebar sidebar-left" toggleable parent-active-class="sidebar-left-in" id="mainSidebar" ng-controller='databasesController' ng-init='initMain()'>
+      <h1 class="app-name">DataPet</h1>
 
-  <div class="scrollable">
+      <div class="scrollable">
+        <input ng-model='tableFilter' ng-change='displayAllTables()' class='form-control' placeholder='Table Name...'/>
 
-      <input 
-             class='form-control' placeholder='Table Name...'
-             ng-model='tableFilter'
-             ng-change='displayAllConnections()'
-      />
-    <div class="scrollable-content">
+        <div class="scrollable-content">
+          <div class="list-group">
+            <div class="list-group-item" ng-repeat='database in databases'>
+              <span ng-show='database.state=="loading"'>{{database.name}} ... loading</span>
+              <a ng-show='database.state=="loaded"' href='#' class='{{database.state}}' ng-click='toggleDisplay(database)'>{{database.name}}</a>
+              <span style='color:red;' ng-show='database.state=="error"'>{{database.name}} ... error</span>
 
-       <div class="list-group">
-
-        <div class="list-group-item" ng-repeat='connection in connections'>
-
-          <font ng-show='connection.state=="loading"'>{{connection.name}} ... loading</font>
-          <a ng-show='connection.state=="loaded"' href='#' class='{{connection.state}}' ng-click='toggleDisplay(connection)'>{{connection.name}}</a>
-          <font style='color:red;' ng-show='connection.state=="error"'>{{connection.name}} ... error</font>
-
-          <div ng-show='connection.display'>
-            <ul>
-              <li ng-repeat='table in connection.tables | filter:tableFilter | orderBy:"fullTableName"'>
-                <a href='#' ng-click='createConnectionWindow(connection, table.fullTableName)'>{{table.fullTableName}}</a>
-              </li>
-            </ul>
+              <div ng-show='database.display'>
+                <ul>
+                  <li ng-repeat='table in database.tables | filter:tableFilter | orderBy:"table.name"'>
+                    <a href='#' ng-click='createDatabaseWindow(database, table.name)'>{{table.name}}</a>
+                  </li>
+                </ul>
+              </div>
+            </div>
           </div>
-
-        </div><!-- connections list-group-item -->
-
-      </div><!-- list-group -->
-
+        </div>
+      </div>
     </div>
-  </div>
-</div>
 <% end %>
 
-<!-- connectionWindows pane -->
-<div id='connection_window_pane' ng-controller='connectionWindowsController' style="padding-left:0; padding-right: 0;">
-  <!-- connectionWindow tabs -->
+<div ng-controller='databaseWindowsController'>
+
   <div id='navigation_tabs'>
-      <ul class='nav nav-tabs'>
-        <li ng-repeat='connectionWindow in connectionWindows' class='{{connectionWindow.active}}'>
-          <a href=#{{connectionWindow.id}} data-toggle='tab' ng-click='showConnectionWindow(connectionWindow.id)'>{{connectionWindow.title}}&nbsp&nbsp<span
-          class="custom fa fa-times" ng-click='closeConnectionWindow(connectionWindow.id)'></a>
-        </li>
-      </ul>
+    <ul class='nav nav-tabs'>
+      <li ng-repeat='databaseWindow in databaseWindows' class='{{databaseWindow.active}}'>
+        <a href=#{{databaseWindow.id}} data-toggle='tab' ng-click='showDatabaseWindow(databaseWindow.id)'>
+          {{databaseWindow.title}}&nbsp&nbsp<span class="custom fa fa-times" ng-click='closeDatabaseWindow(databaseWindow.id)'></span>
+        </a>
+      </li>
+    </ul>
   </div>
 
-  <!-- connectionWindows -->
   <div class='tab-content'>
-    <div ng-repeat='connectionWindow in connectionWindows' id={{connectionWindow.id}}
-         class='tab-pane {{connectionWindow.active}} full-height'>
-      <a style='float:right; margin-right:30px;' href='?connection_id:{{connectionWindow.connectionId}}?connection_name:{{connectionWindow.connectionName}}?full_table_name:{{connectionWindow.fullTableName}}?query:{{connectionWindow.currentSqlQuery}}'>Link Me</a>
-      <br />
-      <div class='connection_window_header connection_window_input'>
-        <form ng-submit='submitQuery(connectionWindow.id, connectionWindow.currentSqlQuery)'>
+    <div ng-repeat='databaseWindow in databaseWindows' id={{databaseWindow.id}} class='tab-pane {{databaseWindow.active}} full-height'>
 
-          <input id='{{connectionWindow.id}}_sql' ng-model='connectionWindow.currentSqlQuery'
-                 class='form-control'
-                 columnautocomplete
-                 />
+      <a style='float:right; margin-right:30px;' href='?database_id:{{databaseWindow.database_id}}?database_name:{{databaseWindow.databaseName}}?full_table_name:{{databaseWindow.fullTableName}}?query:{{databaseWindow.currentSqlQuery}}'>Link Me</a>
+
+      <br/>
+
+      <div class='database_window_header'>
+        <form ng-submit='submitQuery(databaseWindow.id, databaseWindow.currentSqlQuery)'>
+          <input id='{{databaseWindow.id}}_sql' ng-model='databaseWindow.currentSqlQuery' class='form-control' columnautocomplete/>
         </form>
       </div>
 
       <div class='data_content scrolling wrapper'>
-        <table id='{{connectionWindow.id}}_table'  class='table table-bordered table-condensed table-striped fixed-table-header' ng-show='connectionWindow.columns.length > 0'>
-          <thead style='background-color:white;' >
-              <tr>
-                <th>
-                  <!-- filler for relations -->
-                </th>
-                <th ng-repeat='column in connectionWindow.columns'>{{column.name}}</th>
-              </tr>
+        <table id='{{databaseWindow.id}}_table' class='table table-bordered table-condensed table-striped fixed-table-header' ng-show='databaseWindow.columns.length > 0'>
+          <thead style='background-color:white;'>
+          <tr>
+            <th>
+              <!-- filler for relations -->
+            </th>
+            <th ng-repeat='column in databaseWindow.columns'>{{column.name}}</th>
+          </tr>
           </thead>
           <tbody>
-              <tr ng-repeat='row in connectionWindow.rows' ng-dblclick='displayRowDetail(row.rowData, connectionWindow.columns)'>
-                <td ng-click='showRelationMenu(connectionWindow.id, row.id, $event)' class='relations'>
-                  {{row.id+1}}
-                </td>
-                <td ng-repeat='value in row.rowData'>
-                  {{value.value}}
-                </td>
-              </tr>
+          <tr ng-repeat='row in databaseWindow.rows' ng-dblclick='displayRowDetail(row.rowData, databaseWindow.columns)'>
+            <td ng-click='showRelationMenu(databaseWindow.id, row.id, $event)' class='relations'>
+              {{row.id+1}}
+            </td>
+            <td ng-repeat='column in row.columns'>
+              {{column.value}}
+            </td>
+          </tr>
           </tbody>
-
         </table>
-
       </div>
 
-      <div class='connection_window_footer row'>
+      <br/>
+
+      <div class='row'>
         <div class='col-sm-2'>
-          <form ng-submit='submitQuery(connectionWindow.id, connectionWindow.currentSqlQuery)'>
-            <input id='{{connectionWindow.id}}_max_rows' ng-model='connectionWindow.maxRows'
-                   class='form-control connection_window_input'
-                   placeholder='max rows'
-            />
+          <form ng-submit='submitQuery(databaseWindow.id, databaseWindow.currentSqlQuery)'>
+            <input id='{{databaseWindow.id}}_max_rows' ng-model='databaseWindow.maxRows' class='form-control' placeholder='max rows'/>
           </form>
         </div>
         <div class='col-sm-2 col-sm-offset-8'>
-          <input readonly value='{{connectionWindow.rows.length}}/{{connectionWindow.maxRows}}' class='form-control {{connectionWindow.state}} connection_window_input' />
+          <input readonly value='{{databaseWindow.rows.length}}/{{databaseWindow.maxRows}}' class='form-control {{databaseWindow.state}}'/>
         </div>
-
       </div>
 
       <!-- modal window for relations -->
-      <div id='{{connectionWindow.id}}_relations' class='context_menu'>
-        <a href='#' class='up_and_left' ng-click="closeRelationMenu(connectionWindow.id)">
+      <div id='{{databaseWindow.id}}_relations' class='context_menu'>
+        <a href='#' class='up_and_left' ng-click="closeRelationMenu(databaseWindow.id)">
           <span class="custom fa fa-times"></span>
         </a>
         <ul>
-          <a class='centered' ng-repeat='relation in connectionWindow.relations' href='#'
-             ng-click='newRelationWindow(connectionWindow.id, relation.name)'>{{relation.name}}<br/></a>
+          <a class='centered' ng-repeat='relation in databaseWindow.relations' href='#'
+             ng-click='newRelationWindow(databaseWindow.id, relation.name)'>{{relation.name}}<br/></a>
         </ul>
-        <br />
+        <br/>
       </div>
 
       <div class='row_detail' ng-show='rowDetail.show'>
-        <a  href='#' ng-click="closeRowDetail()">
+        <a href='#' ng-click="closeRowDetail()">
           <span style='margin: 10px 0 10px 10px;' class="custom fa fa-times"></span>
         </a>
         <input class='form-control' placeholder='Column Name...'
@@ -151,55 +126,64 @@
 
 
   </div>
-  <!-- end of connectionWindows -->
-</div><!-- end of connectionWindows pane -->
+</div>
 
-<script>
-    // adjust the body tag to be full window height
-    window.onload = function () {
-        resizeMain();
-    };
+<%= content_for :javascripts do %>
+    <script src='/javascripts/angular/controllers/databases/databases_controller.js'></script>
+    <script src='/javascripts/angular/controllers/databases/database_windows_controller.js'></script>
 
-    window.onresize = function () {
-        resizeMain();
-        resizeConnectionWindows();
-    };
+    <script src='/javascripts/spinner.js'></script>
+    <script src='/javascripts/spin.min.js'></script>
 
-    function resizeMain() {
-        $('#main').height($(window).height() - 5 - $('#top_navigation_bar').height());
-    }
+    <!-- auto complete for filter -->
+    <script src='/javascripts/angular/directives/column_autocomplete.js'></script>
+    <script>
+        // adjust the body tag to be full window height
+        window.onload = function () {
+            resizeMain();
+        };
 
-    function resizeConnectionWindows() {
-        var x;
-        var formHeight = 0;
+        window.onresize = function () {
+            resizeMain();
+            resizeDatabaseWindows();
+        };
 
-        var tabHeight = document.getElementById('navigation_tabs').offsetHeight;
-        var headers = document.getElementsByClassName('connection_window_header');
-        // var footers = document.getElementsByClassName('connection_window_footer');
+        function resizeMain() {
+            $('#main').height($(window).height() - 5 - $('#top_navigation_bar').height());
+        }
 
-        for (x = 0; x < headers.length; x++) {
-            var height = headers[x].offsetHeight + 100;
-            if (height > formHeight) {
-                formHeight = height;
+        function resizeDatabaseWindows() {
+            var x;
+            var formHeight = 0;
+
+            var tabHeight = document.getElementById('navigation_tabs').offsetHeight;
+            var headers = document.getElementsByClassName('database_window_header');
+
+            for (x = 0; x < headers.length; x++) {
+                var height = headers[x].offsetHeight + 100;
+                if (height > formHeight) {
+                    formHeight = height;
+                }
+            }
+
+            var datas = document.getElementsByClassName('data_content');
+            var tabs = document.getElementsByClassName('tab-pane');
+            var newHeight = $(window).height() - tabHeight - $('#top_navigation_bar').height() - 35;
+
+            for (x = 0; x < tabs.length; x++) {
+                tabs[x].style.height = newHeight + 'px';
+                datas[x].style.height = (newHeight - formHeight ) + 'px';
             }
         }
 
-        var datas = document.getElementsByClassName('data_content');
-        var tabs = document.getElementsByClassName('tab-pane');
-        var newHeight = $(window).height() - tabHeight - $('#top_navigation_bar').height() - 35;
-
-        for (x = 0; x < tabs.length; x++) {
-            tabs[x].style.height = newHeight + 'px';
-            datas[x].style.height = (newHeight - formHeight ) + 'px';
+        function fixTableHeaders() {
+            var $table = $('table.fixed-table-header');
+            $table.floatThead({
+                scrollContainer: function ($table) {
+                    return $table.closest('.wrapper');
+                }
+            });
         }
-    }
+    </script>
+<% end %>
 
-    function fixTableHeaders(){
-        var $table = $('table.fixed-table-header');
-        $table.floatThead({
-            scrollContainer: function($table){
-                return $table.closest('.wrapper');
-            }
-        });
-    }
-</script>

@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  database_relation_id: 1
+  from_column_name: MyString
+  to_column_name: MyString
+  through_relation_id: 1
+
+two:
+  database_relation_id: 1
+  from_column_name: MyString
+  to_column_name: MyString
+  through_relation_id: 1

@@ -2,12 +2,7 @@
     font-size: 30px;
     background: #f5f5f5;
     border-radius: 50%;
-}
-
-.connections {
-    overflow: auto;
-    background-color: #f8f8f8;
-    box-shadow: 0 0 1px rgba(0,0,0,0.5);
+    padding-left: 50px;
 }
 
 .context_menu {
@@ -94,10 +89,6 @@ ul.ui-autocomplete {
     border-top-color: lightgray;
     border-top-width: thin;
     border-top-style: solid;
-}
-
-.connection_window_footer {
-    padding: 0 5px 0 5px;
 }
 
 .connection_window_input {

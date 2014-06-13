@@ -1,15 +1,15 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery
 
-  def set_connection
-    @connection = Connection.get(params[:connection_name])
+  before_filter :init_response
+
+  def init_response
+    @response = ResponseJson.new()
   end
 
-  def set_table
-    schema_name = params[:schema_name]
-    table_name = params[:table_name]
-
-    @full_table_name = schema_name.present? ? "#{schema_name}.#{table_name}" : table_name
+  rescue_from Exception do |e|
+    @response.register_error(e)
+    render :json => @response.json and return
   end
 
 end

@@ -1,36 +1,41 @@
 class RelationCalculator
 
-  def initialize(connection_name, table_name, relation_name, data_hash, max_rows = 50)
-    @table_name = table_name
-    @data_hash = data_hash
+  def initialize(relation_id, query_data)
+    @table_name = query_data[:table_name]
+
+    # ensure that the column names are all lowercase
+    @data_hash = query_data[:row_data].map do |row|
+      { 'column'=> row['column'].downcase, 'value' => row['value'] }
+    end
 
     # find the configuration for this relation
-    relation = Relation.where(from_connection_id: connection_name, from_table_name: table_name, relation_name: relation_name).first
-    @connection_name = relation.to_connection_id
+    relation = DatabaseRelation.find(relation_id)
+    @database_id = relation.to_database_id
     @relation_table_name = relation.to_table_name
     @where_clauses = relation.where_clauses
-    @to_connection = Connection.get(relation.to_connection_id)
+    @to_database = Database.find(@database_id)
 
-    top_sql = @to_connection.create_top_statement(max_rows)
-    limit_sql = @to_connection.create_limit_statement(max_rows)
+    top_sql = query_data[:join].present? ? '' : @to_database.top_statement(query_data['max_rows'])
+    limit_sql = query_data[:join].present? ? '' : @to_database.limit_statement(query_data['max_rows'])
 
-    @sql = "SELECT #{top_sql} * FROM #{@to_connection.format_table_name(@relation_table_name)} WHERE "
+    @sql = "SELECT #{top_sql} * FROM #{@to_database.format_table_name(@relation_table_name)} WHERE "
 
     case relation.relation_type
       when 'has'
         add_where_clauses
-
       when 'has_through'
-        through_relation = RelationCalculator.new(connection_name, table_name, relation.through_relation.relation_name, data_hash)
-        join_records = through_relation.compute
+        new_relation_id = relation.through_relation_id
+        through_relation = RelationCalculator.new(new_relation_id, query_data.dup.merge({ join: true }))
+        join_data = through_relation.compute
 
-        # need the keys to be downcase for use later
-        @join_data = join_records.inject([]) do |join_data, join_record|
-          new_data = {}
-          join_record.each do |key, value|
-            new_data[key.downcase.to_sym] = value
+        @join_data = []
+        # ensure that the column names are all lowercase
+        join_data.each do |row|
+          new_row = {}
+          row.each do |key, value|
+            new_row[key.downcase.to_sym] = value
           end
-          join_data << new_data
+          @join_data << new_row
         end
 
         @join_clauses = relation.join_clauses
@@ -41,8 +46,9 @@ class RelationCalculator
           @sql += " AND "
           add_where_clauses
         end
+
       else
-        raise "#{relation.relation_type} relationship is not supported."
+        raise "A #{relation.relation_type} relationship is not supported."
     end
 
     @sql += " #{limit_sql}"
@@ -50,40 +56,43 @@ class RelationCalculator
   end
 
   def add_where_clauses
-    where_clause_sql = @where_clauses.map{ |where| create_where_clause(where) }.join(' AND ')
+    where_clause_sql = @where_clauses.map{ |where_clause| create_where_clause(where_clause) }.join(' AND ')
     @sql += where_clause_sql
   end
 
   def add_join_clauses
-    join_clause_sql = @join_clauses.map{ |join| create_join_clause(join) }.join(' AND ')
-    @sql += join_clause_sql
+    all_joins =  []
+    @join_data.each do |join_data|
+      join_clause_sql = @join_clauses.map{ |join_clause| create_join_clause(join_clause, join_data) }.join(' AND ')
+      all_joins << "(#{join_clause_sql})"
+    end
+    @sql += "(#{all_joins.join(' OR ' )})"
   end
 
-  def create_join_clause(join)
-    join_column = join['join_column']
-    from_column = join['from_column']
+  def create_join_clause(join_clause, join_data)
+    join_column = join_clause.to_column_name
+    from_column = join_clause.from_column_name
+    join_value = join_data[from_column.downcase.to_sym]
 
-    join_data = @join_data.collect{ |row| row[from_column.downcase.to_sym] }.join("','")
-    raise 'Cannot join without values.' if join_data.blank?
+    raise 'The through relation consisted of no data.' if join_data.blank?
 
-    "#{@to_connection.format_table_name(@relation_table_name+'.'+join_column)} IN ('#{join_data}')"
+    "#{@to_database.format_table_name(@relation_table_name+'.'+join_column)} = '#{join_value}'"
   end
 
-  def create_where_clause(where)
-    column = where['to_table_column']
-    operator = where['comparison_operator']
+  def create_where_clause(where_clause)
+    column = where_clause.column_name
+    operator = where_clause.comparison_operator
 
-    case where['comparison_type']
+    case where_clause.comparison_type
       when 'Column'
-        my_value = @data_hash[where['comparison_value'].to_s.downcase]
+        my_value = @data_hash.select{|column_hash| column_hash['column'] == where_clause.comparison_value.downcase }.first['value']
       when 'Value'
-        my_value = where['comparison_value']
-
+        my_value = where_clause.comparison_value
       else
         raise "This type of WHERE clause is not supported."
     end
 
-    "#{@to_connection.format_table_name(@relation_table_name+'.'+column)} #{comparison_sql(operator, my_value)}"
+    "#{@to_database.format_table_name(@relation_table_name+'.'+column)} #{comparison_sql(operator, my_value)}"
   end
 
   def comparison_sql(comparison_operator, my_value)
@@ -116,8 +125,7 @@ class RelationCalculator
   end
 
   def compute
-    connection = Connection.get(@connection_name)
-    connection.execute_query(@sql, true)
+    @to_database.execute_query(@sql)
   end
 
   def result_set
@@ -129,17 +137,11 @@ class RelationCalculator
   end
 
   def rows
-    @result_set.present? ? @result_set.map{ |row| row.values } : []
+    @result_set.present? ? @result_set : []
   end
 
   def relations
-    relations = []
-    mongoid_relations = Relation.includes(:to_connection).where(from_connection_id: @connection_name, from_table_name: @to_connection.unformat_table_name( @relation_table_name)).all
-    mongoid_relations.each do |relation|
-      relation['to_connection_name'] = relation.to_connection.name
-      relations << relation
-    end
-    relations
+    DatabaseRelation.where(from_database_id: @database_id, from_table_name: @to_database.unformat_table_name(@relation_table_name)).all
   end
 
 end

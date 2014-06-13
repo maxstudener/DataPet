@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  database_relation_id: 1
+  column_name: MyString
+  comparison_operator: MyString
+  comparison_type: MyString
+  comparison_value: MyString
+
+two:
+  database_relation_id: 1
+  column_name: MyString
+  comparison_operator: MyString
+  comparison_type: MyString
+  comparison_value: MyString

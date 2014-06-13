@@ -1,0 +1,24 @@
+<div ng-controller="relationsController" ng-init="initializeIndexPage()" class='scrollable-content container'>
+  <br />
+  <input class='form-control' placeholder='Filter...' ng-model='relationFilter' />
+
+  <div class="row" ng-repeat="relation in relations | filter:relationFilter | orderBy:'from_connection_name'">
+    <br/>
+    <div class='col-sm-10 col-xs-12' style='text-align: left'>
+      <b>{{relation.from_connection_name + ' / ' + relation.from_table_name}}</b>
+      <br />
+      {{relation.name}}
+    </div>
+    <div class='col-sm-2 col-xs-12'>
+      <button class="btn btn-sm btn-danger expand" ng-click='destroyRelation(relation.id)'>Delete</button>
+    </div>
+    <div class='col-xs-12'>
+      <hr />
+    </div>
+  </div>
+
+</div>
+
+<%= content_for :javascripts do %>
+    <script src="/javascripts/angular/controllers/relations/relations_controller.js"></script>
+<% end %>

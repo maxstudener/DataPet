@@ -1,0 +1,24 @@
+<div ng-controller="databasesController" ng-init='initEdit()' class='scrollable-content container-fluid' >
+
+  <br />
+
+  <h3>Edit a Database Connection</h3>
+  <input type='hidden' id='database_id' name='database_id' value='<%= @database_id %>' />
+
+  <br />
+
+  <%= render partial: 'form' %>
+
+  <div class='row'>
+    <div class='col-sm-2 col-xs-12'>
+      <input type='button' class='btn btn-default' value='Test' ng-click='testConnection()' ng-show='form.state === "valid"' />
+      <input type='button' class='btn btn-success' value='Save' ng-click='updateConnection()' ng-show='form.state === "tested"' />
+    </div>
+  </div>
+
+</div>
+
+<%= content_for :javascripts do %>
+    <script type="text/javascript" src="/javascripts/angular/controllers/databases/databases_controller.js"></script>
+
+<% end %>

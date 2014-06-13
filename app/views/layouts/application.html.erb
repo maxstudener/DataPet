@@ -1,119 +1,97 @@
 <!DOCTYPE html>
 <html ng-app='data-pet'>
+
 <head>
   <title>DataPet</title>
 
-  <!-- css files -->
-  <!-- <link rel='stylesheet' type='text/css' href='/stylesheets/bootstrap/bootstrap.min.css'/> -->
-  <link rel='stylesheet' type='text/css' href='/stylesheets/jquery.ui.all.css'/>
-  <link rel='stylesheet' type='text/css' href='/stylesheets/base.css'/>
+  <!-- angular-ui css -->
   <link rel="stylesheet" type='text/css' href="/stylesheets/mobile-angular-ui-base.css">
-  <!-- <link rel="stylesheet" type='text/css' href="/stylesheets/mobile-angular-ui-desktop.css"> -->
 
-  <!-- angular js -->
-  <script src='/javascripts/angular/angular.min.js'></script>
-  <script src="/javascripts/angular/mobile-angular-ui.min.js"></script>
-  <script>var app = angular.module('data-pet', ['ui.bootstrap', 'ui.codemirror', 'mobile-angular-ui']);</script>
+  <!-- application css -->
+  <link rel='stylesheet' type='text/css' href='/stylesheets/base.css'/>
 
-  <!-- jQuery -->
-  <script src='/javascripts/jquery/jquery-2.0.3.min.js'></script>
-  <script src='/javascripts/jquery/jquery-ui.js'></script>
+  <meta name='viewport' content="width=device-width, initial-scale=1.0">
 
-  <!-- bootstrap -->
-  <script src='/javascripts/bootstrap/bootstrap.min.js'></script>
-
-  <script src='/javascripts/bootstrap/ui-bootstrap.min.js'></script>
-  <script src='/javascripts/bootstrap/ui-bootstrap-tpls.min.js'></script>
-
-  <!-- floatTHead used for sticky table headers -->
-  <script type="text/javascript" src="/javascripts/jquery/floatTHead.js"></script>
-
-  <!-- code mirror used for JSON editing -->
-  <link rel="stylesheet" type="text/css" href="/bower_components/codemirror/lib/codemirror.css">
-  <script type="text/javascript" src="/bower_components/codemirror/lib/codemirror.js"></script>
-  <script type="text/javascript" src="/bower_components/codemirror/mode/javascript/javascript.js"></script>
-  <script type="text/javascript" src="/bower_components/angular-ui-codemirror/ui-codemirror.js"></script>
-
-  <!-- noticesController used to display messages to the user -->
-  <script src='/javascripts/controllers/notices.js'></script>
   <%= csrf_meta_tags %>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 </head>
 
 <body>
-
 <%= yield :sidebar %>
 
 <div class="sidebar sidebar-right ng-scope" toggleable="" parent-active-class="sidebar-right-in" id="rightSidebar">
   <div class="scrollable">
     <div class="scrollable-content">
       <div class="list-group" toggle="off" bubble="" target="rightSidebar">
-
-
-          <div class="list-group-item">
-            <a <%= target_blank? %> href='<%= connections_path %>' class="btn btn-navbar">Connections</a>
-          </div>
-          <div class="list-group-item">
-            <a <%= target_blank? %> href='<%= new_connection_path %>' class="btn btn-navbar">New Connection</i></a>
-          </div>
-              
-          <div class="list-group-item">
-            <a <%= target_blank? %> href='<%= relations_path %>' class="btn btn-navbar">Relations</a>
-          </div>
-          <div class="list-group-item">
-            <a <%= target_blank? %> href='<%= new_relation_path %>' class="btn btn-navbar">New Relation</a>
-          </div>
-
-          
-          <div class="list-group-item">
-            <a <%= target_blank? %> href='<%= sql_windows_path %>' class="btn btn-navbar">New SQL Window</a>
-          </div>
-
+        <div class="list-group-item">
+          <a <%= target_blank? %> href='<%= databases_path %>' class="btn btn-navbar">Databases</a>
+        </div>
+        <div class="list-group-item">
+          <a <%= target_blank? %> href='<%= new_database_path %>' class="btn btn-navbar">New Database</a>
+        </div>
+        <div class="list-group-item">
+          <a <%= target_blank? %> href='<%= database_relations_path %>' class="btn btn-navbar">Relations</a>
+        </div>
+        <div class="list-group-item">
+          <a <%= target_blank? %> href='<%= new_database_relation_path %>' class="btn btn-navbar">New Relation</a>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
-
 <div class="app">
-
   <div class="navbar navbar-app navbar-absolute-top" id='top_navigation_bar'>
-
     <div class="navbar-brand navbar-brand-center">
       <span><a href="/">DataPet</a></span>
     </div>
-
     <div class="btn-group pull-left">
       <div ng-click="toggle('mainSidebar')" class="btn btn-navbar">
         <i class="fa fa-bars"></i> Databases
       </div>
     </div>
-
     <div class="btn-group pull-right">
       <div ng-click="toggle('rightSidebar')" class="btn btn-navbar">
         Menu <i class="fa fa-bars"></i>
       </div>
     </div>
-
   </div>
-
   <div class='app-body'>
     <div class="app-content">
       <%= yield %>
     </div>
   </div>
-
-</div><!-- app -->
-
-
+</div>
 
 <!-- notices -->
 <div ng-controller='noticesController'>
-  <div ng-repeat='notice in notices' ng-click='removeNotice(notice.id)' class='alert alert-custom {{notice.class}}' style='top:{{notice.top}}px'>
+  <div ng-repeat='notice in notices' ng-click='removeNotice(notice.id)' class='alert alert-custom {{notice.class}}' style='top:{{notice.top}}px;'>
     {{notice.text}}
   </div>
 </div>
 
+<!-- angular js -->
+<script src='/javascripts/angular/angular.min.js'></script>
+<script src="/javascripts/angular/mobile-angular-ui.min.js"></script>
+<script>var app = angular.module('data-pet', ['ui.bootstrap', 'mobile-angular-ui']);</script>
+
+<!-- jQuery -->
+<script src='/javascripts/jquery/jquery-2.0.3.min.js'></script>
+<script src='/javascripts/jquery/jquery-ui.js'></script>
+
+<!-- Bootstrap -->
+<script src='/javascripts/bootstrap/bootstrap.min.js'></script>
+<script src='/javascripts/bootstrap/ui-bootstrap.min.js'></script>
+<script src='/javascripts/bootstrap/ui-bootstrap-tpls.min.js'></script>
+
+<!-- floatTHead used for sticky table headers -->
+<script type="text/javascript" src="/javascripts/jquery/floatTHead.js"></script>
+
+<!-- noticesController used to display messages to the user -->
+<script src='/javascripts/angular/controllers/notices/notices_controller.js'></script>
+<script type="text/javascript" src="/javascripts/angular/services/http_services.js"></script>
+
+<!-- Page Specific JS -->
+<%= yield :javascripts %>
 </body>
+
 </html>

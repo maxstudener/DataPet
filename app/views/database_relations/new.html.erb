@@ -1,0 +1,20 @@
+<div class='scrollable-content container-fluid' ng-controller='relationsController' ng-init='initializeNewPage()'>
+
+    <br />
+
+    <h3>New Relation</h3>
+
+    <%= render partial: 'form' %>
+
+    <input type='button' value='Create Relation' class='btn btn-primary' ng-click='createRelation()'/>
+
+    <br />
+    <br />
+    <br />
+    <br />
+</div>
+
+
+<%= content_for :javascripts do %>
+    <script src='/javascripts/angular/controllers/relations/relations_controller.js'></script>
+<% end %>

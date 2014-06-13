@@ -1,0 +1,212 @@
+<hr />
+<!-- Relation Name -->
+<div class='row'>
+  <div class='col-xs-12 col-sm-3 right'>
+    <label>Relation Name</label>
+  </div>
+  <div class='col-xs-12 col-sm-6'>
+    <input type='text' class='form-control' ng-model='relation.name'/>
+  </div>
+</div>
+<br/>
+
+<!-- From Database Name -->
+<div class='row'>
+  <div class='col-xs-12 col-sm-3 right'>
+    <label>From Database Name</label>
+  </div>
+  <div class='col-xs-12 col-sm-6'>
+    <select class='form-control' ng-model='relation.from_database_id' ng-change='updateFromDatabase()'>
+      <option ng-repeat='database in databases' value='{{database.id}}'>{{database.name}}</option>
+    </select>
+  </div>
+</div>
+<br/>
+
+<!-- From Table Name -->
+<div class='row'>
+  <div class='col-xs-12 col-sm-3 right'>
+    <label>From Table Name</label>
+  </div>
+  <div class='col-xs-12 col-sm-6'>
+    <input class='form-control'
+           autocomplete="off"
+           ng-model='relation.from_table_name'
+           typeahead='table.name for table in fromDatabase.tables | filter:$viewValue | limitTo:8'
+           typeahead-on-select='loadColumns(relation.from_database_id, relation.from_table_name); loadRelations(relation.from_database_id, relation.from_table_name)'
+    />
+  </div>
+</div>
+
+<br/>
+
+<!-- Relation Type -->
+<div class='row'>
+  <div class='col-xs-12 col-sm-3 right'>
+    <label>Relation Type</label>
+  </div>
+  <div class='col-xs-12 col-sm-6'>
+    <select class='form-control' ng-model='relation.relation_type' ng-change="changedType()">
+      <option ng-repeat='type in relationTypes' value='{{type.value}}'>{{type.name}}</option>
+    </select>
+  </div>
+</div>
+<br/>
+
+<!-- To Database Name -->
+<div class='row'>
+  <div class='col-xs-12 col-sm-3 right'>
+    <label>To Database Name</label>
+  </div>
+  <div class='col-xs-12 col-sm-6'>
+    <select id='to_database_id' class='form-control' ng-model='relation.to_database_id' ng-change='updateToDatabase()'>
+      <option ng-repeat='database in databases' value='{{database.id}}'>{{database.name}}</option>
+    </select>
+  </div>
+</div>
+<br/>
+
+<!-- To Table Name -->
+<div class='row'>
+  <div class='col-xs-12 col-sm-3 right'>
+    <label>To Table Name</label>
+  </div>
+  <div class='col-xs-12 col-sm-6'>
+    <input class='form-control'
+           autocomplete="off"
+           ng-model='relation.to_table_name'
+           typeahead='table.name for table in toDatabase.tables | filter:$viewValue | limitTo:8'
+           typeahead-on-select='loadColumns(relation.to_database_id, relation.to_table_name)'
+    />
+  </div>
+</div>
+
+<hr/>
+
+<!-- WHERE CLAUSES -->
+<h3>Where&nbsp&nbsp<span class='fa fa-plus' ng-click='addWhereClause()'></span></h3>
+<hr />
+<h6 ng-show='type=="has_through"' style='color:red;'>* Optional for 'Has Through' relation type.</h6>
+
+<div ng-repeat='whereClause in relation.where_clauses_attributes'>
+  <div class='row'>
+    <span class='fa fa-times-circle-o medium_glyph' ng-click='removeWhereClause(whereClause.id)'></span>
+  </div>
+
+  <!-- Where Clause / To Table Column -->
+  <div class='row'>
+    <div class='col-xs-12 col-sm-3 right'>
+      <label ng-show='relation.to_database_id !== null'>Column to {{relation.to_table_name}}</label>
+    </div>
+    <div class='col-xs-12 col-sm-6'>
+      <input class='form-control'
+             autocomplete="off"
+             ng-model='whereClause.column_name'
+             typeahead='column for column in columnData[relation.to_database_id][relation.to_table_name] | filter:$viewValue | limitTo:15'
+      >
+    </div>
+  </div>
+  <br/>
+
+  <!-- Where Clause / Comparison Operator -->
+  <div class='row'>
+    <div class='col-xs-12 col-sm-3 right'>
+      <label>Is</label>
+    </div>
+    <div class='col-xs-12 col-sm-6'>
+      <select class='form-control' ng-model='whereClause.comparison_operator'>
+        <option ng-repeat='operator in comparisonOperators' value='{{operator.name}}'>{{operator.name}}</option>
+      </select>
+    </div>
+  </div>
+  <br/>
+
+  <!-- Where Clause / Comparison Type -->
+  <div class='row' ng-hide='whereClause.comparison_operator == "NULL" || whereClause.comparison_operator == "Not NULL"'>
+    <div class='col-xs-12 col-sm-3 right'>
+      <label>Comparison Type</label>
+    </div>
+    <div class='col-xs-12 col-sm-6'>
+      <select class='form-control' ng-model='whereClause.comparison_type'>
+        <option ng-repeat='type in comparisonTypes' value='{{type.name}}'>{{type.name}}</option>
+      </select>
+    </div>
+  </div>
+  <br/>
+
+  <!-- Where Clause / Comparison Value -->
+  <div class='row' ng-hide='whereClause.comparison_operator == "NULL" || whereClause.comparison_operator == "Not NULL"'>
+    <div class='col-xs-12 col-sm-3 right'>
+      <label ng-show='whereClause.comparison_type=="Value"'>Comparison Value</label>
+      <label ng-show='whereClause.comparison_type=="Column"'>Column from {{relation.from_table_name}}</label>
+    </div>
+    <div class='col-xs-12 col-sm-6'>
+      <input class='form-control'
+             autocomplete="off"
+             ng-model='whereClause.comparison_value'
+             typeahead='column for column in columnData[relation.from_database_id][relation.from_table_name] | filter:$viewValue | limitTo:15'
+      >
+    </div>
+  </div>
+  <hr/>
+</div>
+
+
+<!-- THROUGH RELATION -->
+<div ng-show='relation.relation_type=="has_through"'>
+  <h3>Through</h3>
+
+  <!-- Through Relation Name -->
+  <div class='row'>
+    <div class='col-xs-12 col-sm-3 right'>
+      <label>Through Relation Name</label>
+    </div>
+    <div class='col-xs-12 col-sm-6'>
+      <select class='form-control' ng-model='relation.through_relation_id' ng-change='loadRelationColumns(relation.through_relation_id)'>
+        <option ng-repeat='throughRelation in relationData[relation.from_database_id][relation.from_table_name]' value='{{throughRelation.id}}'>{{throughRelation.name}}</option>
+      </select>
+    </div>
+  </div>
+
+  <hr />
+
+  <!-- JOIN CLAUSES -->
+  <h3>Joining&nbsp&nbsp<span class='fa fa-plus' ng-click='addJoinClause()'></span></h3>
+  <hr />
+  <div ng-repeat='joinClause in relation.join_clauses_attributes'>
+    <div class='row'>
+      <span class='fa fa-times-circle-o medium_glyph' ng-click='removeJoinClause(joinClause.id)'></span>
+    </div>
+
+    <!-- From Column -->
+    <div class='row'>
+      <div class='col-xs-12 col-sm-3 right'>
+        Column from {{throughRelation.relation.to_table_name}}
+      </div>
+      <div class='col-xs-12 col-sm-6'>
+        <input class='form-control'
+               autocomplete="off"
+               ng-model='joinClause.from_column_name'
+               typeahead='column for column in columnData[throughRelation.relation.to_database_id][throughRelation.relation.to_table_name] | filter:$viewValue | limitTo:15'
+        >
+      </div>
+    </div>
+    <br/>
+
+    <!-- Join Column -->
+    <div class='row'>
+      <div class='col-xs-12 col-sm-3 right'>
+        Column from {{relation.to_table_name}}
+      </div>
+      <div class='col-xs-12 col-sm-6'>
+        <input class='form-control'
+               autocomplete="off"
+               ng-model='joinClause.to_column_name'
+               typeahead='column for column in columnData[relation.to_database_id][relation.to_table_name] | filter:$viewValue | limitTo:15'
+        >
+      </div>
+    </div>
+    <hr/>
+  </div>
+
+</div>
