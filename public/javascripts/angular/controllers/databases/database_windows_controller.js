@@ -83,6 +83,11 @@ function databaseWindowsController($scope, $rootScope, httpServices) {
 
     $scope.fillTable = function (databaseWindow, data) {
         var def = [];
+
+        data.columns.forEach(function (column) {
+            databaseWindow.columns.push(new Column(column));
+        });
+
         if (data.rows.length > 0) {
 
             // set the state to truncated if the result set is greater than or equal to the maxRows
@@ -90,10 +95,6 @@ function databaseWindowsController($scope, $rootScope, httpServices) {
                 databaseWindow.state = 'truncated';
                 $rootScope.$emit('sendNoticeToUser', { text: 'The result set may be limited by max rows.', class: 'alert-warning' });
             }
-
-            data.columns.forEach(function (column) {
-                databaseWindow.columns.push(new Column(column));
-            });
 
             data.rows.forEach(function (row, idx) {
                 // rows change the size of the table columns so we must defer calling fixTableHeaders() until all the data is loaded
