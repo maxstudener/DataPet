@@ -23,7 +23,7 @@ class DatabasesController < ApplicationController
   end
 
   def list
-    @response.set_data(Database.select([:name, :id])).all
+    @response.set_data(Database.select([:name, :id]).all)
 
     render :json => @response.json
   end
