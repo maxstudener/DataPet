@@ -275,11 +275,11 @@ function databaseWindowsController($scope, $rootScope, httpServices) {
 
     $scope.rowDetail = { columns: [], data: {}, show: false, sort: 'none' };
 
-    $scope.displayRowDetail = function (data, columns) {
+    $scope.displayRowDetail = function (rowColumns, columns) {
         $scope.rowDetail.show = true;
         $scope.rowDetail.columns = columns;
         columns.forEach(function (column, idx, arr) {
-            $scope.rowDetail.data[column.name] = data[idx].value;
+            $scope.rowDetail.data[column.name] = rowColumns[idx].value;
         });
 
     };

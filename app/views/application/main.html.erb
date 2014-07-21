@@ -64,7 +64,7 @@
           </tr>
           </thead>
           <tbody>
-          <tr ng-repeat='row in databaseWindow.rows' ng-dblclick='displayRowDetail(row.rowData, databaseWindow.columns)'>
+          <tr ng-repeat='row in databaseWindow.rows' ng-dblclick='displayRowDetail(row.columns, databaseWindow.columns)'>
             <td ng-click='showRelationMenu(databaseWindow.id, row.id, $event)' class='relations'>
               {{row.id+1}}
             </td>
