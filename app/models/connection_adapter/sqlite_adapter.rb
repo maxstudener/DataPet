@@ -8,7 +8,7 @@ module ConnectionAdapter
 
     TIC       = %q|"|
 
-    TABLE_FETCH_SQL = %Q|SELECT tbl_name AS "name" FROM sqlite_master WHERE type='table';|
+    TABLE_FETCH_SQL = %Q|SELECT tbl_name AS "name" FROM sqlite_master WHERE type='table' ORDER BY "name";|
 
     COLUMN_FETCH_SQL = %Q|PRAGMA table_info(?);|
 

@@ -8,7 +8,7 @@ module ConnectionAdapter
 
     TIC       = %q|"|
 
-    TABLE_FETCH_SQL = %Q|SELECT SCHEMA_NAME(schema_id)+'.'+name AS "name" FROM sys.tables;|
+    TABLE_FETCH_SQL = %Q|SELECT SCHEMA_NAME(schema_id)+'.'+name AS "name" FROM sys.tables ORDER BY "name";|
 
     COLUMN_FETCH_SQL = %Q|SELECT COLUMN_NAME AS "name" FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '?' AND TABLE_SCHEMA = '?';|
 
