@@ -53,6 +53,9 @@
         </form>
       </div>
 
+      <input ng-model='databaseWindow.columnFilter' class='form-control' placeholder='Column Filter...' onkeypress='fixTableHeaders()'/>
+
+
       <div class='data_content scrolling wrapper'>
         <table id='{{databaseWindow.id}}_table' class='table table-bordered table-condensed table-striped fixed-table-header' ng-show='databaseWindow.columns.length > 0'>
           <thead style='background-color:white;'>
@@ -60,7 +63,7 @@
             <th>
               <!-- filler for relations -->
             </th>
-            <th ng-repeat='column in databaseWindow.columns | orderBy:name'>{{column.name}}</th>
+            <th ng-repeat='column in databaseWindow.columns | filter:databaseWindow.columnFilter | orderBy:name'>{{column.name}}</th>
           </tr>
           </thead>
           <tbody>
@@ -68,7 +71,7 @@
             <td ng-click='showRelationMenu(databaseWindow.id, row.id, $event)' class='relations'>
               {{row.id+1}}
             </td>
-            <td ng-repeat='column in databaseWindow.columns | orderBy:name'>
+            <td ng-repeat='column in databaseWindow.columns | filter:databaseWindow.columnFilter | orderBy:name'>
               {{row.data[column.name]}}
             </td>
           </tr>
@@ -180,7 +183,7 @@
             console.log('fixing');
             var $table = $('table.fixed-table-header');
 
-            $table.floatThead('destroy')
+            $table.floatThead('destroy');
 
             $table.floatThead({
                 scrollContainer: function ($table) {
