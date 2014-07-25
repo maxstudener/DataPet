@@ -253,13 +253,10 @@ function databaseWindowsController($scope, $rootScope, httpServices) {
     var Row = function (rowData, idx) {
         var row = this;
         row.id = idx;
-        row.columns = [];
+        row.data = {};
 
         Object.keys(rowData).forEach(function (column_name) {
-            row.columns.push({
-                column: column_name,
-                value: rowData[column_name]
-            });
+            row.data[column_name] = rowData[column_name];
         });
     };
 
@@ -275,11 +272,12 @@ function databaseWindowsController($scope, $rootScope, httpServices) {
 
     $scope.rowDetail = { columns: [], data: {}, show: false, sort: 'none' };
 
-    $scope.displayRowDetail = function (rowColumns, columns) {
+    $scope.displayRowDetail = function (rowData, columns) {
+        console.log(rowData);
         $scope.rowDetail.show = true;
         $scope.rowDetail.columns = columns;
         columns.forEach(function (column, idx, arr) {
-            $scope.rowDetail.data[column.name] = rowColumns[idx].value;
+            $scope.rowDetail.data[column.name] = rowData[column.name];
         });
 
     };

@@ -64,12 +64,12 @@
           </tr>
           </thead>
           <tbody>
-          <tr ng-repeat='row in databaseWindow.rows' ng-dblclick='displayRowDetail(row.columns, databaseWindow.columns)'>
+          <tr ng-repeat='row in databaseWindow.rows' ng-dblclick='displayRowDetail(row.data, databaseWindow.columns)'>
             <td ng-click='showRelationMenu(databaseWindow.id, row.id, $event)' class='relations'>
               {{row.id+1}}
             </td>
-            <td ng-repeat='c in row.columns | orderBy:column'>
-              {{c.value}}
+            <td ng-repeat='column in databaseWindow.columns | orderBy:name'>
+              {{row.data[column.name]}}
             </td>
           </tr>
           </tbody>
