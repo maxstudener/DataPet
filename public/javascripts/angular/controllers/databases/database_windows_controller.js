@@ -247,7 +247,7 @@ function databaseWindowsController($scope, $rootScope, httpServices) {
     };
 
     var Column = function (columnName) {
-        this.name = columnName;
+        this.name = columnName.toLowerCase();
     };
 
     var Row = function (rowData, idx) {
