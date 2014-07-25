@@ -60,7 +60,7 @@
             <th>
               <!-- filler for relations -->
             </th>
-            <th ng-repeat='column in databaseWindow.columns'>{{column.name}}</th>
+            <th ng-repeat='column in databaseWindow.columns | orderBy:name'>{{column.name}}</th>
           </tr>
           </thead>
           <tbody>
@@ -68,7 +68,7 @@
             <td ng-click='showRelationMenu(databaseWindow.id, row.id, $event)' class='relations'>
               {{row.id+1}}
             </td>
-            <td ng-repeat='column in row.columns'>
+            <td ng-repeat='column in row.columns | orderBy:name'>
               {{column.value}}
             </td>
           </tr>
