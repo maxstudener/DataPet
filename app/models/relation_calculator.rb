@@ -4,8 +4,8 @@ class RelationCalculator
     @table_name = query_data[:table_name]
 
     # ensure that the column names are all lowercase
-    @data_hash = query_data[:row_data].map do |row|
-      { 'column'=> row['column'].downcase, 'value' => row['value'] }
+    @data_hash = query_data[:row_data].map do |k, v|
+      { 'column'=> k.downcase, 'value' => v }
     end
 
     # find the configuration for this relation

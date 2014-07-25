@@ -8,8 +8,13 @@ class ApplicationController < ActionController::Base
   end
 
   rescue_from Exception do |e|
-    @response.register_error(e)
-    render :json => @response.json and return
+    if Rails.env == 'production'
+      @response.register_error(e)
+      render :json => @response.json and return
+    else
+      raise e
+    end
+
   end
 
 end

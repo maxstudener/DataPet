@@ -144,7 +144,7 @@ function databaseWindowsController($scope, $rootScope, httpServices) {
 
 
         var newDatabaseWindow = $scope.createDatabaseWindow(relationDatabaseObject, relation.relationAttributes.to_table_name);
-        $scope.getRelationData(newDatabaseWindow, databaseWindow, relation.id, row.columns);
+        $scope.getRelationData(newDatabaseWindow, databaseWindow, relation.id, row.data);
     };
 
     $scope.getRelationData = function (databaseWindow, oldDatabaseWindow, relationId, rowData) {
