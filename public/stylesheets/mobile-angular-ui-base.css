@@ -6490,18 +6490,18 @@ button.close {
   display: none !important;
 }
 
-html {
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
-}
+/*html {*/
+  /*height: 100%;*/
+  /*width: 100%;*/
+  /*overflow: hidden;*/
+/*}*/
 
-body {
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
-  font-weight: 200;
-}
+/*body {*/
+  /*height: 100%;*/
+  /*width: 100%;*/
+  /*overflow: hidden;*/
+  /*font-weight: 200;*/
+/*}*/
 
 a {
   text-decoration: none;
@@ -6549,17 +6549,17 @@ img {
   max-width: 100%;
 }
 
-html {
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
-}
+/*html {*/
+  /*height: 100%;*/
+  /*width: 100%;*/
+  /*overflow: hidden;*/
+/*}*/
 
-body {
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
-}
+/*body {*/
+  /*height: 100%;*/
+  /*width: 100%;*/
+  /*overflow: hidden;*/
+/*}*/
 
 textarea,
 input[type="email"],
@@ -6737,7 +6737,7 @@ a.list-group-item .icon.pull-right {
   display: block;
   height: 100%;
   padding: 0;
-  overflow: hidden;
+  /*overflow: hidden;*/
 }
 
 .app-content {
@@ -6746,7 +6746,7 @@ a.list-group-item .icon.pull-right {
   height: 100%;
   width: 100%;
   padding: 0;
-  overflow: hidden;
+  /*overflow: hidden;*/
 }
 
 .app-search {
@@ -6979,7 +6979,7 @@ a.list-group-item .icon.pull-right {
 
 .sidebar-header + .scrollable,
 .app-name + .scrollable {
-  padding-top: 70px;
+  padding-top: 52px;
 }
 
 .app-search + .scrollable {

@@ -23,9 +23,8 @@ angular.module('data-pet').directive('columnautocomplete', function() {
                   database = scope.databaseWindows.filter(function(databaseWindow){
                       return databaseWindow.active == 'active';
                   })[0];
-                  columns = database && database.columns.map(function(k){return k.name});
                   response( $.ui.autocomplete.filter(
-                    columns, extractLast( request.term ) ).slice(0, 5) );
+                      database.colHeaders, extractLast( request.term ) ).slice(0, 5) );
                 },
                 focus: function() {
                   // prevent value inserted on focus

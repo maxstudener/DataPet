@@ -55,28 +55,21 @@
 
 
 
-      <div class='data_content scrolling wrapper'>
-        <table id='{{databaseWindow.id}}_table' class='table table-bordered table-condensed table-striped fixed-table-header' ng-show='databaseWindow.columns.length > 0'>
-          <thead style='background-color:white;'>
-          <tr>
-            <th>
-              <!-- filler for relations -->
-            </th>
-            <th ng-repeat='column in databaseWindow.columns | orderBy:name'>{{column.name}}</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr ng-repeat='row in databaseWindow.rows' ng-dblclick='displayRowDetail(row.data, databaseWindow.columns)'>
-            <td ng-click='showRelationMenu(databaseWindow.id, row.id, $event)' class='relations'>
-              {{row.id+1}}
-            </td>
-            <td ng-repeat='column in databaseWindow.columns | orderBy:name'>
-              {{row.data[column.name]}}
-            </td>
-          </tr>
-          </tbody>
-        </table>
-      </div>
+
+    <hot-table  id='{{databaseWindow.id}}_table' ng-if="databaseWindow.rows.length > 0"
+    settings="{ contextMenu: databaseWindow.contextMenu,
+                manualColumnResize: true,
+                rowHeaders: true,
+                columnSorting: true,
+                colHeaders: databaseWindow.colHeaders,
+                columns: databaseWindow.columns,
+                stretchH: 'all'}"
+    datarows="databaseWindow.rows"
+    minSpareRows="0"
+    >
+
+    </hot-table>
+
 
       <br/>
 
@@ -91,23 +84,11 @@
         </div>
       </div>
 
-      <!-- modal window for relations -->
-      <div id='{{databaseWindow.id}}_relations' class='context_menu'>
-        <a href='#' class='up_and_left' ng-click="closeRelationMenu(databaseWindow.id)">
-          <span class="custom fa fa-times"></span>
-        </a>
-        <ul>
-          <a class='centered' ng-repeat='relation in databaseWindow.relations' href='#'
-             ng-click='newRelationWindow(databaseWindow.id, relation.name)'>{{relation.name}}<br/></a>
-        </ul>
-        <br/>
-      </div>
-
       <div class='row_detail' ng-show='rowDetail.show'>
         <a href='#' ng-click="closeRowDetail()">
           <span style='margin: 10px 0 10px 10px;' class="custom fa fa-times"></span>
         </a>
-        <input class='form-control' placeholder='Column Name...'
+        <input class='form-control' placeholder='Search data...'
                ng-model='columnFilter'
                style='margin: 0 10px 10px 10px;'
         />
@@ -118,9 +99,9 @@
             <th>Value</th>
           </tr>
           </thead>
-          <tr ng-repeat='column in rowDetail.columns | filter:columnFilter'>
-            <th>{{column.name}}</th>
-            <td>{{rowDetail.data[column.name]}}</td>
+          <tr ng-repeat='(key, value) in rowDetail.data | with:columnFilter'>
+            <th>{{key}}</th>
+            <td>{{value}}</td>
           </tr>
         </table>
       </div>
@@ -139,54 +120,5 @@
 
     <!-- auto complete for filter -->
     <script src='/javascripts/angular/directives/column_autocomplete.js'></script>
-    <script>
-        // adjust the body tag to be full window height
-        window.onload = function () {
-            resizeMain();
-        };
-
-        window.onresize = function () {
-            resizeMain();
-            resizeDatabaseWindows();
-        };
-
-        function resizeMain() {
-            $('#main').height($(window).height() - 5 - $('#top_navigation_bar').height());
-        }
-
-        function resizeDatabaseWindows() {
-            var x;
-            var formHeight = 0;
-
-            var tabHeight = document.getElementById('navigation_tabs').offsetHeight;
-            var headers = document.getElementsByClassName('database_window_header');
-
-            for (x = 0; x < headers.length; x++) {
-                var height = headers[x].offsetHeight + 100;
-                if (height > formHeight) {
-                    formHeight = height;
-                }
-            }
-
-            var datas = document.getElementsByClassName('data_content');
-            var tabs = document.getElementsByClassName('tab-pane');
-            var newHeight = $(window).height() - tabHeight - $('#top_navigation_bar').height() - 35;
-
-            for (x = 0; x < tabs.length; x++) {
-                tabs[x].style.height = newHeight + 'px';
-                datas[x].style.height = (newHeight - formHeight ) + 'px';
-            }
-        }
-
-        function fixTableHeaders() {
-            var $table = $('table.fixed-table-header');
-
-            $table.floatThead({
-                scrollContainer: function ($table) {
-                    return $table.closest('.wrapper');
-                }
-            });
-        }
-    </script>
 <% end %>
 

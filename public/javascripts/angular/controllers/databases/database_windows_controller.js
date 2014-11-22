@@ -9,7 +9,6 @@ function databaseWindowsController($scope, $rootScope, httpServices) {
 
     $rootScope.$on('addDatabaseWindow', function (event, data) {
         var databaseWindow = $scope.createDatabaseWindow(data['database'], data['tableName']);
-        $(window).trigger('resize');
         $scope.submitQuery(databaseWindow.id, '');
     });
 
@@ -27,8 +26,6 @@ function databaseWindowsController($scope, $rootScope, httpServices) {
             } else {
                 databaseWindow.active = '';
             }
-
-            $(window).trigger('resize');
         });
     };
 
@@ -84,6 +81,8 @@ function databaseWindowsController($scope, $rootScope, httpServices) {
     $scope.fillTable = function (databaseWindow, data) {
         var def = [];
 
+        databaseWindow.colHeaders = data.columns;
+
         data.columns.forEach(function (column) {
             databaseWindow.columns.push(new Column(column));
         });
@@ -105,6 +104,25 @@ function databaseWindowsController($scope, $rootScope, httpServices) {
                 databaseWindow.relations.push(new Relation(relation.name, relation));
             });
 
+            var items = {
+                "view_detail": {
+                    name: 'View Details'
+                }
+            };
+            for(var i = 0; i < databaseWindow.relations.length; i++){
+                items["relation_" + i] = databaseWindow.relations[i];
+            }
+            //databaseWindow.relations
+
+            databaseWindow.contextMenu = {callback: function(key, options){
+                if(key == "view_detail"){
+                    $scope.displayRowDetail(databaseWindow.rows[options.start.row]);
+                }else{
+                    $scope.setCurrentRowId(options.start.row);
+                    $scope.newRelationWindow(databaseWindow, databaseWindow.relations[parseInt(key.replace(/relation_/, ''))]);
+                }
+            }, items: items};
+
         } else {
             $rootScope.$emit('sendNoticeToUser', { text: 'The query returned no data.', class: 'alert-info' });
         }
@@ -112,14 +130,13 @@ function databaseWindowsController($scope, $rootScope, httpServices) {
         $.when.apply($, def).done(function () {
             setTimeout(function () {
                 $(window).trigger('resize');
-                fixTableHeaders();
             }, 0);
         });
     };
 
     $scope.addRow = function (databaseWindow, row, idx) {
         var dfd = $.Deferred();
-        databaseWindow.rows.push(new Row(row, idx));
+        databaseWindow.rows.push(row);
         dfd.resolve();
         return dfd.promise();
     };
@@ -128,13 +145,8 @@ function databaseWindowsController($scope, $rootScope, httpServices) {
     // DatabaseWindows for Relations
 
 
-    $scope.newRelationWindow = function (databaseWindowId, relationName) {
-        $scope.closeRelationMenu(databaseWindowId); // close the pop-up menu
-        var databaseWindow = $scope.getDatabaseWindow(databaseWindowId);
-        var relation = databaseWindow.relations.filter(function (relation) {
-            return relation.name == relationName;
-        })[0];
-
+    $scope.newRelationWindow = function (databaseWindow, relation) {
+        console.log(relation);
         var relationDatabaseObject = {
             name: databaseWindow.title,
             id: relation.relationAttributes.to_database_id
@@ -142,9 +154,8 @@ function databaseWindowsController($scope, $rootScope, httpServices) {
 
         var row = databaseWindow.rows[$scope.currentRowId];
 
-
         var newDatabaseWindow = $scope.createDatabaseWindow(relationDatabaseObject, relation.relationAttributes.to_table_name);
-        $scope.getRelationData(newDatabaseWindow, databaseWindow, relation.id, row.data);
+        $scope.getRelationData(newDatabaseWindow, databaseWindow, relation.relationAttributes.id, row);
     };
 
     $scope.getRelationData = function (databaseWindow, oldDatabaseWindow, relationId, rowData) {
@@ -247,7 +258,8 @@ function databaseWindowsController($scope, $rootScope, httpServices) {
     };
 
     var Column = function (columnName) {
-        this.name = columnName.toLowerCase();
+        this.data = columnName.toLowerCase();
+        this.readOnly = true;
     };
 
     var Row = function (rowData, idx) {
@@ -261,7 +273,7 @@ function databaseWindowsController($scope, $rootScope, httpServices) {
     };
 
     var Relation = function (relationName, relationAttributes) {
-        this.id = relationAttributes.id;
+        //this.id = relationAttributes.id;
         this.name = relationName;
         this.relationAttributes = relationAttributes;
     };
@@ -272,14 +284,9 @@ function databaseWindowsController($scope, $rootScope, httpServices) {
 
     $scope.rowDetail = { columns: [], data: {}, show: false, sort: 'none' };
 
-    $scope.displayRowDetail = function (rowData, columns) {
-        console.log(rowData);
+    $scope.displayRowDetail = function (rowData) {
         $scope.rowDetail.show = true;
-        $scope.rowDetail.columns = columns;
-        columns.forEach(function (column, idx, arr) {
-            $scope.rowDetail.data[column.name] = rowData[column.name];
-        });
-
+        $scope.rowDetail.data = rowData;
     };
 
     $scope.closeRowDetail = function () {
