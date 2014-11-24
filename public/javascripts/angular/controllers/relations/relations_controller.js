@@ -200,9 +200,6 @@ function relationsController($scope, $rootScope, $http, httpServices) {
             httpServices.get('/database_relations/' + id, function (success, data) {
                 if (success) {
                     $scope.throughRelation = data;
-                    console.log($scope.throughRelation.relation.to_database_id);
-                    console.log($scope.throughRelation.relation.to_table_name);
-
                     $scope.loadColumns($scope.throughRelation.relation.to_database_id, $scope.throughRelation.relation.to_table_name);
                 }
             });

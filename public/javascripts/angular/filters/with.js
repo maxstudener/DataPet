@@ -1,6 +1,5 @@
 app.filter('with', function() {
     return function(items, field) {
-        console.log(field);
         if(!Boolean(field)){
             return items;
         }

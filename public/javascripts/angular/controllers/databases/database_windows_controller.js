@@ -49,12 +49,10 @@ function databaseWindowsController($scope, $rootScope, httpServices) {
             if (newActiveWindow !== undefined) {
                 newActiveWindow.active = 'active';
             }
-            $(window).trigger('resize');
         }
     };
 
     $scope.submitQuery = function (databaseWindowId, sqlQuery) {
-        var spinner = startSpinner(databaseWindowId);
         var databaseWindow = $scope.getDatabaseWindow(databaseWindowId);
 
         databaseWindow.reset(); // clear the columns, rows, relations, and state
@@ -71,15 +69,12 @@ function databaseWindowsController($scope, $rootScope, httpServices) {
         httpServices.post(postData, '/databases/' + databaseWindow.database_id + '/tables/query', function (success, data) {
             if (success) {
                 $scope.fillTable(databaseWindow, data);
-                spinner.stop();
             } else {
-                spinner.stop();
             }
         });
     };
 
-    $scope.fillTable = function (databaseWindow, data) {
-        var def = [];
+    $scope.fillTable = function (databaseWindow, data) {;
 
         databaseWindow.colHeaders = data.columns;
 
@@ -95,10 +90,7 @@ function databaseWindowsController($scope, $rootScope, httpServices) {
                 $rootScope.$emit('sendNoticeToUser', { text: 'The result set may be limited by max rows.', class: 'alert-warning' });
             }
 
-            data.rows.forEach(function (row, idx) {
-                // rows change the size of the table columns so we must defer calling fixTableHeaders() until all the data is loaded
-                def.push($scope.addRow(databaseWindow, row, idx));
-            });
+            databaseWindow.rows = data.rows;
 
             data.relations.forEach(function (relation) {
                 databaseWindow.relations.push(new Relation(relation.name, relation));
@@ -126,19 +118,6 @@ function databaseWindowsController($scope, $rootScope, httpServices) {
         } else {
             $rootScope.$emit('sendNoticeToUser', { text: 'The query returned no data.', class: 'alert-info' });
         }
-
-        $.when.apply($, def).done(function () {
-            setTimeout(function () {
-                $(window).trigger('resize');
-            }, 0);
-        });
-    };
-
-    $scope.addRow = function (databaseWindow, row, idx) {
-        var dfd = $.Deferred();
-        databaseWindow.rows.push(row);
-        dfd.resolve();
-        return dfd.promise();
     };
 
 
@@ -146,7 +125,6 @@ function databaseWindowsController($scope, $rootScope, httpServices) {
 
 
     $scope.newRelationWindow = function (databaseWindow, relation) {
-        console.log(relation);
         var relationDatabaseObject = {
             name: databaseWindow.title,
             id: relation.relationAttributes.to_database_id
@@ -287,6 +265,7 @@ function databaseWindowsController($scope, $rootScope, httpServices) {
     $scope.displayRowDetail = function (rowData) {
         $scope.rowDetail.show = true;
         $scope.rowDetail.data = rowData;
+        $scope.$apply();
     };
 
     $scope.closeRowDetail = function () {

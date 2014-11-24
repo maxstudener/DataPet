@@ -9,7 +9,7 @@
 
         <div class="scrollable-content">
           <div class="list-group">
-            <div class="list-group-item" ng-repeat='database in databases'>
+            <div class="list-group-item" ng-repeat="database in databases">
               <span ng-show='database.state=="loading"'>{{database.name}} ... loading</span>
               <a ng-show='database.state=="loaded"' href='#' class='{{database.state}}' ng-click='toggleDisplay(database)'>{{database.name}}</a>
               <span style='color:red;' ng-show='database.state=="error"'>{{database.name}} ... error</span>
@@ -41,7 +41,7 @@
   </div>
 
   <div class='tab-content'>
-    <div ng-repeat='databaseWindow in databaseWindows' id={{databaseWindow.id}} class='tab-pane {{databaseWindow.active}} full-height'>
+    <div ng-repeat='databaseWindow in databaseWindows' id="{{databaseWindow.id}}" class='tab-pane {{databaseWindow.active}}'>
 
       <a style='float:right; margin-right:30px;' href='?database_id:{{databaseWindow.database_id}}?database_name:{{databaseWindow.databaseName}}?full_table_name:{{databaseWindow.fullTableName}}?query:{{databaseWindow.currentSqlQuery}}'>Link Me</a>
 
@@ -56,9 +56,10 @@
 
 
 
-    <hot-table  id='{{databaseWindow.id}}_table' ng-if="databaseWindow.rows.length > 0"
+    <hot-table  id='{{databaseWindow.id}}_table' ng-if="databaseWindow.rows.length > 0" class="table-striped"
     settings="{ contextMenu: databaseWindow.contextMenu,
                 manualColumnResize: true,
+                manualColumnMove: true,
                 rowHeaders: true,
                 columnSorting: true,
                 colHeaders: databaseWindow.colHeaders,
@@ -114,9 +115,6 @@
 <%= content_for :javascripts do %>
     <script src='/javascripts/angular/controllers/databases/databases_controller.js'></script>
     <script src='/javascripts/angular/controllers/databases/database_windows_controller.js'></script>
-
-    <script src='/javascripts/spinner.js'></script>
-    <script src='/javascripts/spin.min.js'></script>
 
     <!-- auto complete for filter -->
     <script src='/javascripts/angular/directives/column_autocomplete.js'></script>

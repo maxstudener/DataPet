@@ -5,14 +5,14 @@
   <title>DataPet</title>
 
   <!-- angular-ui css -->
-  <link rel="stylesheet" type='text/css' href="/stylesheets/mobile-angular-ui-base.css">
-
+  <link rel="stylesheet" type='text/css' href="/stylesheets/mobile-angular-ui-base.css"/>
+  <link rel="stylesheet" type="text/css" href="/stylesheets/angular-animate.css"/>
   <!-- application css -->
   <link rel='stylesheet' type='text/css' href='/stylesheets/base.css'/>
 
   <link rel="stylesheet" type="text/css" href="/stylesheets/jquery.handsontable.full.css"/>
 
-  <meta name='viewport' content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="/stylesheets/loading-bar.css"/>
 
   <%= csrf_meta_tags %>
 </head>
@@ -86,8 +86,10 @@
 <script src='/javascripts/bootstrap/ui-bootstrap.min.js'></script>
 <script src='/javascripts/bootstrap/ui-bootstrap-tpls.min.js'></script>
 <script type="text/javascript" src="/javascripts/angular/directives/ngHandsontable.js"></script>
+<script type="text/javascript" src="/javascripts/angular/directives/loading-bar.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular-animate.min.js"></script>
 
-<script>var app = angular.module('data-pet', ['ui.bootstrap', 'mobile-angular-ui', 'ngHandsontable']);</script>
+<script>var app = angular.module('data-pet', ['ui.bootstrap', 'mobile-angular-ui', 'ngHandsontable', 'angular-loading-bar', 'ngAnimate']);</script>
 
 <!-- noticesController used to display messages to the user -->
 <script src='/javascripts/angular/controllers/notices/notices_controller.js'></script>

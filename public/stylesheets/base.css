@@ -5,52 +5,10 @@
     padding-left: 50px;
 }
 
-.context_menu {
-    position: absolute;
-    display: none;
-    z-index: 9999;
-    background-color: #f8f8f8;
-    border-style: solid;
-    border-width: thin;
-    border-color: #616161;
-    padding-right: 30px;
-    -webkit-border-radius: 2px 2px 2px 2px;
-    border-radius: 2px 2px 2px 2px;
-    -webkit-box-shadow: 0 1px 10px 2px rgba(25, 25, 25, .5);
-    box-shadow: 0 1px 10px 2px rgba(25, 25, 25, .5);
-}
-
 .centered {
     text-align: center;
 }
 
-
-
-td.relations {
-    background-color: #91baff !important;
-    width: 25px;
-    min-width: 25px;
-    overflow: hidden;
-    color: #ffffff;
-    text-align: center;
-}
-
-td.relations:hover {
-    background-color: #2a86ff !important;
-
-}
-
-td {
-    white-space: nowrap;
-}
-
-th {
-    white-space: nowrap;
-}
-
-.full-height {
-    height: 100%;
-}
 
 .twenty-height {
     height: 20%;
@@ -148,6 +106,17 @@ span.custom:hover {
     left: -5px;
 }
 
-body{
-    background: #f8f8f8;
+body, .app-content, .sidebar{
+    background: #fff !important;
+}
+h1.app-name{
+    color: black;
+}
+
+html,body{
+    overflow: visible !important;
+}
+
+.app, .app-body, .app-content{
+    overflow: visible !important;
 }
