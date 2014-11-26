@@ -112,11 +112,6 @@ body, .app-content, .sidebar{
 h1.app-name{
     color: black;
 }
-
-html,body{
-    overflow: visible !important;
-}
-
-.app, .app-body, .app-content{
-    overflow: visible !important;
+.has-navbar-top .app-body {
+    padding-top:0px;
 }

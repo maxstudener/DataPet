@@ -54,7 +54,7 @@ class DatabasesController < ApplicationController
 
   def tables
     database = Database.find(params[:id])
-    @response.set(:tables, database.tables)
+    @response.set(:tables, database.tables.sort{|a,b|a[:name] <=> b[:name] })
 
     render :json => @response.json
   end

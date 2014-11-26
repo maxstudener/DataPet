@@ -1,19 +1,15 @@
-function databaseWindowsController($scope, $rootScope, httpServices) {
+function databaseWindowsController($scope, $rootScope, httpServices, $interval) {
 
     $scope.databaseWindows = [];
-    $scope.currentRowId = null; // holds the last selected rowId in order to lookup data before fetching a relation
-
 
     // DatabaseWindows
 
-
     $rootScope.$on('addDatabaseWindow', function (event, data) {
-        var databaseWindow = $scope.createDatabaseWindow(data['database'], data['tableName']);
-        $scope.submitQuery(databaseWindow.id, '');
+        $scope.createDatabaseWindow(data['database'], data['tableName']);
     });
 
-    $scope.createDatabaseWindow = function (databaseObject, tableName) {
-        var databaseWindow = new DatabaseWindow(databaseObject, tableName);
+    $scope.createDatabaseWindow = function (databaseObject, tableName, loadRelationDataFunction, relation_id, row) {
+        var databaseWindow = new DatabaseWindow(databaseObject, tableName, loadRelationDataFunction, relation_id, row);
         $scope.databaseWindows.push(databaseWindow);
         $scope.showDatabaseWindow(databaseWindow.id);
         return databaseWindow;
@@ -52,10 +48,15 @@ function databaseWindowsController($scope, $rootScope, httpServices) {
         }
     };
 
-    $scope.submitQuery = function (databaseWindowId, sqlQuery) {
-        var databaseWindow = $scope.getDatabaseWindow(databaseWindowId);
+    $scope.submitQuery = function (databaseWindowId, sqlQuery, databaseWindow, cb) {
+        if(!Boolean(cb)){
+            cb = function(){};
+        }
 
-        databaseWindow.reset(); // clear the columns, rows, relations, and state
+        if(databaseWindow == undefined){
+            databaseWindow = $scope.getDatabaseWindow(databaseWindowId);
+            databaseWindow.reset(); // clear the columns, rows, relations, and state
+        }
 
         var postData = {
             query_data: {
@@ -69,15 +70,17 @@ function databaseWindowsController($scope, $rootScope, httpServices) {
         httpServices.post(postData, '/databases/' + databaseWindow.database_id + '/tables/query', function (success, data) {
             if (success) {
                 $scope.fillTable(databaseWindow, data);
+                cb();
             } else {
             }
         });
     };
 
-    $scope.fillTable = function (databaseWindow, data) {;
+    $scope.fillTable = function (databaseWindow, data) {
 
         databaseWindow.colHeaders = data.columns;
 
+        databaseWindow.columns = [];
         data.columns.forEach(function (column) {
             databaseWindow.columns.push(new Column(column));
         });
@@ -87,36 +90,25 @@ function databaseWindowsController($scope, $rootScope, httpServices) {
             // set the state to truncated if the result set is greater than or equal to the maxRows
             if (data.rows.length >= databaseWindow.maxRows) {
                 databaseWindow.state = 'truncated';
-                $rootScope.$emit('sendNoticeToUser', { text: 'The result set may be limited by max rows.', class: 'alert-warning' });
+                $rootScope.$emit('sendNoticeToUser', {
+                    text: 'The result set may be limited by max rows.',
+                    class: 'alert-warning'
+                });
             }
-
-            databaseWindow.rows = data.rows;
 
             data.relations.forEach(function (relation) {
                 databaseWindow.relations.push(new Relation(relation.name, relation));
             });
 
-            var items = {
-                "view_detail": {
-                    name: 'View Details'
-                }
-            };
-            for(var i = 0; i < databaseWindow.relations.length; i++){
-                items["relation_" + i] = databaseWindow.relations[i];
-            }
-            //databaseWindow.relations
+            databaseWindow.rows = data.rows;
 
-            databaseWindow.contextMenu = {callback: function(key, options){
-                if(key == "view_detail"){
-                    $scope.displayRowDetail(databaseWindow.rows[options.start.row]);
-                }else{
-                    $scope.setCurrentRowId(options.start.row);
-                    $scope.newRelationWindow(databaseWindow, databaseWindow.relations[parseInt(key.replace(/relation_/, ''))]);
-                }
-            }, items: items};
+            databaseWindow.gridOptions = {
+                data: databaseWindow.rows,
+                columnDefs: databaseWindow.columns
+            }
 
         } else {
-            $rootScope.$emit('sendNoticeToUser', { text: 'The query returned no data.', class: 'alert-info' });
+            $rootScope.$emit('sendNoticeToUser', {text: 'The query returned no data.', class: 'alert-info'});
         }
     };
 
@@ -130,15 +122,19 @@ function databaseWindowsController($scope, $rootScope, httpServices) {
             id: relation.relationAttributes.to_database_id
         };
 
-        var row = databaseWindow.rows[$scope.currentRowId];
+        var row = databaseWindow.selectedItem;
 
-        var newDatabaseWindow = $scope.createDatabaseWindow(relationDatabaseObject, relation.relationAttributes.to_table_name);
-        $scope.getRelationData(newDatabaseWindow, databaseWindow, relation.relationAttributes.id, row);
+        if(row == undefined) {
+            $rootScope.$emit('sendNoticeToUser', {text: 'You havent selected a row.', class: 'alert-info'});
+            return false;
+        }
+
+        $scope.createDatabaseWindow(relationDatabaseObject, relation.relationAttributes.to_table_name, true, relation.id, row);
+
     };
 
-    $scope.getRelationData = function (databaseWindow, oldDatabaseWindow, relationId, rowData) {
-        databaseWindow.reset();
-        databaseWindow.maxRows = oldDatabaseWindow.maxRows;
+    $scope.getRelationData = function (databaseWindow, relationId, rowData, cb) {
+        databaseWindow.maxRows = 50;
 
         var postData = {
             query_data: {
@@ -154,40 +150,15 @@ function databaseWindowsController($scope, $rootScope, httpServices) {
                 $scope.fillTable(databaseWindow, data);
                 databaseWindow.currentSqlQuery = 'WHERE' + data.query.split(' WHERE ')[1]; // hack off everything before WHERE clause
                 databaseWindow.currentSqlQuery = databaseWindow.currentSqlQuery.split(' LIMIT ')[0]; // hack of LIMIT statement if it exists
+                cb();
             }
         });
     };
 
 
-    // Relations Menu
-
-
-    $scope.showRelationMenu = function (databaseWindowId, rowId, $event) {
-        databaseWindow = $scope.getDatabaseWindow(databaseWindowId);
-        if (databaseWindow.relations.length > 0) {
-            $scope.setCurrentRowId(rowId);
-            var menu = $('#' + databaseWindowId + '_relations');
-            menu.css('left', '15px');
-            menu.css('top', ($event.clientY - $('#top_navigation_bar').height()) + 'px');
-            menu.show();
-        }
-    };
-
-    $scope.closeRelationMenu = function (databaseWindowId) {
-        $('#' + databaseWindowId + '_relations').hide();
-    };
-
-    // only keeping track of the rowId, regardless of which connectionWindow it was in
-    // the user can only have one active window at a time
-    $scope.setCurrentRowId = function (rowId) {
-        $scope.currentRowId = rowId;
-    };
-
-
     // Objects
+    var DatabaseWindow = function (database, fullTableName, loadRelationDataFunction, relation_id, row) {
 
-
-    var DatabaseWindow = function (database, fullTableName) {
         this.database_id = database.id;
         this.generateId();
         this.generateTableParts(fullTableName);
@@ -207,6 +178,52 @@ function databaseWindowsController($scope, $rootScope, httpServices) {
         this.columns = [];
         this.rows = [];
         this.relations = [];
+        this.selectedItem = undefined;
+        var databaseWindow = this;
+
+            databaseWindow.gridOptions = {
+                data: [], multiSelect: false, enableGridMenu: true, onRegisterApi: function (gridApi) {
+                    $scope.gridApi = gridApi;
+
+                    // interval of zero just to allow the directive to have initialized
+                    $interval(function () {
+
+                        gridApi.core.addToGridMenu(gridApi.grid, [{
+                                'title': 'View Details',
+                                'action': function ($event) {
+                                    $scope.displayRowDetail(databaseWindow.selectedItem);
+                                }
+                            }]
+                        );
+
+
+                        gridApi.selection.on.rowSelectionChanged($scope, function (row) {
+                            databaseWindow.selectedItem = row.entity;
+                        });
+
+                        var relation_drop_down = function(){
+                            databaseWindow.relations.forEach(function (relation) {
+                                gridApi.core.addToGridMenu(gridApi.grid, [{
+                                    'title': relation.name,
+                                    'action': function ($event) {
+                                        $scope.newRelationWindow(databaseWindow, relation);
+                                    }
+                                }]);
+                            });
+                        };
+
+                        if(loadRelationDataFunction) {
+                            $scope.getRelationData(databaseWindow, relation_id, row, relation_drop_down);
+                        }else{
+                            $scope.submitQuery(this.id, '', databaseWindow, relation_drop_down);
+                        }
+
+
+
+                    }, 0, 1);
+                }
+            };
+
     };
 
     // clears the current states and data for the connectionWindow
@@ -236,8 +253,9 @@ function databaseWindowsController($scope, $rootScope, httpServices) {
     };
 
     var Column = function (columnName) {
-        this.data = columnName.toLowerCase();
-        this.readOnly = true;
+        this.field = columnName.toLowerCase();
+        this.name = columnName;
+        this.width = 150;
     };
 
     var Row = function (rowData, idx) {
@@ -251,7 +269,7 @@ function databaseWindowsController($scope, $rootScope, httpServices) {
     };
 
     var Relation = function (relationName, relationAttributes) {
-        //this.id = relationAttributes.id;
+        this.id = relationAttributes.id;
         this.name = relationName;
         this.relationAttributes = relationAttributes;
     };
@@ -260,16 +278,15 @@ function databaseWindowsController($scope, $rootScope, httpServices) {
     // Display Row Details
 
 
-    $scope.rowDetail = { columns: [], data: {}, show: false, sort: 'none' };
+    $scope.rowDetail = {columns: [], data: {}, show: false, sort: 'none'};
 
     $scope.displayRowDetail = function (rowData) {
         $scope.rowDetail.show = true;
         $scope.rowDetail.data = rowData;
-        $scope.$apply();
     };
 
     $scope.closeRowDetail = function () {
-        $scope.rowDetail = { columns: [], data: {}, show: false };
+        $scope.rowDetail = {columns: [], data: {}, show: false};
 
     };
 
@@ -294,20 +311,20 @@ function databaseWindowsController($scope, $rootScope, httpServices) {
 
     $scope.server = location.host;
 
-    $(function(){
+    $(function () {
 
         var paramsHash = {};
         var queryString = location.search;
         var querySplit = queryString.split('?');
 
-        for(var x=0;x<querySplit.length;x++){
-            try{
+        for (var x = 0; x < querySplit.length; x++) {
+            try {
                 var paramPieces = querySplit[x].split(':');
-                if(paramPieces[0] !== '' && paramPieces[1] != ''){
+                if (paramPieces[0] !== '' && paramPieces[1] != '') {
                     paramsHash[paramPieces[0]] = paramPieces[1];
                 }
             }
-            catch(err){
+            catch (err) {
                 console.log(err);
             }
         }
@@ -318,11 +335,11 @@ function databaseWindowsController($scope, $rootScope, httpServices) {
         var tableName = decodeURI(paramsHash['full_table_name']);
         var query = decodeURI(paramsHash['query']).split(' LIMIT ')[0];
 
-        if(query === 'undefined'){
+        if (query === 'undefined') {
             query = '';
         }
 
-        if(database._id !== 'undefined' && database.name !== 'undefined' && tableName !== 'undefined' ){
+        if (database._id !== 'undefined' && database.name !== 'undefined' && tableName !== 'undefined') {
             var databaseWindow = $scope.createDatabaseWindow(database, tableName);
             databaseWindow.currentSqlQuery = query;
             $(window).trigger('resize');

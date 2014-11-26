@@ -157,17 +157,6 @@ function databasesController($scope, $rootScope, httpServices) {
         });
     };
 
-    // opens up all databases and their tables to be filtered
-    $scope.displayAllTables = function () {
-        $scope.databases.forEach(function (database) {
-            database.display = true;
-        });
-    };
-
-    $scope.toggleDisplay = function (database) {
-        database.display = database.display !== true;
-    };
-
     $scope.createDatabaseWindow = function (database, tableName) {
         $rootScope.$emit('addDatabaseWindow', { database: database, tableName: tableName });
     };

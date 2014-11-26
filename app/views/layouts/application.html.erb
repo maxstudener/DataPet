@@ -7,12 +7,15 @@
   <!-- angular-ui css -->
   <link rel="stylesheet" type='text/css' href="/stylesheets/mobile-angular-ui-base.css"/>
   <link rel="stylesheet" type="text/css" href="/stylesheets/angular-animate.css"/>
+  <link rel="stylesheet" type="text/css" href="/stylesheets/lumen.bootstrap.min.css"/>
   <!-- application css -->
-  <link rel='stylesheet' type='text/css' href='/stylesheets/base.css'/>
 
-  <link rel="stylesheet" type="text/css" href="/stylesheets/jquery.handsontable.full.css"/>
+
+  <link rel="styleSheet" type="text/css" href="/stylesheets/ui-grid.css"/>
 
   <link rel="stylesheet" type="text/css" href="/stylesheets/loading-bar.css"/>
+
+  <link rel='stylesheet' type='text/css' href='/stylesheets/base.css'/>
 
   <%= csrf_meta_tags %>
 </head>
@@ -79,17 +82,16 @@
 <!-- jQuery -->
 <script src='/javascripts/jquery/jquery-2.0.3.min.js'></script>
 <script src='/javascripts/jquery/jquery-ui.js'></script>
-<script type="text/javascript" src="/javascripts/jquery/jquery.handsontable.full.js"></script>
 
 <!-- Bootstrap -->
 <script src='/javascripts/bootstrap/bootstrap.min.js'></script>
 <script src='/javascripts/bootstrap/ui-bootstrap.min.js'></script>
 <script src='/javascripts/bootstrap/ui-bootstrap-tpls.min.js'></script>
-<script type="text/javascript" src="/javascripts/angular/directives/ngHandsontable.js"></script>
+<script type="text/javascript" src="/javascripts/ui-grid.js"></script>
 <script type="text/javascript" src="/javascripts/angular/directives/loading-bar.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular-animate.min.js"></script>
 
-<script>var app = angular.module('data-pet', ['ui.bootstrap', 'mobile-angular-ui', 'ngHandsontable', 'angular-loading-bar', 'ngAnimate']);</script>
+<script>var app = angular.module('data-pet', ['ui.bootstrap', 'mobile-angular-ui', 'angular-loading-bar', 'ngAnimate','ui.grid', 'ui.grid.cellNav', 'ui.grid.edit', 'ui.grid.resizeColumns', 'ui.grid.pinning', 'ui.grid.selection', 'ui.grid.moveColumns']);</script>
 
 <!-- noticesController used to display messages to the user -->
 <script src='/javascripts/angular/controllers/notices/notices_controller.js'></script>

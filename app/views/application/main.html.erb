@@ -5,22 +5,21 @@
       <h1 class="app-name">DataPet</h1>
 
       <div class="scrollable">
-        <input ng-model='tableFilter' ng-change='displayAllTables()' class='form-control' placeholder='Table Name...'/>
+        <input ng-model='tableFilter' class='form-control' placeholder='Table Name...'/>
 
         <div class="scrollable-content">
           <div class="list-group">
             <div class="list-group-item" ng-repeat="database in databases">
               <span ng-show='database.state=="loading"'>{{database.name}} ... loading</span>
-              <a ng-show='database.state=="loaded"' href='#' class='{{database.state}}' ng-click='toggleDisplay(database)'>{{database.name}}</a>
+              <div>{{database.name}}</div>
               <span style='color:red;' ng-show='database.state=="error"'>{{database.name}} ... error</span>
 
-              <div ng-show='database.display'>
-                <ul>
-                  <li ng-repeat='table in database.tables | filter:tableFilter | orderBy:"table.name"'>
-                    <a href='#' ng-click='createDatabaseWindow(database, table.name)'>{{table.name}}</a>
-                  </li>
-                </ul>
-              </div>
+              <ul>
+                <li ng-repeat='table in database.tables | filter:tableFilter'>
+                  <a href='#' ng-click='createDatabaseWindow(database, table.name)'>{{table.name}}</a>
+                </li>
+              </ul>
+
             </div>
           </div>
         </div>
@@ -43,7 +42,8 @@
   <div class='tab-content'>
     <div ng-repeat='databaseWindow in databaseWindows' id="{{databaseWindow.id}}" class='tab-pane {{databaseWindow.active}}'>
 
-      <a style='float:right; margin-right:30px;' href='?database_id:{{databaseWindow.database_id}}?database_name:{{databaseWindow.databaseName}}?full_table_name:{{databaseWindow.fullTableName}}?query:{{databaseWindow.currentSqlQuery}}'>Link Me</a>
+      <a style='float:right; margin-right:30px;' href='?database_id:{{databaseWindow.database_id}}?database_name:{{databaseWindow.databaseName}}?full_table_name:{{databaseWindow.fullTableName}}?query:{{databaseWindow.currentSqlQuery}}'>Link
+        Me</a>
 
       <br/>
 
@@ -53,23 +53,29 @@
         </form>
       </div>
 
+      <div ui-grid="databaseWindow.gridOptions"
+           ui-grid-cellNav
+           ui-grid-edit
+           ui-grid-resize-columns
+           ui-grid-pinning
+           ui-grid-selection
+           ui-grid-move-columns
+           class="grid"></div>
 
+      {{databaseWindow.gridMenuCustomItems}}
+      <!--<hot-table  id='{{databaseWindow.id}}_table' ng-if="databaseWindow.rows.length > 0" class="table-striped"-->
+      <!--settings="{ contextMenu: databaseWindow.contextMenu,-->
+      <!--manualColumnResize: true,-->
+      <!--manualColumnMove: true,-->
+      <!--rowHeaders: true,-->
+      <!--columnSorting: true,-->
+      <!--colHeaders: databaseWindow.colHeaders,-->
+      <!--columns: databaseWindow.columns,-->
+      <!--stretchH: 'all'}"-->
+      <!--datarows="databaseWindow.rows"-->
+      <!--minSpareRows="0">-->
 
-
-    <hot-table  id='{{databaseWindow.id}}_table' ng-if="databaseWindow.rows.length > 0" class="table-striped"
-    settings="{ contextMenu: databaseWindow.contextMenu,
-                manualColumnResize: true,
-                manualColumnMove: true,
-                rowHeaders: true,
-                columnSorting: true,
-                colHeaders: databaseWindow.colHeaders,
-                columns: databaseWindow.columns,
-                stretchH: 'all'}"
-    datarows="databaseWindow.rows"
-    minSpareRows="0"
-    >
-
-    </hot-table>
+      </hot-table>
 
 
       <br/>
