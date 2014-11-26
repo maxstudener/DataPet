@@ -5,16 +5,18 @@
       <h1 class="app-name">DataPet</h1>
 
       <div class="scrollable">
-        <input ng-model='tableFilter' class='form-control' placeholder='Table Name...'/>
+        <input ng-model='tableFilter' class='form-control' placeholder='Table Name'/>
 
         <div class="scrollable-content">
           <div class="list-group">
             <div class="list-group-item" ng-repeat="database in databases">
-              <span ng-show='database.state=="loading"'>{{database.name}} ... loading</span>
-              <div>{{database.name}}</div>
-              <span style='color:red;' ng-show='database.state=="error"'>{{database.name}} ... error</span>
+              <div>
+                  <span ng-click="database.override = !database.override">{{database.name}}</span>
+                  <span ng-show='database.state=="loading"'> ... loading</span>
+                  <span style='color:red;' ng-show='database.state=="error"'> ... error</span>
+              </div>
 
-              <ul>
+              <ul ng-if="(tableFilter && tableFilter.length > 1) || database.override">
                 <li ng-repeat='table in database.tables | filter:tableFilter'>
                   <a href='#' ng-click='createDatabaseWindow(database, table.name)'>{{table.name}}</a>
                 </li>
@@ -61,22 +63,6 @@
            ui-grid-selection
            ui-grid-move-columns
            class="grid"></div>
-
-      {{databaseWindow.gridMenuCustomItems}}
-      <!--<hot-table  id='{{databaseWindow.id}}_table' ng-if="databaseWindow.rows.length > 0" class="table-striped"-->
-      <!--settings="{ contextMenu: databaseWindow.contextMenu,-->
-      <!--manualColumnResize: true,-->
-      <!--manualColumnMove: true,-->
-      <!--rowHeaders: true,-->
-      <!--columnSorting: true,-->
-      <!--colHeaders: databaseWindow.colHeaders,-->
-      <!--columns: databaseWindow.columns,-->
-      <!--stretchH: 'all'}"-->
-      <!--datarows="databaseWindow.rows"-->
-      <!--minSpareRows="0">-->
-
-      </hot-table>
-
 
       <br/>
 

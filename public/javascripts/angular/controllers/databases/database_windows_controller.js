@@ -182,11 +182,19 @@ function databaseWindowsController($scope, $rootScope, httpServices, $interval) 
         var databaseWindow = this;
 
             databaseWindow.gridOptions = {
-                data: [], multiSelect: false, enableGridMenu: true, onRegisterApi: function (gridApi) {
+                data: [],
+                multiSelect: false,
+                enableGridMenu: true,
+                onRegisterApi: function (gridApi) {
                     $scope.gridApi = gridApi;
 
                     // interval of zero just to allow the directive to have initialized
                     $interval(function () {
+
+
+                        gridApi.selection.on.rowSelectionChanged($scope, function (row) {
+                            databaseWindow.selectedItem = row.entity;
+                        });
 
                         gridApi.core.addToGridMenu(gridApi.grid, [{
                                 'title': 'View Details',
@@ -195,11 +203,6 @@ function databaseWindowsController($scope, $rootScope, httpServices, $interval) 
                                 }
                             }]
                         );
-
-
-                        gridApi.selection.on.rowSelectionChanged($scope, function (row) {
-                            databaseWindow.selectedItem = row.entity;
-                        });
 
                         var relation_drop_down = function(){
                             databaseWindow.relations.forEach(function (relation) {
@@ -255,7 +258,7 @@ function databaseWindowsController($scope, $rootScope, httpServices, $interval) 
     var Column = function (columnName) {
         this.field = columnName.toLowerCase();
         this.name = columnName;
-        this.width = 150;
+        this.minWidth = 150;
     };
 
     var Row = function (rowData, idx) {
@@ -287,22 +290,6 @@ function databaseWindowsController($scope, $rootScope, httpServices, $interval) 
 
     $scope.closeRowDetail = function () {
         $scope.rowDetail = {columns: [], data: {}, show: false};
-
-    };
-
-    $scope.sortRowDetail = function () {
-        var sorted = $scope.rowDetail.sort;
-        if (sorted == 'none' || sorted == 'desc') {
-            $scope.rowDetail.columns.sort(function (a, b) {
-                return a.name.localeCompare(b.name)
-            });
-            $scope.rowDetail.sort = 'asc';
-        } else {
-            $scope.rowDetail.columns.sort(function (a, b) {
-                return b.name.localeCompare(a.name)
-            });
-            $scope.rowDetail.sort = 'desc';
-        }
     };
 
 
