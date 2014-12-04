@@ -1,3 +1,4 @@
+require 'timeout'
 class Database < ActiveRecord::Base
 
   def adapter
@@ -10,7 +11,9 @@ class Database < ActiveRecord::Base
   end
 
   def establish_sequel_connection
-    Sequel.connect(sequel_configuration)
+    Timeout::timeout(10) {
+      Sequel.connect(sequel_configuration)
+    }
   end
 
   def sequel_configuration

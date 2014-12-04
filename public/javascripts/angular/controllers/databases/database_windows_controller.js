@@ -184,13 +184,19 @@ function databaseWindowsController($scope, $rootScope, httpServices, $interval) 
             databaseWindow.gridOptions = {
                 data: [],
                 multiSelect: false,
+                enableRowHeaderSelection: false,
+                enableColumnMenus: false,
                 enableGridMenu: true,
+                rowTemplate: '<div ng-dblclick="displayRowDetail(databaseWindow.selectedItem)" ng-repeat="col in colContainer.renderedColumns track by col.colDef.name" class="ui-grid-cell" ui-grid-cell></div>',
                 onRegisterApi: function (gridApi) {
                     $scope.gridApi = gridApi;
 
                     // interval of zero just to allow the directive to have initialized
                     $interval(function () {
 
+                        gridApi.edit.on.beginCellEdit($scope,function(rowEntity, colDef){
+                            $scope.displayRowDetail(databaseWindow.selectedItem);
+                        });
 
                         gridApi.selection.on.rowSelectionChanged($scope, function (row) {
                             databaseWindow.selectedItem = row.entity;
@@ -213,6 +219,7 @@ function databaseWindowsController($scope, $rootScope, httpServices, $interval) 
                                     }
                                 }]);
                             });
+                            window.dispatchEvent(new Event('resize'));
                         };
 
                         if(loadRelationDataFunction) {

@@ -112,10 +112,37 @@ h1.app-name{
     color: black;
 }
 .has-navbar-top .app-body {
-    padding-top:0px;
+    padding-top:50px;
 }
 
 .ui-grid-menu-button .ui-grid-menu{
     max-height: 285px;
     overflow: scroll;
+}
+
+.nav-tabs {
+    white-space: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    min-height: 46px;
+}
+.nav-tabs li{
+    display: inline-block;
+    float:none;
+}
+
+.grid{
+    position: absolute;
+    top: 100px;
+    bottom: 35px;
+    left: 0;
+    right: 0;
+}
+
+.maxrows{
+    position: absolute;
+    bottom: 0;
+    left:0;
+    /*height: 100px;*/
+    width: 100%;
 }

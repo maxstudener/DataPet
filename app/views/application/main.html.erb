@@ -51,22 +51,20 @@
 
       <div class='database_window_header'>
         <form ng-submit='submitQuery(databaseWindow.id, databaseWindow.currentSqlQuery)'>
-          <input id='{{databaseWindow.id}}_sql' ng-model='databaseWindow.currentSqlQuery' class='form-control' columnautocomplete/>
+          <input id='{{databaseWindow.id}}_sql' ng-model='databaseWindow.currentSqlQuery' class='form-control' placeholder="where clause..." columnautocomplete/>
         </form>
       </div>
 
       <div ui-grid="databaseWindow.gridOptions"
-           ui-grid-cellNav
-           ui-grid-edit
            ui-grid-resize-columns
-           ui-grid-pinning
            ui-grid-selection
+           ui-grid-edit
            ui-grid-move-columns
            class="grid"></div>
 
       <br/>
 
-      <div class='row'>
+      <div class='row maxrows'>
         <div class='col-sm-2'>
           <form ng-submit='submitQuery(databaseWindow.id, databaseWindow.currentSqlQuery)'>
             <input id='{{databaseWindow.id}}_max_rows' ng-model='databaseWindow.maxRows' class='form-control' placeholder='max rows'/>
